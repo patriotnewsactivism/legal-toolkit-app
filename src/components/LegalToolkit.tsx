@@ -2,17 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 
-export function LegalToolkit() {
-  const [data, setData] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetch('/api/toolkit')
-      .then(res => res.json())
-      .then(json => setData(json.toolkit));
-  }, []);
-
-  return <div>{data ?? 'Loading…'}</div>;
-}
+// src/components/LegalToolkit.tsx
+- import React, { useState, useEffect } from 'react';
++ // (remove React import entirely if using React 17+ JSX transform)
 
 
 // -- The main functional component is already defined correctly
