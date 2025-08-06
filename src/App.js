@@ -1,10 +1,10 @@
 import React from 'react';
-import LegalToolkit from './components/LegalToolkit.tsx';
+import LegalToolkit from './components/LegalToolkit';
+import './App.css';
 
 function App() {
   return (
-    <div style={{ padding: '2rem', fontFamily: 'Arial, sans-serif' }}>
-      <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>📚 Legal Toolkit</h1>
+    <div className="App">
       <LegalToolkit />
     </div>
   );
