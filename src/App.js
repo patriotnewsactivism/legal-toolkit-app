@@ -1,5 +1,5 @@
 import React from 'react';
-import LegalToolkit from './components/LegalToolkit';
+import LegalToolkit from './components/legal_toolkit.js';
 import './App.css';
 
 function App() {
