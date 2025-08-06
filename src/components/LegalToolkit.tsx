@@ -2,6 +2,19 @@
 
 import React, { useState, useEffect } from 'react';
 
+export function LegalToolkit() {
+  const [data, setData] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch('/api/toolkit')
+      .then(res => res.json())
+      .then(json => setData(json.toolkit));
+  }, []);
+
+  return <div>{data ?? 'Loading…'}</div>;
+}
+
+
 // -- The main functional component is already defined correctly
 // -- Data constants are large but valid and well-structured
 // -- Conditional logic for document generation is sound
