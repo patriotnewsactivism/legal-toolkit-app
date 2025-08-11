@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
 // COMPREHENSIVE 2024-2025 LEGISLATIVE UPDATES - Enhanced for Civil Rights Attorneys
-// All data verified through primary sources as of August 2025
-
-// Updated Public Records Database with Latest Legislative Changes
 const statePublicRecordsData = {
   'AL': { name: 'Alabama', statute: 'Alabama Open Records Act (Code of Alabama § 36-12-40)', timeLimit: '7-10 business days' },
   'AK': { name: 'Alaska', statute: 'Alaska Public Records Act (AS § 40.25.110-40.25.220)', timeLimit: '10 business days' },
@@ -73,110 +70,12 @@ const statePublicRecordsData = {
   'DC': { name: 'District of Columbia', statute: 'DC Freedom of Information Act (DC Code § 2-531)', timeLimit: '15 business days' }
 };
 
-// COMPREHENSIVE MARIJUANA LAW DATABASE - Updated August 2025
 const cannabisLaws = {
-  // RECREATIONAL MARIJUANA LEGAL (24 States + DC)
-  'AK': { 
-    status: 'Recreational & Medical', 
-    enacted: '2014', 
-    possession: '1 oz flower, 6 plants (3 mature)', 
-    details: 'Ballot Measure 2 with 53% support'
-  },
-  'AZ': { 
-    status: 'Recreational & Medical', 
-    enacted: '2020', 
-    possession: '1 oz flower, 6 plants, 5g concentrates', 
-    details: 'Smart and Safe Arizona Act (Prop 207) with 59.95% support'
-  },
   'CA': { 
     status: 'Recreational & Medical', 
     enacted: '2016', 
     possession: '1 oz flower, 6 plants, 8g concentrates', 
     details: 'First medical state (1996), recreational via Prop 64 (57% support)'
-  },
-  'CO': { 
-    status: 'Recreational & Medical', 
-    enacted: '2012', 
-    possession: '1 oz flower, 6 plants (3 mature)', 
-    details: 'Amendment 64 with 55% support - early pioneer state'
-  },
-  'CT': { 
-    status: 'Recreational & Medical', 
-    enacted: '2021', 
-    possession: '1.5 oz flower, 6 plants (starting July 2023)', 
-    details: 'Legislative passage - SB 1201'
-  },
-  'DE': { 
-    status: 'Recreational & Medical', 
-    enacted: '2023', 
-    possession: '1 oz flower (no home cultivation)', 
-    details: 'Most recent recreational state - HB 1 & 2, Gov. Carney allowed to become law'
-  },
-  'IL': { 
-    status: 'Recreational & Medical', 
-    enacted: '2019', 
-    possession: '1 oz flower (no home cultivation for recreational)', 
-    details: 'Legislative passage - Cannabis Regulation and Tax Act'
-  },
-  'ME': { 
-    status: 'Recreational & Medical', 
-    enacted: '2016', 
-    possession: '2.5 oz flower, 6 mature plants', 
-    details: 'Question 1 ballot measure'
-  },
-  'MD': { 
-    status: 'Recreational & Medical', 
-    enacted: '2022', 
-    possession: '1.5 oz flower, 2 plants', 
-    details: 'Question 4 ballot measure with 66.2% support'
-  },
-  'MA': { 
-    status: 'Recreational & Medical', 
-    enacted: '2016', 
-    possession: '1 oz flower, 6 plants', 
-    details: 'Question 4 ballot measure with 53.6% support'
-  },
-  'MI': { 
-    status: 'Recreational & Medical', 
-    enacted: '2018', 
-    possession: '2.5 oz flower, 12 plants', 
-    details: 'Proposal 1 with 55.9% support'
-  },
-  'MN': { 
-    status: 'Recreational & Medical', 
-    enacted: '2023', 
-    possession: '2 oz flower, 8 plants', 
-    details: '23rd recreational state - legislative passage by Gov. Tim Walz'
-  },
-  'MO': { 
-    status: 'Recreational & Medical', 
-    enacted: '2022', 
-    possession: '3 oz flower, 6 plants', 
-    details: 'Amendment 3 with 53.2% support'
-  },
-  'MT': { 
-    status: 'Recreational & Medical', 
-    enacted: '2020', 
-    possession: '1 oz flower, 4 plants', 
-    details: 'Constitutional Initiative 118 with 56.9% support'
-  },
-  'NV': { 
-    status: 'Recreational & Medical', 
-    enacted: '2016', 
-    possession: '1 oz flower, 6 plants (if 25+ miles from dispensary)', 
-    details: 'Question 2 with 54.5% support'
-  },
-  'NJ': { 
-    status: 'Recreational & Medical', 
-    enacted: '2020', 
-    possession: '1 oz flower (no home cultivation)', 
-    details: 'Public Question 1 with 67% support'
-  },
-  'NM': { 
-    status: 'Recreational & Medical', 
-    enacted: '2021', 
-    possession: '2 oz flower, 6 mature plants', 
-    details: 'Cannabis Regulation Act - legislative passage'
   },
   'NY': { 
     status: 'Recreational & Medical', 
@@ -184,283 +83,32 @@ const cannabisLaws = {
     possession: '3 oz flower, 6 plants', 
     details: 'Marijuana Regulation and Taxation Act - legislative passage'
   },
-  'OH': { 
-    status: 'Recreational & Medical', 
-    enacted: '2023', 
-    possession: '2.5 oz flower, 6 plants', 
-    details: 'Issue 2 with 55% support - 24th recreational state'
-  },
-  'OR': { 
-    status: 'Recreational & Medical', 
-    enacted: '2014', 
-    possession: '1 oz flower, 4 plants', 
-    details: 'Measure 91 with 56.1% support'
-  },
-  'RI': { 
-    status: 'Recreational & Medical', 
-    enacted: '2022', 
-    possession: '1 oz public/10 oz home, 3 mature plants', 
-    details: 'Rhode Island Cannabis Act - legislative passage'
-  },
-  'VT': { 
-    status: 'Recreational & Medical', 
-    enacted: '2018', 
-    possession: '1 oz flower, 6 plants (2 mature)', 
-    details: 'First state to legalize via legislature (H.511)'
-  },
-  'VA': { 
-    status: 'Recreational & Medical', 
-    enacted: '2021', 
-    possession: '1 oz flower, 4 plants', 
-    details: 'Legislative passage - retail sales delayed until 2024'
-  },
-  'WA': { 
-    status: 'Recreational & Medical', 
-    enacted: '2012', 
-    possession: '1 oz flower (no home cultivation)', 
-    details: 'Initiative 502 with 55.7% support - early pioneer state'
-  },
-  'DC': { 
-    status: 'Recreational & Medical', 
-    enacted: '2014', 
-    possession: '2 oz flower, 6 plants', 
-    details: 'Initiative 71 with 65% support (no retail sales due to federal restrictions)'
-  },
-
-  // MEDICAL MARIJUANA ONLY (15 States)
-  'AL': { 
-    status: 'Medical Only', 
-    enacted: '2021', 
-    possession: 'Qualified patients only', 
-    details: 'Compassion Act - very restrictive program'
-  },
-  'AR': { 
-    status: 'Medical Only', 
-    enacted: '2016', 
-    possession: '2.5 oz per 14 days for qualified patients', 
-    details: 'Arkansas Medical Marijuana Amendment'
-  },
-  'FL': { 
-    status: 'Medical Only', 
-    enacted: '2016', 
-    possession: '2.5 oz smokable per 35 days', 
-    details: 'Amendment 2 with 71.3% support - recreational failed 2024 (56% - needed 60%)'
-  },
-  'GA': { 
-    status: 'Medical Only (Limited)', 
-    enacted: '2015', 
-    possession: 'Low-THC oil only (5% THC max)', 
-    details: 'Haleighs Hope Act - very restrictive CBD program'
-  },
-  'HI': { 
-    status: 'Medical Only', 
-    enacted: '2000', 
-    possession: '4 oz flower, 7 plants', 
-    details: 'Legislative passage - no dispensaries until 2017'
-  },
-  'LA': { 
-    status: 'Medical Only', 
-    enacted: '2015', 
-    possession: 'Non-smokable forms only', 
-    details: 'Very restrictive - only 2 licensed cultivators (LSU & Southern University)'
-  },
-  'MS': { 
-    status: 'Medical Only', 
-    enacted: '2022', 
-    possession: '3.5g per day, 2.5 oz per month', 
-    details: 'Mississippi Medical Cannabis Act - legislative after ballot measure struck down'
-  },
-  'NE': { 
-    status: 'Medical Only (PENDING LEGAL CHALLENGE)', 
-    enacted: '2024', 
-    possession: '5 oz flower for qualified patients', 
-    details: 'Initiatives 437 & 438 passed with 70% support but facing court challenges'
-  },
-  'NH': { 
-    status: 'Medical Only', 
-    enacted: '2013', 
-    possession: '2 oz flower per month', 
-    details: 'Therapeutic Cannabis Program - no home cultivation'
-  },
-  'ND': { 
-    status: 'Medical Only', 
-    enacted: '2016', 
-    possession: '3 oz flower, 8 plants', 
-    details: 'Measure 5 - recreational failed in 2018, 2022, and 2024'
-  },
-  'OK': { 
-    status: 'Medical Only', 
-    enacted: '2018', 
-    possession: '3 oz flower, 6 mature plants', 
-    details: 'State Question 788 with 57% support - recreational failed March 2023'
-  },
-  'PA': { 
-    status: 'Medical Only', 
-    enacted: '2016', 
-    possession: '3 oz flower per month', 
-    details: 'Medical Marijuana Act - no home cultivation'
-  },
-  'SD': { 
-    status: 'Medical Only', 
-    enacted: '2020', 
-    possession: '3 oz flower for qualified patients', 
-    details: 'Measure 26 - recreational failed in 2020, 2022, and 2024'
-  },
-  'UT': { 
-    status: 'Medical Only', 
-    enacted: '2018', 
-    possession: 'State-regulated products only', 
-    details: 'Proposition 2 - very restrictive program'
-  },
-  'WV': { 
-    status: 'Medical Only', 
-    enacted: '2017', 
-    possession: '3 oz flower per month', 
-    details: 'Medical Cannabis Act - program launched 2022'
-  },
-
-  // CBD ONLY/DECRIMINALIZED (7 States)
-  'IN': { 
-    status: 'CBD Only', 
-    enacted: '2018', 
-    possession: 'CBD products with <0.3% THC only', 
-    details: 'Industrial Hemp Act - very restrictive'
-  },
-  'IA': { 
-    status: 'CBD Only', 
-    enacted: '2017', 
-    possession: 'CBD products with <3% THC for qualified patients', 
-    details: 'Medical Cannabidiol Act'
-  },
-  'KY': { 
-    status: 'Medical Starting 2025', 
-    enacted: '2023', 
-    possession: 'Will allow vaporized/edible forms', 
-    details: 'SB 47 - medical program starts January 1, 2025'
-  },
-  'NC': { 
-    status: 'Decriminalized', 
-    enacted: 'N/A', 
-    possession: 'Decriminalized <0.5 oz (civil fine)', 
-    details: 'Local decriminalization in some areas'
-  },
-  'TN': { 
-    status: 'CBD Only', 
-    enacted: '2015', 
-    possession: 'CBD oil for qualified patients only', 
-    details: 'Very restrictive CBD program'
-  },
   'TX': { 
     status: 'CBD Only', 
     enacted: '2015', 
     possession: 'Low-THC CBD for qualified patients', 
     details: 'Compassionate Use Act - very restrictive'
   },
-  'WI': { 
-    status: 'CBD Only', 
-    enacted: '2017', 
-    possession: 'CBD products with <0.3% THC only', 
-    details: 'Industrial Hemp Program'
+  'FL': { 
+    status: 'Medical Only', 
+    enacted: '2016', 
+    possession: '2.5 oz smokable per 35 days', 
+    details: 'Amendment 2 with 71.3% support - recreational failed 2024'
   },
-
-  // FULLY ILLEGAL (4 States)
-  'ID': { 
-    status: 'Fully Illegal', 
-    enacted: 'N/A', 
-    possession: 'All cannabis products illegal', 
-    details: 'No medical, recreational, or CBD programs'
-  },
-  'KS': { 
-    status: 'Fully Illegal', 
-    enacted: 'N/A', 
-    possession: 'All cannabis products illegal', 
-    details: 'Medical bills introduced but failed'
-  },
-  'SC': { 
-    status: 'Fully Illegal', 
-    enacted: 'N/A', 
-    possession: 'All cannabis products illegal', 
-    details: 'Medical bills have been introduced but not passed'
-  },
-  'WY': { 
-    status: 'Fully Illegal', 
-    enacted: 'N/A', 
-    possession: 'All cannabis products illegal', 
-    details: 'No medical, recreational, or CBD programs'
+  'NJ': { 
+    status: 'Recreational & Medical', 
+    enacted: '2020', 
+    possession: '1 oz flower (no home cultivation)', 
+    details: 'Public Question 1 with 67% support'
   }
 };
 
-// State-specific ID rights and stop-and-identify laws
 const stateIDRights = {
-  'AL': { stopAndID: true, law: 'Ala. Code 15-5-30', idRequired: 'Name, address, explanation for felony/public offense suspicion', recording: 'One-party consent' },
-  'AK': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'One-party consent' },
-  'AZ': { stopAndID: true, law: 'A.R.S. § 13-2412', idRequired: 'Must provide true full name if lawfully detained', recording: 'One-party consent' },
-  'AR': { stopAndID: true, law: 'A.C.A. § 5-71-213', idRequired: 'Must provide name if lawfully stopped with reasonable suspicion', recording: 'One-party consent' },
   'CA': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'Two-party consent' },
-  'CO': { stopAndID: true, law: 'C.R.S. § 16-3-103', idRequired: 'Name, address, ID if available, explanation of actions', recording: 'One-party consent' },
-  'CT': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'Two-party consent' },
-  'DE': { stopAndID: true, law: '11 Del. C. § 1902', idRequired: 'Must identify self if lawfully detained on reasonable suspicion', recording: 'Two-party consent' },
-  'FL': { stopAndID: true, law: 'F.S. § 856.021', idRequired: 'Must provide name if lawfully detained, refusal may be obstruction', recording: 'Two-party consent' },
-  'GA': { stopAndID: true, law: 'O.C.G.A. § 16-11-36', idRequired: 'Must provide name and address if lawfully detained', recording: 'One-party consent' },
-  'HI': { stopAndID: true, law: 'HRS 291C-172', idRequired: 'Pedestrians for traffic violations only', recording: 'One-party consent' },
-  'ID': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'One-party consent' },
-  'IL': { stopAndID: true, law: '725 ILCS 5/107-14', idRequired: 'Must provide name if lawfully detained (refusal protected)', recording: 'Two-party consent' },
-  'IN': { stopAndID: true, law: 'IC § 34-28-5-3.5', idRequired: 'Must provide name if lawfully detained on reasonable suspicion', recording: 'One-party consent' },
-  'IA': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'One-party consent' },
-  'KS': { stopAndID: true, law: 'K.S.A. § 22-2402', idRequired: 'Must provide name if lawfully detained on reasonable suspicion', recording: 'One-party consent' },
-  'KY': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'One-party consent' },
-  'LA': { stopAndID: true, law: 'LSA-R.S. § 14:108', idRequired: 'Must provide name if lawfully detained on reasonable suspicion', recording: 'One-party consent' },
-  'ME': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'One-party consent' },
-  'MD': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'Two-party consent' },
-  'MA': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'Two-party consent' },
-  'MI': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'One-party consent' },
-  'MN': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'One-party consent' },
-  'MS': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'One-party consent' },
-  'MO': { stopAndID: true, law: 'R.S.Mo. § 84.710', idRequired: 'Must provide name if lawfully detained (Kansas City and St. Louis only)', recording: 'One-party consent' },
-  'MT': { stopAndID: true, law: 'MCA § 46-5-401', idRequired: 'Must provide name if lawfully detained on reasonable suspicion', recording: 'Two-party consent' },
-  'NE': { stopAndID: true, law: 'Neb. Rev. Stat. § 29-829', idRequired: 'Must provide name if lawfully detained on reasonable suspicion', recording: 'One-party consent' },
-  'NV': { stopAndID: true, law: 'NRS § 171.123', idRequired: 'Name only during lawful detention', recording: 'One-party consent (mixed rules for phone/text)' },
-  'NH': { stopAndID: true, law: 'RSA § 594:2', idRequired: 'Name, address, destination with reasonable suspicion', recording: 'Two-party consent' },
-  'NJ': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'One-party consent' },
-  'NM': { stopAndID: true, law: 'NMSA § 30-22-3', idRequired: 'Must provide name if lawfully detained on reasonable suspicion', recording: 'One-party consent' },
   'NY': { stopAndID: true, law: 'N.Y. CPL § 140.50', idRequired: 'Must provide name, address, and explanation of conduct if lawfully stopped', recording: 'One-party consent' },
-  'NC': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'One-party consent' },
-  'ND': { stopAndID: true, law: 'NDCC § 29-29-21', idRequired: 'Must provide name if lawfully detained on reasonable suspicion', recording: 'One-party consent' },
-  'OH': { stopAndID: true, law: 'ORC § 2921.29', idRequired: 'Must provide name, address, date of birth if lawfully detained', recording: 'One-party consent' },
-  'OK': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'One-party consent' },
-  'OR': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'One-party consent (two-party for in-person)' },
-  'PA': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'Two-party consent' },
-  'RI': { stopAndID: true, law: 'R.I.G.L. § 12-7-1', idRequired: 'Name, address, destination with reasonable suspicion', recording: 'One-party consent' },
-  'SC': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'One-party consent' },
-  'SD': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'One-party consent' },
-  'TN': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'One-party consent' },
   'TX': { stopAndID: true, law: 'Tex. Penal Code § 38.02', idRequired: 'Must provide name and address if lawfully arrested or detained', recording: 'One-party consent' },
-  'UT': { stopAndID: true, law: 'Utah Code § 77-7-15', idRequired: 'Full name, address, date of birth during valid stop', recording: 'One-party consent' },
-  'VT': { stopAndID: true, law: '24 V.S.A. § 1983', idRequired: 'Municipal ordinance violations only', recording: 'One-party consent' },
-  'VA': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'One-party consent' },
-  'WA': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'Two-party consent' },
-  'WV': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'One-party consent' },
-  'WI': { stopAndID: true, law: 'Wis. Stat. § 968.24', idRequired: 'Must provide name if lawfully detained (no penalty for refusal)', recording: 'One-party consent' },
-  'WY': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'One-party consent' },
-  'DC': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'One-party consent' }
-};
-
-// COMPREHENSIVE STATE-SPECIFIC LEGAL NOTICE REQUIREMENTS - UPDATED 2024-2025
-const stateNoticeRequirements = {
-  'AL': {
-    govTortClaim: { timeLimit: '1 year', statute: 'Alabama Code § 11-47-190', requirements: 'Written notice required' },
-    medMalpractice: { timeLimit: '90 days', statute: 'Alabama Code § 6-5-484', requirements: 'Pre-suit notice with expert affidavit' },
-    ceaseDesist: { requirements: 'No specific statutory requirements' }
-  },
-  'NJ': {
-    govTortClaim: { timeLimit: '90 days', statute: 'N.J.S.A. § 59:8-8', requirements: 'Notice within 90 days with extraordinary circumstances extension to one year' },
-    medMalpractice: { timeLimit: '60 days', statute: 'N.J.S.A. § 2A:53A-27', requirements: 'Affidavit of merit required from board-certified expert in same specialty' },
-    ceaseDesist: { 
-      requirements: 'CONFIRMED: No 7 business day requirement exists. New Jersey Consumer Fraud Act (N.J.S.A. 56:8-1 et seq.) does not specify mandatory time periods for cease and desist letters.',
-      legalNote: 'Research confirms no statutory time requirements for cease and desist in New Jersey'
-    }
-  }
-  // Additional states would be added here following the same pattern
+  'FL': { stopAndID: true, law: 'F.S. § 856.021', idRequired: 'Must provide name if lawfully detained, refusal may be obstruction', recording: 'Two-party consent' },
+  'NJ': { stopAndID: false, law: 'No stop and identify statute', idRequired: 'Only when driving, under arrest, or specific licensed activities', recording: 'One-party consent' }
 };
 
 const LegalToolkit = () => {
@@ -473,33 +121,19 @@ const LegalToolkit = () => {
   const [timeLimit, setTimeLimit] = useState('');
   const [statute, setStatute] = useState('');
   const [recipient, setRecipient] = useState('');
-  const [claimType, setClaimType] = useState('general');
-  const [damages, setDamages] = useState('');
-  const [violationType, setViolationType] = useState('harassment');
 
-  // Update jurisdiction, time limit, and statute when state changes
   useEffect(() => {
-    if (selectedState) {
-      if (documentType === 'FOIA Request' || documentType === 'State Public Records Request') {
-        if (statePublicRecordsData[selectedState]) {
-          const stateData = statePublicRecordsData[selectedState];
-          setJurisdiction(stateData.name);
-          setTimeLimit(stateData.timeLimit);
-          setStatute(stateData.statute);
-        }
-      } else if (documentType === 'ID Rights Card' && stateIDRights[selectedState]) {
-        const stateData = statePublicRecordsData[selectedState];
-        const rightsData = stateIDRights[selectedState];
-        setJurisdiction(stateData.name);
-        setTimeLimit(rightsData.stopAndID ? 'Stop and Identify State' : 'No Stop and Identify Law');
-        setStatute(rightsData.law);
-      }
+    if (selectedState && statePublicRecordsData[selectedState]) {
+      const stateData = statePublicRecordsData[selectedState];
+      setJurisdiction(stateData.name);
+      setTimeLimit(stateData.timeLimit);
+      setStatute(stateData.statute);
     } else {
       setJurisdiction('');
       setTimeLimit('');
       setStatute('');
     }
-  }, [selectedState, documentType, claimType]);
+  }, [selectedState, documentType]);
 
   const generateLetter = () => {
     const today = new Date().toLocaleDateString();
@@ -553,8 +187,6 @@ This request seeks records regardless of format, including but not limited to: p
 
 I request that fees be waived as this request is in the public interest and will contribute significantly to public understanding of government operations. If fees cannot be waived entirely, please contact me if costs will exceed $25.00.
 
-If any portion of this request is denied, please specify which exemption applies and provide a detailed justification. If records are partially redacted, please provide all non-exempt portions.
-
 ${selectedState ? `Please note that under ${statute}, you are required to respond within ${timeLimit}.` : 'Please respond within the statutorily required timeframe.'}
 
 I look forward to your prompt response. Please contact me if you need clarification or additional information.
@@ -586,125 +218,33 @@ Reference Number: [Agency will provide]`;
       return 'Please select a state to generate your ID Rights Card';
     }
 
-    return (
-      <div style={{
-        width: '400px',
-        height: '280px',
-        background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
-        borderRadius: '15px',
-        padding: '20px',
-        color: 'white',
-        fontFamily: 'Arial, sans-serif',
-        fontSize: '11px',
-        lineHeight: '1.3',
-        position: 'relative',
-        boxShadow: '0 8px 20px rgba(0,0,0,0.3)',
-        border: '2px solid #fff'
-      }}>
-        <div style={{
-          textAlign: 'center',
-          borderBottom: '2px solid rgba(255,255,255,0.3)',
-          paddingBottom: '8px',
-          marginBottom: '8px'
-        }}>
-          <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{stateName.toUpperCase()}</div>
-          <div style={{ fontSize: '13px', fontWeight: '600' }}>RIGHTS & LAWS CARD</div>
-        </div>
+    return `
+====================================
+${stateName.toUpperCase()} ID RIGHTS CARD
+====================================
 
-        <div style={{ display: 'flex', gap: '15px', height: '180px' }}>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: '10px', fontWeight: 'bold', marginBottom: '6px', color: '#ffd700' }}>
-              CONSTITUTIONAL RIGHTS
-            </div>
-            <div style={{ fontSize: '9px', marginBottom: '4px' }}>
-              • I do not consent to searches
-            </div>
-            <div style={{ fontSize: '9px', marginBottom: '4px' }}>
-              • I invoke my right to remain silent
-            </div>
-            <div style={{ fontSize: '9px', marginBottom: '4px' }}>
-              • I do not waive any rights
-            </div>
-            <div style={{ fontSize: '9px', marginBottom: '8px' }}>
-              • I want a lawyer if detained
-            </div>
+CONSTITUTIONAL RIGHTS:
+• I do not consent to searches
+• I invoke my right to remain silent
+• I do not waive any rights
+• I want a lawyer if detained
 
-            <div style={{ fontSize: '10px', fontWeight: 'bold', marginBottom: '4px', color: '#ffd700' }}>
-              STATE LAWS
-            </div>
-            <div style={{ fontSize: '8px', marginBottom: '4px' }}>
-              {stateRights.stopAndID ? 
-                `✓ Stop & ID: ${stateRights.law}` : 
-                '✗ No Stop & ID Law'
-              }
-            </div>
-            <div style={{ fontSize: '8px', marginBottom: '4px' }}>
-              Recording: {stateRights.recording}
-            </div>
-            {cannabisData && (
-              <div style={{ fontSize: '8px', marginBottom: '4px', color: '#90EE90' }}>
-                Cannabis: {cannabisData.status}
-              </div>
-            )}
-          </div>
+POLICE ENCOUNTER SCRIPT:
+"Officer, am I being detained or am I free to go?"
 
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: '10px', fontWeight: 'bold', marginBottom: '6px', color: '#ffd700' }}>
-              POLICE ENCOUNTER
-            </div>
-            <div style={{ fontSize: '8px', marginBottom: '3px', fontWeight: '600' }}>
-              "Officer, am I being detained or am I free to go?"
-            </div>
-            
-            <div style={{ fontSize: '8px', marginBottom: '2px' }}>
-              <strong>If FREE TO GO:</strong>
-            </div>
-            <div style={{ fontSize: '7px', marginBottom: '4px', fontStyle: 'italic' }}>
-              "I choose to leave now. Have a good day."
-            </div>
-            
-            <div style={{ fontSize: '8px', marginBottom: '2px' }}>
-              <strong>If DETAINED:</strong>
-            </div>
-            <div style={{ fontSize: '7px', marginBottom: '2px' }}>
-              "I respectfully decline to answer questions."
-            </div>
-            <div style={{ fontSize: '7px', marginBottom: '2px' }}>
-              "I do not consent to any search."
-            </div>
-            <div style={{ fontSize: '7px', marginBottom: '4px' }}>
-              {stateRights.stopAndID ? 
-                '"Please state the law requiring me to provide ID."' :
-                '"I am not required to show ID unless driving or under arrest."'
-              }
-            </div>
-            
-            <div style={{ fontSize: '8px', marginBottom: '2px' }}>
-              <strong>If ARRESTED:</strong>
-            </div>
-            <div style={{ fontSize: '7px' }}>
-              "I invoke my right to remain silent and want a lawyer."
-            </div>
-          </div>
-        </div>
+IF FREE TO GO: "I choose to leave now."
+IF DETAINED: "I decline to answer questions. I do not consent to searches."
+IF ARRESTED: "I invoke my right to remain silent and want a lawyer."
 
-        <div style={{
-          position: 'absolute',
-          bottom: '8px',
-          left: '20px',
-          right: '20px',
-          borderTop: '1px solid rgba(255,255,255,0.3)',
-          paddingTop: '4px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          fontSize: '7px',
-          opacity: '0.8'
-        }}>
-          <div>Generated: {new Date().toLocaleDateString()}</div>
-          <div>For informational purposes only</div>
-        </div>
-      </div>
-    );
+STATE LAWS:
+Stop & ID Law: ${stateRights.stopAndID ? 'YES - ' + stateRights.law : 'NO'}
+ID Required: ${stateRights.idRequired}
+Recording Laws: ${stateRights.recording}
+${cannabisData ? `Cannabis Status: ${cannabisData.status}` : ''}
+
+Generated: ${new Date().toLocaleDateString()}
+For informational purposes only
+====================================`;
   };
 
   const generateCeaseDesistLetter = (today) => {
@@ -720,7 +260,7 @@ ${recipient || '[Recipient Name]'}
 [Recipient Address]
 [City, State, ZIP Code]
 
-RE: CEASE AND DESIST - ${violationType.toUpperCase()} VIOLATIONS
+RE: CEASE AND DESIST NOTICE
 ${jurisdiction ? `JURISDICTION: ${jurisdiction}` : ''}
 
 Dear ${recipient || '[Recipient Name]'}:
@@ -731,30 +271,33 @@ You are hereby notified to CEASE AND DESIST from the following unlawful activiti
 
 VIOLATIONS: ${incident || '[Describe specific violations, actions, or behaviors that must stop]'}
 
-LEGAL BASIS: Your actions constitute violations of applicable law.
-
 DEMAND FOR CESSATION: You are hereby demanded to immediately:
 
-1. CEASE all ${violationType} activities described above
+1. CEASE all described activities
 2. REFRAIN from any future similar conduct
 3. REMOVE any infringing materials (if applicable)
 4. PROVIDE written confirmation of compliance within 10 days
 
 CONSEQUENCES OF NON-COMPLIANCE: 
 
-Please be advised that if you fail to comply with this demand within 10 days of receipt:
-
+If you fail to comply within 10 days of receipt:
 1. We will pursue all available legal remedies
 2. You may be liable for damages, including attorney fees
-3. We may seek injunctive relief to stop your actions
+3. We may seek injunctive relief
 4. Criminal charges may be filed if applicable
 
-Time for compliance: You have ten (10) days from receipt of this letter to comply.
+Time for compliance: Ten (10) days from receipt of this letter.
 
 Sincerely,
 
 [Your Signature]
-[Your Printed Name]`;
+[Your Printed Name]
+
+---
+DELIVERY VERIFICATION:
+☐ Certified Mail, Return Receipt Requested
+☐ Personal Service
+☐ Email with read receipt`;
   };
 
   return (
@@ -793,7 +336,7 @@ Sincerely,
             fontSize: '1.2rem',
             margin: '0'
           }}>
-            Professional Civil Rights Attorney Document Generator with Complete 2024-2025 Legislative Updates
+            Professional Civil Rights Attorney Document Generator
           </p>
         </div>
 
@@ -820,215 +363,11 @@ Sincerely,
                 width: '100%', 
                 padding: '15px', 
                 border: '2px solid #3498db',
-                fontSize: '16px',
-              color: '#000000',
-              backgroundColor: '#ffffff',
-              resize: 'vertical',
-              fontFamily: 'inherit',
-              lineHeight: '1.5',
-              transition: 'all 0.3s ease'
-            }}
-          />
-        </div>
-
-        <button 
-          onClick={generateLetter}
-          style={{ 
-            width: '100%',
-            padding: '20px',
-            backgroundColor: '#3498db',
-            color: 'white',
-            border: 'none',
-            borderRadius: '12px',
-            fontSize: '20px',
-            fontWeight: '700',
-            cursor: 'pointer',
-            marginBottom: '30px',
-            transition: 'all 0.3s ease',
-            textTransform: 'uppercase',
-            letterSpacing: '1px',
-            boxShadow: '0 4px 15px rgba(52, 152, 219, 0.3)'
-          }}
-          onMouseOver={(e) => {
-            e.target.style.backgroundColor = '#2980b9';
-            e.target.style.transform = 'translateY(-2px)';
-            e.target.style.boxShadow = '0 6px 20px rgba(52, 152, 219, 0.4)';
-          }}
-          onMouseOut={(e) => {
-            e.target.style.backgroundColor = '#3498db';
-            e.target.style.transform = 'translateY(0)';
-            e.target.style.boxShadow = '0 4px 15px rgba(52, 152, 219, 0.3)';
-          }}
-        >
-          🚀 Generate {documentType === 'ID Rights Card' ? 'Professional Rights & Laws Card' : 'Attorney-Level Legal Document'}
-        </button>
-
-        {generatedLetter && (
-          <div style={{
-            backgroundColor: '#f8f9fa',
-            border: '2px solid #27ae60',
-            borderRadius: '15px',
-            padding: '25px',
-            boxShadow: '0 4px 15px rgba(39, 174, 96, 0.1)'
-          }}>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '20px',
-              flexWrap: 'wrap',
-              gap: '10px'
-            }}>
-              <h3 style={{ 
-                color: '#27ae60',
-                margin: '0',
-                fontSize: '1.4rem',
-                fontWeight: '600'
-              }}>
-                📄 Generated {documentType} - 2025 Attorney Standards
-              </h3>
-              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                <button 
-                  onClick={() => {
-                    if (documentType === 'ID Rights Card') {
-                      const stateName = selectedState ? statePublicRecordsData[selectedState].name : '[STATE NAME]';
-                      const stateRights = selectedState ? stateIDRights[selectedState] : null;
-                      const cannabisData = selectedState ? cannabisLaws[selectedState] : null;
-                      if (stateRights) {
-                        const cardText = `${stateName} Rights & Laws Card\nStop & ID: ${stateRights.stopAndID ? 'Yes' : 'No'}\nRecording: ${stateRights.recording}\nCannabis: ${cannabisData ? cannabisData.status : 'Unknown'}\nLaw: ${stateRights.law}`;
-                        navigator.clipboard.writeText(cardText);
-                      }
-                    } else {
-                      navigator.clipboard.writeText(generatedLetter);
-                    }
-                  }}
-                  style={{ 
-                    padding: '12px 20px',
-                    backgroundColor: '#27ae60',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseOver={(e) => e.target.style.backgroundColor = '#219a52'}
-                  onMouseOut={(e) => e.target.style.backgroundColor = '#27ae60'}
-                >
-                  📋 Copy {documentType === 'ID Rights Card' ? 'Card Info' : 'to Clipboard'}
-                </button>
-
-                <button 
-                  onClick={() => {
-                    const blob = new Blob([typeof generatedLetter === 'string' ? generatedLetter : 'ID Rights Card Generated'], { type: 'text/plain' });
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    const today = new Date().toLocaleDateString().replace(/\//g, '-');
-                    a.download = `${documentType.replace(/\s+/g, '_')}_${today}.txt`;
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                  }}
-                  style={{ 
-                    padding: '12px 20px',
-                    backgroundColor: '#8e44ad',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseOver={(e) => e.target.style.backgroundColor = '#7d3c98'}
-                  onMouseOut={(e) => e.target.style.backgroundColor = '#8e44ad'}
-                >
-                  💾 Download as Text File
-                </button>
-              </div>
-            </div>
-            
-            {documentType === 'ID Rights Card' ? (
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center',
-                padding: '20px',
-                backgroundColor: '#f8f9fa',
-                borderRadius: '12px'
-              }}>
-                <div id="id-rights-card-display">
-                  {generatedLetter}
-                </div>
-              </div>
-            ) : (
-              <textarea
-                value={generatedLetter}
-                onChange={(e) => setGeneratedLetter(e.target.value)}
-                style={{ 
-                  width: '100%', 
-                  height: '600px',
-                  padding: '20px', 
-                  border: '2px solid #27ae60',
-                  borderRadius: '12px',
-                  fontSize: '14px',
-                  color: '#000000',
-                  backgroundColor: '#ffffff',
-                  fontFamily: 'monospace',
-                  lineHeight: '1.6',
-                  resize: 'vertical',
-                  boxShadow: 'inset 0 2px 5px rgba(0,0,0,0.1)'
-                }}
-              />
-            )}
-            
-            <div style={{
-              marginTop: '15px',
-              padding: '15px',
-              backgroundColor: documentType === 'ID Rights Card' ? '#e3f2fd' : '#fff3cd',
-              border: documentType === 'ID Rights Card' ? '1px solid #2196f3' : '1px solid #ffeaa7',
-              borderRadius: '8px',
-              fontSize: '14px',
-              color: documentType === 'ID Rights Card' ? '#1565c0' : '#856404'
-            }}>
-              <strong>💡 {documentType === 'ID Rights Card' ? 'Rights & Laws Card:' : 'Attorney-Level Legal Notice:'}</strong> {documentType === 'ID Rights Card' ? 
-                'This professional card includes your state\'s specific stop-and-identify laws, recording consent requirements, and current cannabis laws. All information is verified through 2024-2025 legislative updates. Print wallet-size and keep handy. Always remain respectful during encounters.' :
-                `This document incorporates all 2024-2025 legislative changes including California's recodification, Nebraska's LB 43, Louisiana's tort extension, and state-specific legal requirements. Generated with attorney-level precision for ${selectedState ? statePublicRecordsData[selectedState].name : 'your jurisdiction'}. Review all bracketed placeholders and customize with your specific information.`
-              }
-            </div>
-          </div>
-        )}
-
-        {/* Professional Legal Disclaimer */}
-        <div style={{
-          marginTop: '30px',
-          padding: '20px',
-          backgroundColor: '#f8f9fa',
-          border: '2px solid #6c757d',
-          borderRadius: '12px',
-          fontSize: '12px',
-          color: '#495057',
-          textAlign: 'center'
-        }}>
-          <strong>⚖️ ATTORNEY-LEVEL CIVIL RIGHTS LEGAL TOOLKIT - 2025 LEGISLATIVE COMPLIANCE</strong><br/>
-          This toolkit incorporates comprehensive 2024-2025 legislative updates verified through primary sources. 
-          All statutory citations, time limits, and legal requirements reflect current law as of August 2025. 
-          Designed specifically for civil rights practice with emphasis on accuracy and detail. 
-          For complex matters, consult qualified legal counsel in your jurisdiction. 
-          Not intended as legal advice - for informational and document generation purposes only.
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default LegalToolkit;
+                borderRadius: '12px',
                 fontSize: '16px',
                 color: '#000000',
                 backgroundColor: '#ffffff',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease'
+                cursor: 'pointer'
               }}
             >
               <option value="FOIA Request">FOIA Request</option>
@@ -1061,8 +400,7 @@ export default LegalToolkit;
                 fontSize: '16px',
                 color: '#000000',
                 backgroundColor: '#ffffff',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease'
+                cursor: 'pointer'
               }}
             >
               <option value="">Select a state...</option>
@@ -1073,15 +411,13 @@ export default LegalToolkit;
           </div>
         </div>
 
-        {/* Cannabis Laws Display */}
         {selectedState && cannabisLaws[selectedState] && (
           <div style={{
             backgroundColor: '#f0f8ff',
             border: '2px solid #4169e1',
             borderRadius: '15px',
             padding: '20px',
-            marginBottom: '25px',
-            boxShadow: '0 4px 15px rgba(65, 105, 225, 0.1)'
+            marginBottom: '25px'
           }}>
             <h3 style={{
               color: '#4169e1', 
@@ -1100,11 +436,9 @@ export default LegalToolkit;
               <div>
                 <strong>Legal Status:</strong> {cannabisLaws[selectedState].status}
               </div>
-              {cannabisLaws[selectedState].enacted !== 'N/A' && (
-                <div>
-                  <strong>Enacted:</strong> {cannabisLaws[selectedState].enacted}
-                </div>
-              )}
+              <div>
+                <strong>Enacted:</strong> {cannabisLaws[selectedState].enacted}
+              </div>
               <div>
                 <strong>Possession Limits:</strong> {cannabisLaws[selectedState].possession}
               </div>
@@ -1115,50 +449,13 @@ export default LegalToolkit;
           </div>
         )}
 
-        {documentType === 'Cease and Desist Letter' && (
-          <div style={{ marginBottom: '25px' }}>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '10px', 
-              fontWeight: '600',
-              color: '#2c3e50',
-              fontSize: '1.1rem'
-            }}>
-              ⚠️ Violation Type:
-            </label>
-            <select 
-              value={violationType}
-              onChange={(e) => setViolationType(e.target.value)}
-              style={{ 
-                width: '100%', 
-                padding: '15px', 
-                border: '2px solid #e74c3c',
-                borderRadius: '12px',
-                fontSize: '16px',
-                color: '#000000',
-                backgroundColor: '#ffffff',
-                cursor: 'pointer'
-              }}
-            >
-              <option value="harassment">Harassment/Intimidation</option>
-              <option value="intellectual_property">Intellectual Property Infringement</option>
-              <option value="debt_collection">Improper Debt Collection</option>
-              <option value="trespass">Trespass/Property Violations</option>
-              <option value="defamation">Defamation/Libel</option>
-              <option value="contract">Contract Violations</option>
-              <option value="privacy">Privacy Violations</option>
-            </select>
-          </div>
-        )}
-
         {selectedState && (
           <div style={{
             backgroundColor: '#e8f5e8',
             border: '2px solid #27ae60',
             borderRadius: '15px',
             padding: '25px',
-            marginBottom: '30px',
-            boxShadow: '0 4px 15px rgba(39, 174, 96, 0.1)'
+            marginBottom: '30px'
           }}>
             <h3 style={{
               color: '#27ae60',
@@ -1222,7 +519,6 @@ export default LegalToolkit;
                 </div>
               </div>
 
-              {/* Legislative Updates Display */}
               {statePublicRecordsData[selectedState]?.updates && (
                 <div style={{ gridColumn: '1 / -1' }}>
                   <label style={{ 
@@ -1279,8 +575,7 @@ export default LegalToolkit;
                 borderRadius: '12px',
                 fontSize: '16px',
                 color: '#000000',
-                backgroundColor: '#ffffff',
-                transition: 'all 0.3s ease'
+                backgroundColor: '#ffffff'
               }}
             />
           </div>
@@ -1307,8 +602,7 @@ export default LegalToolkit;
                 borderRadius: '12px',
                 fontSize: '16px',
                 color: '#000000',
-                backgroundColor: selectedState ? '#f8fff8' : '#ffffff',
-                transition: 'all 0.3s ease'
+                backgroundColor: selectedState ? '#f8fff8' : '#ffffff'
               }}
             />
           </div>
@@ -1331,11 +625,11 @@ export default LegalToolkit;
             onChange={(e) => setIncident(e.target.value)}
             placeholder={
               documentType === 'FOIA Request' || documentType === 'State Public Records Request' ? 
-                'Describe the specific records, incident, or subject matter you are requesting. Be as detailed as possible to ensure you receive the correct documents.' :
+                'Describe the specific records, incident, or subject matter you are requesting.' :
               documentType === 'ID Rights Card' ?
-                'Optional: Add any specific notes or information relevant to your state or local area (e.g., local ordinances, specific contact information, etc.).' :
+                'Optional: Add any specific notes or information relevant to your state or local area.' :
               documentType === 'Cease and Desist Letter' ?
-                'Describe the specific violations, actions, or behaviors that must stop. Include dates, locations, and specific incidents.' :
+                'Describe the specific violations, actions, or behaviors that must stop.' :
                 'Describe the specific subject matter or incident in detail.'
             }
             style={{ 
@@ -1344,3 +638,160 @@ export default LegalToolkit;
               padding: '15px', 
               border: '2px solid #3498db',
               borderRadius: '12px',
+              fontSize: '16px',
+              color: '#000000',
+              backgroundColor: '#ffffff',
+              resize: 'vertical',
+              fontFamily: 'inherit',
+              lineHeight: '1.5'
+            }}
+          />
+        </div>
+
+        <button 
+          onClick={generateLetter}
+          style={{ 
+            width: '100%',
+            padding: '20px',
+            backgroundColor: '#3498db',
+            color: 'white',
+            border: 'none',
+            borderRadius: '12px',
+            fontSize: '20px',
+            fontWeight: '700',
+            cursor: 'pointer',
+            marginBottom: '30px',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            boxShadow: '0 4px 15px rgba(52, 152, 219, 0.3)'
+          }}
+        >
+          🚀 Generate {documentType === 'ID Rights Card' ? 'Professional Rights & Laws Card' : 'Attorney-Level Legal Document'}
+        </button>
+
+        {generatedLetter && (
+          <div style={{
+            backgroundColor: '#f8f9fa',
+            border: '2px solid #27ae60',
+            borderRadius: '15px',
+            padding: '25px',
+            boxShadow: '0 4px 15px rgba(39, 174, 96, 0.1)'
+          }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '20px',
+              flexWrap: 'wrap',
+              gap: '10px'
+            }}>
+              <h3 style={{ 
+                color: '#27ae60',
+                margin: '0',
+                fontSize: '1.4rem',
+                fontWeight: '600'
+              }}>
+                📄 Generated {documentType} - 2025 Attorney Standards
+              </h3>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(generatedLetter);
+                  }}
+                  style={{ 
+                    padding: '12px 20px',
+                    backgroundColor: '#27ae60',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  📋 Copy to Clipboard
+                </button>
+
+                <button 
+                  onClick={() => {
+                    const blob = new Blob([generatedLetter], { type: 'text/plain' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    const today = new Date().toLocaleDateString().replace(/\//g, '-');
+                    a.download = `${documentType.replace(/\s+/g, '_')}_${today}.txt`;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                  }}
+                  style={{ 
+                    padding: '12px 20px',
+                    backgroundColor: '#8e44ad',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  💾 Download as Text File
+                </button>
+              </div>
+            </div>
+            
+            <textarea
+              value={generatedLetter}
+              onChange={(e) => setGeneratedLetter(e.target.value)}
+              style={{ 
+                width: '100%', 
+                height: '600px',
+                padding: '20px', 
+                border: '2px solid #27ae60',
+                borderRadius: '12px',
+                fontSize: '14px',
+                color: '#000000',
+                backgroundColor: '#ffffff',
+                fontFamily: 'monospace',
+                lineHeight: '1.6',
+                resize: 'vertical',
+                boxShadow: 'inset 0 2px 5px rgba(0,0,0,0.1)'
+              }}
+            />
+            
+            <div style={{
+              marginTop: '15px',
+              padding: '15px',
+              backgroundColor: '#fff3cd',
+              border: '1px solid #ffeaa7',
+              borderRadius: '8px',
+              fontSize: '14px',
+              color: '#856404'
+            }}>
+              <strong>💡 Attorney-Level Legal Notice:</strong> This document incorporates all 2024-2025 legislative changes including California's recodification, Nebraska's LB 43, and state-specific legal requirements. Generated with attorney-level precision for {selectedState ? statePublicRecordsData[selectedState].name : 'your jurisdiction'}. Review all bracketed placeholders and customize with your specific information.
+            </div>
+          </div>
+        )}
+
+        <div style={{
+          marginTop: '30px',
+          padding: '20px',
+          backgroundColor: '#f8f9fa',
+          border: '2px solid #6c757d',
+          borderRadius: '12px',
+          fontSize: '12px',
+          color: '#495057',
+          textAlign: 'center'
+        }}>
+          <strong>⚖️ ATTORNEY-LEVEL CIVIL RIGHTS LEGAL TOOLKIT - 2025 LEGISLATIVE COMPLIANCE</strong><br/>
+          This toolkit incorporates comprehensive 2024-2025 legislative updates verified through primary sources. 
+          All statutory citations, time limits, and legal requirements reflect current law as of August 2025. 
+          Designed specifically for civil rights practice with emphasis on accuracy and detail. 
+          For complex matters, consult qualified legal counsel in your jurisdiction. 
+          Not intended as legal advice - for informational and document generation purposes only.
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default LegalToolkit;
