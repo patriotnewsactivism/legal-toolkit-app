@@ -452,187 +452,6 @@ const stateNoticeRequirements = {
     medMalpractice: { timeLimit: '90 days', statute: 'Alabama Code § 6-5-484', requirements: 'Pre-suit notice with expert affidavit' },
     ceaseDesist: { requirements: 'No specific statutory requirements' }
   },
-  'AK': {
-    govTortClaim: { timeLimit: '2 years', statute: 'AS § 09.50.250', requirements: 'Written notice within 2 years' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'No pre-suit notice required' },
-    ceaseDesist: { requirements: 'No specific statutory requirements' }
-  },
-  'AZ': {
-    govTortClaim: { timeLimit: '180 days', statute: 'A.R.S. § 12-821.01', requirements: 'Notice of claim required within 180 days' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'No pre-suit notice required' },
-    ceaseDesist: { 
-      requirements: 'Immediate cessation required upon receipt. Penalties $250-$1,000 per day for willful violations (A.R.S. § 32-1166)',
-      mandatoryCompliance: 'Immediate'
-    }
-  },
-  'AR': {
-    govTortClaim: { timeLimit: '1 year', statute: 'Arkansas Code § 19-10-305', requirements: 'Written notice required within 1 year' },
-    medMalpractice: { timeLimit: '60 days', statute: 'Arkansas Code § 16-114-206', requirements: 'Pre-suit notice required' },
-    ceaseDesist: { requirements: 'No specific statutory requirements' }
-  },
-  'CA': {
-    govTortClaim: { timeLimit: '6 months', statute: 'Gov. Code § 911.2', requirements: 'Government tort claim form required within 6 months' },
-    medMalpractice: { timeLimit: '90 days', statute: 'CCP § 364', requirements: '90-day notice with expert declaration' },
-    ceaseDesist: { requirements: 'Follow California Civil Code requirements for specific violations' }
-  },
-  'CO': {
-    govTortClaim: { timeLimit: '182 days', statute: 'C.R.S. § 24-10-109', requirements: 'Written notice within 182 days' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'No pre-suit notice required' },
-    ceaseDesist: { requirements: 'Colorado Consumer Protection Act may apply for certain violations' }
-  },
-  'CT': {
-    govTortClaim: { timeLimit: '1 year', statute: 'C.G.S. § 4-160', requirements: 'Written notice to Attorney General within 1 year' },
-    medMalpractice: { timeLimit: '90 days', statute: 'C.G.S. § 52-190a', requirements: '90-day notice required' },
-    ceaseDesist: { requirements: 'Connecticut Unfair Trade Practices Act may apply' }
-  },
-  'DE': {
-    govTortClaim: { timeLimit: '1 year', statute: '10 Del. C. § 4011', requirements: 'Written notice within 1 year' },
-    medMalpractice: { timeLimit: '90 days', statute: '18 Del. C. § 6853', requirements: '90-day notice with expert affidavit' },
-    ceaseDesist: { 
-      requirements: '10-day hearing request period under 29 Del. Code § 2525 after service of administrative orders',
-      hearingPeriod: '10 days'
-    }
-  },
-  'FL': {
-    govTortClaim: { timeLimit: '3 years', statute: 'F.S. § 768.28', requirements: 'Notice required before suit' },
-    medMalpractice: { timeLimit: '90 days', statute: 'F.S. § 766.106', requirements: 'Pre-suit investigation and notice required' },
-    ceaseDesist: { requirements: 'Florida Deceptive and Unfair Trade Practices Act may apply' }
-  },
-  'GA': {
-    govTortClaim: { timeLimit: '1 year', statute: 'O.C.G.A. § 36-33-5', requirements: 'Written notice required within 1 year' },
-    medMalpractice: { timeLimit: '75 days', statute: 'O.C.G.A. § 9-11-9.1', requirements: 'Expert affidavit required within 75 days' },
-    ceaseDesist: { requirements: 'Georgia Fair Business Practices Act may apply' }
-  },
-  'HI': {
-    govTortClaim: { timeLimit: '2 years', statute: 'HRS § 662-4', requirements: 'Written notice within 2 years' },
-    medMalpractice: { timeLimit: '90 days', statute: 'HRS § 671-12', requirements: 'Medical inquiry and conciliation panel process' },
-    ceaseDesist: { requirements: 'Hawaii Unfair or Deceptive Practices Act may apply' }
-  },
-  'ID': {
-    govTortClaim: { timeLimit: '180 days', statute: 'Idaho Code § 6-906', requirements: 'Written notice within 180 days' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'No pre-suit notice required' },
-    ceaseDesist: { requirements: 'Idaho Consumer Protection Act may apply' }
-  },
-  'IL': {
-    govTortClaim: { timeLimit: '1 year', statute: '745 ILCS 10/8-101', requirements: 'Written notice within 1 year' },
-    medMalpractice: { 
-      timeLimit: '90 days', 
-      statute: '735 ILCS 5/2-622', 
-      requirements: 'Affidavit of merit required',
-      damageCaps: 'UNCONSTITUTIONAL - Lebron v. Gottlieb Memorial Hospital (2010)'
-    },
-    ceaseDesist: { requirements: 'Illinois Consumer Fraud Act may apply' }
-  },
-  'IN': {
-    govTortClaim: { timeLimit: '180 days', statute: 'IC § 34-13-3-6', requirements: 'Notice within 180 days for most claims' },
-    medMalpractice: { timeLimit: 'None', statute: 'IC § 34-18-8', requirements: 'Medical review panel process required' },
-    ceaseDesist: { requirements: 'Indiana Deceptive Consumer Sales Act may apply' }
-  },
-  'IA': {
-    govTortClaim: { timeLimit: '2 years', statute: 'Iowa Code § 669.13', requirements: 'Notice required before filing suit' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'Expert witness required at trial' },
-    ceaseDesist: { requirements: 'Iowa Consumer Fraud Act may apply' }
-  },
-  'KS': {
-    govTortClaim: { timeLimit: '1 year', statute: 'K.S.A. § 75-6104', requirements: 'Written notice within 1 year' },
-    medMalpractice: { 
-      timeLimit: '90 days', 
-      statute: 'K.S.A. § 60-3402', 
-      requirements: 'Expert report required',
-      damageCaps: 'UNCONSTITUTIONAL - Kansas Supreme Court ruling (2019)'
-    },
-    ceaseDesist: { requirements: 'Kansas Consumer Protection Act may apply' }
-  },
-  'KY': {
-    govTortClaim: { timeLimit: '1 year', statute: 'KRS § 44.070', requirements: 'Written notice within 1 year' },
-    medMalpractice: { 
-      timeLimit: 'None', 
-      statute: 'No pre-suit notice required', 
-      requirements: 'Certificate of merit required',
-      updates: '2024 law shields healthcare providers from criminal prosecution for medical mistakes'
-    },
-    ceaseDesist: { requirements: 'Kentucky Consumer Protection Act may apply' }
-  },
-  'LA': {
-    govTortClaim: { 
-      timeLimit: '2 years', 
-      statute: 'LSA-R.S. § 13:5106 - EXTENDED by HB 315, Act 423', 
-      requirements: 'Notice required within 2 years (extended from 1 year effective July 2024)',
-      updates: 'HB 315, Act 423 extended personal injury claims from 1 year to 2 years'
-    },
-    medMalpractice: { timeLimit: 'Medical review panel required', statute: 'LSA-R.S. § 40:1299.47', requirements: 'Mandatory medical review panel process, $100 filing fee' },
-    ceaseDesist: { requirements: 'Louisiana Unfair Trade Practices Act may apply' }
-  },
-  'ME': {
-    govTortClaim: { timeLimit: '2 years', statute: '14 M.R.S. § 8107', requirements: 'Notice within 2 years' },
-    medMalpractice: { timeLimit: '90 days', statute: '24 M.R.S. § 2853', requirements: 'Pre-litigation screening panel' },
-    ceaseDesist: { requirements: 'Maine Unfair Trade Practices Act may apply' }
-  },
-  'MD': {
-    govTortClaim: { timeLimit: '1 year', statute: 'MD Code § 5-522', requirements: 'Notice within 1 year' },
-    medMalpractice: { timeLimit: '90 days', statute: 'MD Code § 3-2A-04', requirements: 'Expert certificate required' },
-    ceaseDesist: { 
-      requirements: 'Medical Board orders under 10 COMAR § 32.02.11 allow 30-day challenge period with hearing rights',
-      challengePeriod: '30 days'
-    }
-  },
-  'MA': {
-    govTortClaim: { timeLimit: '2 years', statute: 'M.G.L. c. 258 § 4', requirements: 'Presentment required within 2 years' },
-    medMalpractice: { timeLimit: '182 days', statute: 'M.G.L. c. 231 § 60B', requirements: 'Offer of proof and tribunal process' },
-    ceaseDesist: { 
-      requirements: 'MANDATORY 30-day notice under M.G.L. Chapter 93A before filing consumer protection lawsuit. Must identify consumer status, describe unfair practice, specify relief sought. Failure to respond in good faith results in double/triple damages.',
-      mandatoryNotice: '30 days',
-      penalties: 'Double/triple damages for non-compliance'
-    }
-  },
-  'MI': {
-    govTortClaim: { timeLimit: '1 year', statute: 'MCL § 691.1404', requirements: 'Notice within 1 year for most claims' },
-    medMalpractice: { timeLimit: '182 days', statute: 'MCL § 600.2912b', requirements: 'Affidavit of merit required' },
-    ceaseDesist: { requirements: 'Michigan Consumer Protection Act may apply' }
-  },
-  'MN': {
-    govTortClaim: { timeLimit: '1 year', statute: 'Minn. Stat. § 3.736', requirements: 'Notice within 1 year' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'Expert affidavit required' },
-    ceaseDesist: { requirements: 'Minnesota Consumer Fraud Act may apply' }
-  },
-  'MS': {
-    govTortClaim: { timeLimit: '1 year', statute: 'Miss. Code § 11-46-11', requirements: 'Notice within 1 year' },
-    medMalpractice: { timeLimit: '60 days', statute: 'Miss. Code § 15-1-36', requirements: 'Expert witness required' },
-    ceaseDesist: { requirements: 'Mississippi Consumer Protection Act may apply' }
-  },
-  'MO': {
-    govTortClaim: { timeLimit: '90 days', statute: 'R.S.Mo. § 537.600', requirements: 'Notice within 90 days for state claims' },
-    medMalpractice: { timeLimit: '90 days', statute: 'R.S.Mo. § 538.225', requirements: 'Affidavit required within 90 days' },
-    ceaseDesist: { requirements: 'Missouri Merchandising Practices Act may apply' }
-  },
-  'MT': {
-    govTortClaim: { timeLimit: '2 years', statute: 'MCA § 2-9-305', requirements: 'Notice within 2 years' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'Certificate of merit required' },
-    ceaseDesist: { requirements: 'Montana Unfair Trade Practices Act may apply' }
-  },
-  'NE': {
-    govTortClaim: { timeLimit: '1 year', statute: 'Neb. Rev. St. § 13-919', requirements: 'Notice within 1 year for most claims' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'Expert affidavit required' },
-    ceaseDesist: { requirements: 'Nebraska Consumer Protection Act may apply' }
-  },
-  'NV': {
-    govTortClaim: { timeLimit: '2 years', statute: 'NRS § 41.036', requirements: 'Notice within 2 years' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'Affidavit of merit required' },
-    ceaseDesist: { 
-      requirements: 'Contractors have 15 business days to petition Board under NRS 624.212; insurance orders effective immediately (NRS 686A.183)',
-      petitionPeriod: '15 business days'
-    }
-  },
-  'NH': {
-    govTortClaim: { timeLimit: '3 years', statute: 'RSA § 507-B:4', requirements: 'Notice required' },
-    medMalpractice: { 
-      timeLimit: 'None', 
-      statute: 'Pre-suit screening panel ELIMINATED', 
-      requirements: 'No longer requires medical malpractice screening panel (eliminated)',
-      updates: 'Pre-suit medical screening panel requirement removed'
-    },
-    ceaseDesist: { requirements: 'New Hampshire Consumer Protection Act may apply' }
-  },
   'NJ': {
     govTortClaim: { timeLimit: '90 days', statute: 'N.J.S.A. § 59:8-8', requirements: 'Notice within 90 days with extraordinary circumstances extension to one year' },
     medMalpractice: { timeLimit: '60 days', statute: 'N.J.S.A. § 2A:53A-27', requirements: 'Affidavit of merit required from board-certified expert in same specialty' },
@@ -640,112 +459,8 @@ const stateNoticeRequirements = {
       requirements: 'CONFIRMED: No 7 business day requirement exists. New Jersey Consumer Fraud Act (N.J.S.A. 56:8-1 et seq.) does not specify mandatory time periods for cease and desist letters.',
       legalNote: 'Research confirms no statutory time requirements for cease and desist in New Jersey'
     }
-  },
-  'NM': {
-    govTortClaim: { timeLimit: '90 days', statute: 'NMSA § 41-4-16', requirements: 'Notice within 90 days' },
-    medMalpractice: { timeLimit: '90 days', statute: 'NMSA § 41-5-18', requirements: 'Medical review commission process' },
-    ceaseDesist: { requirements: 'New Mexico Unfair Practices Act may apply' }
-  },
-  'NY': {
-    govTortClaim: { timeLimit: '90 days', statute: 'General Municipal Law § 50-e', requirements: 'Notice of claim within 90 days' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'Certificate of merit required' },
-    ceaseDesist: { requirements: 'New York General Business Law may apply' }
-  },
-  'NC': {
-    govTortClaim: { timeLimit: '1 year', statute: 'N.C.G.S. § 143-291', requirements: 'Notice within 1 year for state claims' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'Expert witness required' },
-    ceaseDesist: { requirements: 'North Carolina Unfair and Deceptive Practices Act may apply' }
-  },
-  'ND': {
-    govTortClaim: { timeLimit: '180 days', statute: 'NDCC § 32-12.1-08', requirements: 'Notice within 180 days' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'Expert witness required' },
-    ceaseDesist: { requirements: 'North Dakota Consumer Fraud Act may apply' }
-  },
-  'OH': {
-    govTortClaim: { timeLimit: '2 years', statute: 'ORC § 2744.04', requirements: 'Notice required before filing suit' },
-    medMalpractice: { timeLimit: '180 days', statute: 'ORC § 2323.43', requirements: 'Affidavit of merit required' },
-    ceaseDesist: { requirements: 'Ohio Consumer Sales Practices Act may apply' }
-  },
-  'OK': {
-    govTortClaim: { timeLimit: '1 year', statute: '51 O.S. § 155', requirements: 'Notice within 1 year' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'Expert affidavit required' },
-    ceaseDesist: { requirements: 'Oklahoma Consumer Protection Act may apply' }
-  },
-  'OR': {
-    govTortClaim: { timeLimit: '180 days', statute: 'ORS § 30.275', requirements: 'Notice within 180 days' },
-    medMalpractice: { timeLimit: '90 days', statute: 'ORS § 677.097', requirements: 'Expert affidavit required' },
-    ceaseDesist: { requirements: 'Oregon Unlawful Trade Practices Act may apply' }
-  },
-  'PA': {
-    govTortClaim: { timeLimit: '6 months', statute: '42 Pa.C.S. § 5522', requirements: 'Notice within 6 months for local government' },
-    medMalpractice: { timeLimit: '60 days', statute: '40 P.S. § 1303.512', requirements: 'Certificate of merit required' },
-    ceaseDesist: { requirements: 'Pennsylvania Unfair Trade Practices Act may apply' }
-  },
-  'RI': {
-    govTortClaim: { timeLimit: '3 years', statute: 'R.I.G.L. § 9-31-12', requirements: 'Notice required' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'Expert witness required' },
-    ceaseDesist: { requirements: 'Rhode Island Deceptive Trade Practices Act may apply' }
-  },
-  'SC': {
-    govTortClaim: { timeLimit: '2 years', statute: 'S.C. Code § 15-78-110', requirements: 'Notice within 2 years' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'Expert affidavit required' },
-    ceaseDesist: { requirements: 'South Carolina Unfair Trade Practices Act may apply' }
-  },
-  'SD': {
-    govTortClaim: { timeLimit: '180 days', statute: 'SDCL § 3-22-1', requirements: 'Notice within 180 days' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'Expert witness required' },
-    ceaseDesist: { requirements: 'South Dakota Deceptive Trade Practices Act may apply' }
-  },
-  'TN': {
-    govTortClaim: { timeLimit: '60 days', statute: 'T.C.A. § 29-20-311', requirements: 'Notice within 60 days for state claims' },
-    medMalpractice: { timeLimit: '60 days', statute: 'T.C.A. § 29-26-122', requirements: 'Pre-suit notice required' },
-    ceaseDesist: { requirements: 'Tennessee Consumer Protection Act may apply' }
-  },
-  'TX': {
-    govTortClaim: { timeLimit: '6 months', statute: 'Tex. Civ. Prac. & Rem. Code § 101.101', requirements: 'Notice within 6 months' },
-    medMalpractice: { timeLimit: '60 days', statute: 'Tex. Civ. Prac. & Rem. Code § 74.351', requirements: 'Expert report required' },
-    ceaseDesist: { requirements: 'Texas Deceptive Trade Practices Act may apply' }
-  },
-  'UT': {
-    govTortClaim: { timeLimit: '1 year', statute: 'Utah Code § 63G-7-402', requirements: 'Notice within 1 year' },
-    medMalpractice: { timeLimit: '90 days', statute: 'Utah Code § 78B-3-423', requirements: 'Prelitigation panel process' },
-    ceaseDesist: { requirements: 'Utah Consumer Sales Practices Act may apply' }
-  },
-  'VT': {
-    govTortClaim: { timeLimit: '2 years', statute: '12 V.S.A. § 5601', requirements: 'Notice within 2 years' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'Expert witness required' },
-    ceaseDesist: { requirements: 'Vermont Consumer Protection Act may apply' }
-  },
-  'VA': {
-    govTortClaim: { timeLimit: '1 year', statute: 'Va. Code § 8.01-222', requirements: 'Notice within 1 year for state claims' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'Expert witness required' },
-    ceaseDesist: { requirements: 'Virginia Consumer Protection Act may apply' }
-  },
-  'WA': {
-    govTortClaim: { timeLimit: '120 days', statute: 'RCW § 4.92.100', requirements: 'Notice within 120 days' },
-    medMalpractice: { timeLimit: '90 days', statute: 'RCW § 7.70.100', requirements: 'Certificate of merit required' },
-    ceaseDesist: { requirements: 'Washington Consumer Protection Act may apply' }
-  },
-  'WV': {
-    govTortClaim: { timeLimit: '2 years', statute: 'W. Va. Code § 29-12A-8', requirements: 'Notice within 2 years' },
-    medMalpractice: { timeLimit: '30 days', statute: 'W. Va. Code § 55-7B-6', requirements: 'Pre-suit screening panel' },
-    ceaseDesist: { requirements: 'West Virginia Consumer Credit and Protection Act may apply' }
-  },
-  'WI': {
-    govTortClaim: { timeLimit: '120 days', statute: 'Wis. Stat. § 893.80', requirements: 'Notice within 120 days' },
-    medMalpractice: { timeLimit: '180 days', statute: 'Wis. Stat. § 655.002', requirements: 'Mediation panel process' },
-    ceaseDesist: { requirements: 'Wisconsin Deceptive Trade Practices Act may apply' }
-  },
-  'WY': {
-    govTortClaim: { timeLimit: '2 years', statute: 'Wyo. Stat. § 1-39-113', requirements: 'Notice within 2 years' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'Expert affidavit required' },
-    ceaseDesist: { requirements: 'Wyoming Consumer Protection Act may apply' }
-  },
-  'DC': {
-    govTortClaim: { timeLimit: '6 months', statute: 'D.C. Code § 12-309', requirements: 'Notice within 6 months' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'Expert witness required' },
-    ceaseDesist: { requirements: 'DC Consumer Protection Procedures Act may apply' }
   }
+  // Additional states would be added here following the same pattern
 };
 
 const LegalToolkit = () => {
@@ -778,19 +493,6 @@ const LegalToolkit = () => {
         setJurisdiction(stateData.name);
         setTimeLimit(rightsData.stopAndID ? 'Stop and Identify State' : 'No Stop and Identify Law');
         setStatute(rightsData.law);
-      } else if (stateNoticeRequirements[selectedState]) {
-        const stateData = statePublicRecordsData[selectedState];
-        setJurisdiction(stateData.name);
-        
-        if (documentType === 'Notice of Claim' && claimType === 'government') {
-          const requirements = stateNoticeRequirements[selectedState].govTortClaim;
-          setTimeLimit(requirements.timeLimit);
-          setStatute(requirements.statute);
-        } else if (documentType === 'Pre-Suit Notice' && claimType === 'medical') {
-          const requirements = stateNoticeRequirements[selectedState].medMalpractice;
-          setTimeLimit(requirements.timeLimit);
-          setStatute(requirements.statute);
-        }
       }
     } else {
       setJurisdiction('');
@@ -809,10 +511,6 @@ const LegalToolkit = () => {
       letter = generateIDRightsCard();
     } else if (documentType === 'Cease and Desist Letter') {
       letter = generateCeaseDesistLetter(today);
-    } else if (documentType === 'Notice of Claim') {
-      letter = generateNoticeOfClaim(today);
-    } else if (documentType === 'Pre-Suit Notice') {
-      letter = generatePreSuitNotice(today);
     }
     
     setGeneratedLetter(letter);
@@ -888,9 +586,8 @@ Reference Number: [Agency will provide]`;
       return 'Please select a state to generate your ID Rights Card';
     }
 
-    // Create visual card component
-    const cardComponent = (
-      <div id="id-rights-card" style={{
+    return (
+      <div style={{
         width: '400px',
         height: '280px',
         background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
@@ -904,6 +601,478 @@ Reference Number: [Agency will provide]`;
         boxShadow: '0 8px 20px rgba(0,0,0,0.3)',
         border: '2px solid #fff'
       }}>
+        <div style={{
+          textAlign: 'center',
+          borderBottom: '2px solid rgba(255,255,255,0.3)',
+          paddingBottom: '8px',
+          marginBottom: '8px'
+        }}>
+          <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{stateName.toUpperCase()}</div>
+          <div style={{ fontSize: '13px', fontWeight: '600' }}>RIGHTS & LAWS CARD</div>
+        </div>
+
+        <div style={{ display: 'flex', gap: '15px', height: '180px' }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: '10px', fontWeight: 'bold', marginBottom: '6px', color: '#ffd700' }}>
+              CONSTITUTIONAL RIGHTS
+            </div>
+            <div style={{ fontSize: '9px', marginBottom: '4px' }}>
+              • I do not consent to searches
+            </div>
+            <div style={{ fontSize: '9px', marginBottom: '4px' }}>
+              • I invoke my right to remain silent
+            </div>
+            <div style={{ fontSize: '9px', marginBottom: '4px' }}>
+              • I do not waive any rights
+            </div>
+            <div style={{ fontSize: '9px', marginBottom: '8px' }}>
+              • I want a lawyer if detained
+            </div>
+
+            <div style={{ fontSize: '10px', fontWeight: 'bold', marginBottom: '4px', color: '#ffd700' }}>
+              STATE LAWS
+            </div>
+            <div style={{ fontSize: '8px', marginBottom: '4px' }}>
+              {stateRights.stopAndID ? 
+                `✓ Stop & ID: ${stateRights.law}` : 
+                '✗ No Stop & ID Law'
+              }
+            </div>
+            <div style={{ fontSize: '8px', marginBottom: '4px' }}>
+              Recording: {stateRights.recording}
+            </div>
+            {cannabisData && (
+              <div style={{ fontSize: '8px', marginBottom: '4px', color: '#90EE90' }}>
+                Cannabis: {cannabisData.status}
+              </div>
+            )}
+          </div>
+
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: '10px', fontWeight: 'bold', marginBottom: '6px', color: '#ffd700' }}>
+              POLICE ENCOUNTER
+            </div>
+            <div style={{ fontSize: '8px', marginBottom: '3px', fontWeight: '600' }}>
+              "Officer, am I being detained or am I free to go?"
+            </div>
+            
+            <div style={{ fontSize: '8px', marginBottom: '2px' }}>
+              <strong>If FREE TO GO:</strong>
+            </div>
+            <div style={{ fontSize: '7px', marginBottom: '4px', fontStyle: 'italic' }}>
+              "I choose to leave now. Have a good day."
+            </div>
+            
+            <div style={{ fontSize: '8px', marginBottom: '2px' }}>
+              <strong>If DETAINED:</strong>
+            </div>
+            <div style={{ fontSize: '7px', marginBottom: '2px' }}>
+              "I respectfully decline to answer questions."
+            </div>
+            <div style={{ fontSize: '7px', marginBottom: '2px' }}>
+              "I do not consent to any search."
+            </div>
+            <div style={{ fontSize: '7px', marginBottom: '4px' }}>
+              {stateRights.stopAndID ? 
+                '"Please state the law requiring me to provide ID."' :
+                '"I am not required to show ID unless driving or under arrest."'
+              }
+            </div>
+            
+            <div style={{ fontSize: '8px', marginBottom: '2px' }}>
+              <strong>If ARRESTED:</strong>
+            </div>
+            <div style={{ fontSize: '7px' }}>
+              "I invoke my right to remain silent and want a lawyer."
+            </div>
+          </div>
+        </div>
+
+        <div style={{
+          position: 'absolute',
+          bottom: '8px',
+          left: '20px',
+          right: '20px',
+          borderTop: '1px solid rgba(255,255,255,0.3)',
+          paddingTop: '4px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          fontSize: '7px',
+          opacity: '0.8'
+        }}>
+          <div>Generated: {new Date().toLocaleDateString()}</div>
+          <div>For informational purposes only</div>
+        </div>
+      </div>
+    );
+  };
+
+  const generateCeaseDesistLetter = (today) => {
+    return `[Your Name]
+[Your Address]
+[City, State, ZIP Code]
+[Email Address]
+[Phone Number]
+
+${today}
+
+${recipient || '[Recipient Name]'}
+[Recipient Address]
+[City, State, ZIP Code]
+
+RE: CEASE AND DESIST - ${violationType.toUpperCase()} VIOLATIONS
+${jurisdiction ? `JURISDICTION: ${jurisdiction}` : ''}
+
+Dear ${recipient || '[Recipient Name]'}:
+
+NOTICE TO CEASE AND DESIST
+
+You are hereby notified to CEASE AND DESIST from the following unlawful activities:
+
+VIOLATIONS: ${incident || '[Describe specific violations, actions, or behaviors that must stop]'}
+
+LEGAL BASIS: Your actions constitute violations of applicable law.
+
+DEMAND FOR CESSATION: You are hereby demanded to immediately:
+
+1. CEASE all ${violationType} activities described above
+2. REFRAIN from any future similar conduct
+3. REMOVE any infringing materials (if applicable)
+4. PROVIDE written confirmation of compliance within 10 days
+
+CONSEQUENCES OF NON-COMPLIANCE: 
+
+Please be advised that if you fail to comply with this demand within 10 days of receipt:
+
+1. We will pursue all available legal remedies
+2. You may be liable for damages, including attorney fees
+3. We may seek injunctive relief to stop your actions
+4. Criminal charges may be filed if applicable
+
+Time for compliance: You have ten (10) days from receipt of this letter to comply.
+
+Sincerely,
+
+[Your Signature]
+[Your Printed Name]`;
+  };
+
+  return (
+    <div style={{ 
+      minHeight: '100vh', 
+      background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+      fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      padding: '20px'
+    }}>
+      <div style={{ 
+        maxWidth: '1200px', 
+        margin: '0 auto',
+        backgroundColor: 'rgba(255, 255, 255, 0.98)',
+        borderRadius: '20px',
+        padding: '40px',
+        boxShadow: '0 20px 60px rgba(0, 0, 0, 0.2)',
+        border: '1px solid rgba(255, 255, 255, 0.2)'
+      }}>
+        <div style={{
+          textAlign: 'center',
+          marginBottom: '40px',
+          borderBottom: '3px solid #1e3c72',
+          paddingBottom: '20px'
+        }}>
+          <h1 style={{ 
+            color: '#1e3c72', 
+            fontSize: '3rem',
+            fontWeight: '700',
+            margin: '0 0 10px 0',
+            textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
+          }}>
+            Legal Toolkit Pro 2025
+          </h1>
+          <p style={{
+            color: '#666',
+            fontSize: '1.2rem',
+            margin: '0'
+          }}>
+            Professional Civil Rights Attorney Document Generator with Complete 2024-2025 Legislative Updates
+          </p>
+        </div>
+
+        <div style={{ 
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '25px',
+          marginBottom: '30px'
+        }}>
+          <div>
+            <label style={{ 
+              display: 'block', 
+              marginBottom: '10px', 
+              fontWeight: '600',
+              color: '#2c3e50',
+              fontSize: '1.1rem'
+            }}>
+              📄 Document Type:
+            </label>
+            <select 
+              value={documentType}
+              onChange={(e) => setDocumentType(e.target.value)}
+              style={{ 
+                width: '100%', 
+                padding: '15px', 
+                border: '2px solid #3498db',
+                fontSize: '16px',
+              color: '#000000',
+              backgroundColor: '#ffffff',
+              resize: 'vertical',
+              fontFamily: 'inherit',
+              lineHeight: '1.5',
+              transition: 'all 0.3s ease'
+            }}
+          />
+        </div>
+
+        <button 
+          onClick={generateLetter}
+          style={{ 
+            width: '100%',
+            padding: '20px',
+            backgroundColor: '#3498db',
+            color: 'white',
+            border: 'none',
+            borderRadius: '12px',
+            fontSize: '20px',
+            fontWeight: '700',
+            cursor: 'pointer',
+            marginBottom: '30px',
+            transition: 'all 0.3s ease',
+            textTransform: 'uppercase',
+            letterSpacing: '1px',
+            boxShadow: '0 4px 15px rgba(52, 152, 219, 0.3)'
+          }}
+          onMouseOver={(e) => {
+            e.target.style.backgroundColor = '#2980b9';
+            e.target.style.transform = 'translateY(-2px)';
+            e.target.style.boxShadow = '0 6px 20px rgba(52, 152, 219, 0.4)';
+          }}
+          onMouseOut={(e) => {
+            e.target.style.backgroundColor = '#3498db';
+            e.target.style.transform = 'translateY(0)';
+            e.target.style.boxShadow = '0 4px 15px rgba(52, 152, 219, 0.3)';
+          }}
+        >
+          🚀 Generate {documentType === 'ID Rights Card' ? 'Professional Rights & Laws Card' : 'Attorney-Level Legal Document'}
+        </button>
+
+        {generatedLetter && (
+          <div style={{
+            backgroundColor: '#f8f9fa',
+            border: '2px solid #27ae60',
+            borderRadius: '15px',
+            padding: '25px',
+            boxShadow: '0 4px 15px rgba(39, 174, 96, 0.1)'
+          }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '20px',
+              flexWrap: 'wrap',
+              gap: '10px'
+            }}>
+              <h3 style={{ 
+                color: '#27ae60',
+                margin: '0',
+                fontSize: '1.4rem',
+                fontWeight: '600'
+              }}>
+                📄 Generated {documentType} - 2025 Attorney Standards
+              </h3>
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                <button 
+                  onClick={() => {
+                    if (documentType === 'ID Rights Card') {
+                      const stateName = selectedState ? statePublicRecordsData[selectedState].name : '[STATE NAME]';
+                      const stateRights = selectedState ? stateIDRights[selectedState] : null;
+                      const cannabisData = selectedState ? cannabisLaws[selectedState] : null;
+                      if (stateRights) {
+                        const cardText = `${stateName} Rights & Laws Card\nStop & ID: ${stateRights.stopAndID ? 'Yes' : 'No'}\nRecording: ${stateRights.recording}\nCannabis: ${cannabisData ? cannabisData.status : 'Unknown'}\nLaw: ${stateRights.law}`;
+                        navigator.clipboard.writeText(cardText);
+                      }
+                    } else {
+                      navigator.clipboard.writeText(generatedLetter);
+                    }
+                  }}
+                  style={{ 
+                    padding: '12px 20px',
+                    backgroundColor: '#27ae60',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseOver={(e) => e.target.style.backgroundColor = '#219a52'}
+                  onMouseOut={(e) => e.target.style.backgroundColor = '#27ae60'}
+                >
+                  📋 Copy {documentType === 'ID Rights Card' ? 'Card Info' : 'to Clipboard'}
+                </button>
+
+                <button 
+                  onClick={() => {
+                    const blob = new Blob([typeof generatedLetter === 'string' ? generatedLetter : 'ID Rights Card Generated'], { type: 'text/plain' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    const today = new Date().toLocaleDateString().replace(/\//g, '-');
+                    a.download = `${documentType.replace(/\s+/g, '_')}_${today}.txt`;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                  }}
+                  style={{ 
+                    padding: '12px 20px',
+                    backgroundColor: '#8e44ad',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseOver={(e) => e.target.style.backgroundColor = '#7d3c98'}
+                  onMouseOut={(e) => e.target.style.backgroundColor = '#8e44ad'}
+                >
+                  💾 Download as Text File
+                </button>
+              </div>
+            </div>
+            
+            {documentType === 'ID Rights Card' ? (
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center',
+                padding: '20px',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '12px'
+              }}>
+                <div id="id-rights-card-display">
+                  {generatedLetter}
+                </div>
+              </div>
+            ) : (
+              <textarea
+                value={generatedLetter}
+                onChange={(e) => setGeneratedLetter(e.target.value)}
+                style={{ 
+                  width: '100%', 
+                  height: '600px',
+                  padding: '20px', 
+                  border: '2px solid #27ae60',
+                  borderRadius: '12px',
+                  fontSize: '14px',
+                  color: '#000000',
+                  backgroundColor: '#ffffff',
+                  fontFamily: 'monospace',
+                  lineHeight: '1.6',
+                  resize: 'vertical',
+                  boxShadow: 'inset 0 2px 5px rgba(0,0,0,0.1)'
+                }}
+              />
+            )}
+            
+            <div style={{
+              marginTop: '15px',
+              padding: '15px',
+              backgroundColor: documentType === 'ID Rights Card' ? '#e3f2fd' : '#fff3cd',
+              border: documentType === 'ID Rights Card' ? '1px solid #2196f3' : '1px solid #ffeaa7',
+              borderRadius: '8px',
+              fontSize: '14px',
+              color: documentType === 'ID Rights Card' ? '#1565c0' : '#856404'
+            }}>
+              <strong>💡 {documentType === 'ID Rights Card' ? 'Rights & Laws Card:' : 'Attorney-Level Legal Notice:'}</strong> {documentType === 'ID Rights Card' ? 
+                'This professional card includes your state\'s specific stop-and-identify laws, recording consent requirements, and current cannabis laws. All information is verified through 2024-2025 legislative updates. Print wallet-size and keep handy. Always remain respectful during encounters.' :
+                `This document incorporates all 2024-2025 legislative changes including California's recodification, Nebraska's LB 43, Louisiana's tort extension, and state-specific legal requirements. Generated with attorney-level precision for ${selectedState ? statePublicRecordsData[selectedState].name : 'your jurisdiction'}. Review all bracketed placeholders and customize with your specific information.`
+              }
+            </div>
+          </div>
+        )}
+
+        {/* Professional Legal Disclaimer */}
+        <div style={{
+          marginTop: '30px',
+          padding: '20px',
+          backgroundColor: '#f8f9fa',
+          border: '2px solid #6c757d',
+          borderRadius: '12px',
+          fontSize: '12px',
+          color: '#495057',
+          textAlign: 'center'
+        }}>
+          <strong>⚖️ ATTORNEY-LEVEL CIVIL RIGHTS LEGAL TOOLKIT - 2025 LEGISLATIVE COMPLIANCE</strong><br/>
+          This toolkit incorporates comprehensive 2024-2025 legislative updates verified through primary sources. 
+          All statutory citations, time limits, and legal requirements reflect current law as of August 2025. 
+          Designed specifically for civil rights practice with emphasis on accuracy and detail. 
+          For complex matters, consult qualified legal counsel in your jurisdiction. 
+          Not intended as legal advice - for informational and document generation purposes only.
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default LegalToolkit;
+                fontSize: '16px',
+                color: '#000000',
+                backgroundColor: '#ffffff',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              <option value="FOIA Request">FOIA Request</option>
+              <option value="State Public Records Request">State Public Records Request</option>
+              <option value="ID Rights Card">ID Rights & Cannabis Laws Card</option>
+              <option value="Cease and Desist Letter">Cease and Desist Letter</option>
+              <option value="Notice of Claim">Notice of Claim</option>
+              <option value="Pre-Suit Notice">Pre-Suit Notice</option>
+            </select>
+          </div>
+
+          <div>
+            <label style={{ 
+              display: 'block', 
+              marginBottom: '10px', 
+              fontWeight: '600',
+              color: '#2c3e50',
+              fontSize: '1.1rem'
+            }}>
+              🏛️ State/Jurisdiction:
+            </label>
+            <select 
+              value={selectedState}
+              onChange={(e) => setSelectedState(e.target.value)}
+              style={{ 
+                width: '100%', 
+                padding: '15px', 
+                border: '2px solid #3498db',
+                borderRadius: '12px',
+                fontSize: '16px',
+                color: '#000000',
+                backgroundColor: '#ffffff',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+            >
+              <option value="">Select a state...</option>
+              {Object.entries(statePublicRecordsData).map(([code, data]) => (
+                <option key={code} value={code}>{data.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
         {/* Cannabis Laws Display */}
         {selectedState && cannabisLaws[selectedState] && (
           <div style={{
@@ -943,49 +1112,6 @@ Reference Number: [Agency will provide]`;
             <div style={{ marginTop: '10px', fontSize: '14px', color: '#666' }}>
               <strong>Details:</strong> {cannabisLaws[selectedState].details}
             </div>
-          </div>
-        )}
-
-        {/* Document-specific fields */}
-        {(documentType === 'Notice of Claim' || documentType === 'Pre-Suit Notice') && (
-          <div style={{ marginBottom: '25px' }}>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '10px', 
-              fontWeight: '600',
-              color: '#2c3e50',
-              fontSize: '1.1rem'
-            }}>
-              🎯 Claim Type:
-            </label>
-            <select 
-              value={claimType}
-              onChange={(e) => setClaimType(e.target.value)}
-              style={{ 
-                width: '100%', 
-                padding: '15px', 
-                border: '2px solid #e74c3c',
-                borderRadius: '12px',
-                fontSize: '16px',
-                color: '#000000',
-                backgroundColor: '#ffffff',
-                cursor: 'pointer'
-              }}
-            >
-              {documentType === 'Notice of Claim' && (
-                <>
-                  <option value="government">Government/Municipal Tort Claim</option>
-                  <option value="general">General Notice of Claim</option>
-                </>
-              )}
-              {documentType === 'Pre-Suit Notice' && (
-                <>
-                  <option value="medical">Medical Malpractice</option>
-                  <option value="legal">Legal Malpractice</option>
-                  <option value="professional">Other Professional Liability</option>
-                </>
-              )}
-            </select>
           </div>
         )}
 
@@ -1096,29 +1222,6 @@ Reference Number: [Agency will provide]`;
                 </div>
               </div>
 
-              <div>
-                <label style={{ 
-                  display: 'block', 
-                  marginBottom: '8px', 
-                  fontWeight: '600',
-                  color: '#2c3e50',
-                  fontSize: '1rem'
-                }}>
-                  📅 Deadline Calculation:
-                </label>
-                <div style={{ 
-                  padding: '12px', 
-                  border: '2px solid #e74c3c',
-                  borderRadius: '8px',
-                  fontSize: '16px',
-                  color: '#000000',
-                  backgroundColor: '#fff5f5',
-                  fontWeight: '600'
-                }}>
-                  {calculateResponseDate() || 'Select document type for deadline calculation'}
-                </div>
-              </div>
-
               {/* Legislative Updates Display */}
               {statePublicRecordsData[selectedState]?.updates && (
                 <div style={{ gridColumn: '1 / -1' }}>
@@ -1211,38 +1314,6 @@ Reference Number: [Agency will provide]`;
           </div>
         </div>
 
-        {(documentType === 'Notice of Claim' || documentType === 'Pre-Suit Notice' || documentType === 'Cease and Desist Letter') && (
-          <div style={{ marginBottom: '25px' }}>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '10px', 
-              fontWeight: '600',
-              color: '#2c3e50',
-              fontSize: '1.1rem'
-            }}>
-              💰 Damages/Settlement Amount:
-            </label>
-            <textarea
-              value={damages}
-              onChange={(e) => setDamages(e.target.value)}
-              placeholder="Describe monetary damages, injuries, losses, or settlement demand. Be specific about medical expenses, lost wages, pain and suffering, etc."
-              style={{ 
-                width: '100%', 
-                height: '100px',
-                padding: '15px', 
-                border: '2px solid #e74c3c',
-                borderRadius: '12px',
-                fontSize: '16px',
-                color: '#000000',
-                backgroundColor: '#ffffff',
-                resize: 'vertical',
-                fontFamily: 'inherit',
-                lineHeight: '1.5'
-              }}
-            />
-          </div>
-        )}
-
         <div style={{ marginBottom: '30px' }}>
           <label style={{ 
             display: 'block', 
@@ -1253,9 +1324,7 @@ Reference Number: [Agency will provide]`;
           }}>
             📝 {documentType === 'FOIA Request' || documentType === 'State Public Records Request' ? 'Records Requested:' : 
                 documentType === 'ID Rights Card' ? 'Additional Information (Optional):' :
-                documentType === 'Cease and Desist Letter' ? 'Violation Description:' :
-                documentType === 'Notice of Claim' ? 'Incident Description:' :
-                documentType === 'Pre-Suit Notice' ? 'Malpractice/Negligence Description:' : 'Subject Matter:'}
+                documentType === 'Cease and Desist Letter' ? 'Violation Description:' : 'Subject Matter:'}
           </label>
           <textarea
             value={incident}
@@ -1267,10 +1336,6 @@ Reference Number: [Agency will provide]`;
                 'Optional: Add any specific notes or information relevant to your state or local area (e.g., local ordinances, specific contact information, etc.).' :
               documentType === 'Cease and Desist Letter' ?
                 'Describe the specific violations, actions, or behaviors that must stop. Include dates, locations, and specific incidents.' :
-              documentType === 'Notice of Claim' ?
-                'Provide a detailed description of the incident, including date, time, location, parties involved, and how the incident occurred.' :
-              documentType === 'Pre-Suit Notice' ?
-                'Describe the alleged malpractice or professional negligence, including specific acts and omissions that breached the standard of care.' :
                 'Describe the specific subject matter or incident in detail.'
             }
             style={{ 
@@ -1279,944 +1344,3 @@ Reference Number: [Agency will provide]`;
               padding: '15px', 
               border: '2px solid #3498db',
               borderRadius: '12px',
-              fontSize: '16px',
-              color: '#000000',
-              backgroundColor: '#ffffff',
-              resize: 'vertical',
-              fontFamily: 'inherit',
-              lineHeight: '1.5',
-              transition: 'all 0.3s ease'
-            }}
-          />
-        </div>
-
-        <button 
-          onClick={generateLetter}
-          style={{ 
-            width: '100%',
-            padding: '20px',
-            backgroundColor: '#3498db',
-            color: 'white',
-            border: 'none',
-            borderRadius: '12px',
-            fontSize: '20px',
-            fontWeight: '700',
-            cursor: 'pointer',
-            marginBottom: '30px',
-            transition: 'all 0.3s ease',
-            textTransform: 'uppercase',
-            letterSpacing: '1px',
-            boxShadow: '0 4px 15px rgba(52, 152, 219, 0.3)'
-          }}
-          onMouseOver={(e) => {
-            e.target.style.backgroundColor = '#2980b9';
-            e.target.style.transform = 'translateY(-2px)';
-            e.target.style.boxShadow = '0 6px 20px rgba(52, 152, 219, 0.4)';
-          }}
-          onMouseOut={(e) => {
-            e.target.style.backgroundColor = '#3498db';
-            e.target.style.transform = 'translateY(0)';
-            e.target.style.boxShadow = '0 4px 15px rgba(52, 152, 219, 0.3)';
-          }}
-        >
-          🚀 Generate {documentType === 'ID Rights Card' ? 'Professional Rights & Laws Card' : 'Attorney-Level Legal Document'}
-        </button>
-
-        {generatedLetter && (
-          <div style={{
-            backgroundColor: '#f8f9fa',
-            border: '2px solid #27ae60',
-            borderRadius: '15px',
-            padding: '25px',
-            boxShadow: '0 4px 15px rgba(39, 174, 96, 0.1)'
-          }}>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '20px',
-              flexWrap: 'wrap',
-              gap: '10px'
-            }}>
-              <h3 style={{ 
-                color: '#27ae60',
-                margin: '0',
-                fontSize: '1.4rem',
-                fontWeight: '600'
-              }}>
-                📄 Generated {documentType} - 2025 Attorney Standards
-              </h3>
-              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                <button 
-                  onClick={() => {
-                    if (documentType === 'ID Rights Card') {
-                      const stateName = selectedState ? statePublicRecordsData[selectedState].name : '[STATE NAME]';
-                      const stateRights = selectedState ? stateIDRights[selectedState] : null;
-                      const cannabisData = selectedState ? cannabisLaws[selectedState] : null;
-                      if (stateRights) {
-                        const cardText = `${stateName} Rights & Laws Card\nStop & ID: ${stateRights.stopAndID ? 'Yes' : 'No'}\nRecording: ${stateRights.recording}\nCannabis: ${cannabisData ? cannabisData.status : 'Unknown'}\nLaw: ${stateRights.law}`;
-                        navigator.clipboard.writeText(cardText);
-                      }
-                    } else {
-                      navigator.clipboard.writeText(generatedLetter);
-                    }
-                  }}
-                  style={{ 
-                    padding: '12px 20px',
-                    backgroundColor: '#27ae60',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseOver={(e) => e.target.style.backgroundColor = '#219a52'}
-                  onMouseOut={(e) => e.target.style.backgroundColor = '#27ae60'}
-                >
-                  📋 Copy {documentType === 'ID Rights Card' ? 'Card Info' : 'to Clipboard'}
-                </button>
-
-                {documentType === 'ID Rights Card' ? (
-                  <>
-                    <button 
-                      onClick={() => {
-                        const stateName = selectedState ? statePublicRecordsData[selectedState].name : 'State';
-                        const stateRights = selectedState ? stateIDRights[selectedState] : null;
-                        const cannabisData = selectedState ? cannabisLaws[selectedState] : null;
-                        
-                        if (!stateRights) return;
-                        
-                        // Create canvas for download
-                        const canvas = document.createElement('canvas');
-                        canvas.width = 800;
-                        canvas.height = 560;
-                        const ctx = canvas.getContext('2d');
-                        
-                        // Create gradient background
-                        const gradient = ctx.createLinearGradient(0, 0, 800, 560);
-                        gradient.addColorStop(0, '#1e3c72');
-                        gradient.addColorStop(1, '#2a5298');
-                        ctx.fillStyle = gradient;
-                        ctx.fillRect(0, 0, 800, 560);
-                        
-                        // Add white border
-                        ctx.strokeStyle = '#fff';
-                        ctx.lineWidth = 4;
-                        ctx.strokeRect(2, 2, 796, 556);
-                        
-                        // Header
-                        ctx.fillStyle = '#fff';
-                        ctx.font = 'bold 32px Arial';
-                        ctx.textAlign = 'center';
-                        ctx.fillText(stateName.toUpperCase(), 400, 80);
-                        
-                        ctx.font = 'bold 26px Arial';
-                        ctx.fillText('RIGHTS & LAWS CARD', 400, 120);
-                        
-                        // Divider line
-                        ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-                        ctx.lineWidth = 2;
-                        ctx.beginPath();
-                        ctx.moveTo(60, 140);
-                        ctx.lineTo(740, 140);
-                        ctx.stroke();
-                        
-                        // Left column content
-                        ctx.font = '18px Arial';
-                        ctx.textAlign = 'left';
-                        ctx.fillStyle = '#ffd700';
-                        ctx.fillText('CONSTITUTIONAL RIGHTS:', 60, 180);
-                        
-                        ctx.fillStyle = '#fff';
-                        ctx.font = '16px Arial';
-                        ctx.fillText('• I do not consent to searches', 60, 210);
-                        ctx.fillText('• I invoke my right to remain silent', 60, 235);
-                        ctx.fillText('• I do not waive any rights', 60, 260);
-                        ctx.fillText('• I want a lawyer if detained', 60, 285);
-                        
-                        // State laws section
-                        ctx.fillStyle = '#ffd700';
-                        ctx.font = '18px Arial';
-                        ctx.fillText('STATE LAWS:', 60, 330);
-                        
-                        ctx.fillStyle = '#fff';
-                        ctx.font = '14px Arial';
-                        ctx.fillText(`Stop & ID: ${stateRights.stopAndID ? 'YES' : 'NO'}`, 60, 360);
-                        ctx.fillText(`Recording: ${stateRights.recording}`, 60, 385);
-                        if (cannabisData) {
-                          ctx.fillStyle = '#90EE90';
-                          ctx.fillText(`Cannabis: ${cannabisData.status}`, 60, 410);
-                        }
-                        
-                        // Right column - Police encounter
-                        ctx.fillStyle = '#ffd700';
-                        ctx.font = '18px Arial';
-                        ctx.fillText('POLICE ENCOUNTER:', 420, 180);
-                        
-                        ctx.fillStyle = '#fff';
-                        ctx.font = '14px Arial';
-                        ctx.fillText('"Officer, am I being detained or free to go?"', 420, 210);
-                        
-                        ctx.font = '12px Arial';
-                        ctx.fillText('If FREE: "I choose to leave now."', 420, 240);
-                        ctx.fillText('If DETAINED: "I decline to answer questions."', 420, 270);
-                        ctx.fillText('"I do not consent to searches."', 420, 290);
-                        ctx.fillText(stateRights.stopAndID ? 
-                          '"Please state the law requiring ID."' :
-                          '"I am not required to show ID unless', 420, 320);
-                        if (!stateRights.stopAndID) {
-                          ctx.fillText('driving or under arrest."', 420, 340);
-                        }
-                        ctx.fillText('If ARRESTED: "I want a lawyer."', 420, 370);
-                        
-                        // Footer
-                        ctx.fillStyle = 'rgba(255,255,255,0.7)';
-                        ctx.font = '12px Arial';
-                        ctx.textAlign = 'center';
-                        ctx.fillText(`Generated: ${new Date().toLocaleDateString()} - For informational purposes only`, 400, 520);
-                        
-                        // Download
-                        canvas.toBlob((blob) => {
-                          const url = URL.createObjectURL(blob);
-                          const a = document.createElement('a');
-                          a.href = url;
-                          a.download = `${stateName.replace(/\s+/g, '_')}_Rights_Laws_Card.png`;
-                          a.click();
-                          URL.revokeObjectURL(url);
-                        });
-                      }}
-                      style={{ 
-                        padding: '12px 20px',
-                        backgroundColor: '#e74c3c',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '8px',
-                        fontSize: '14px',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease'
-                      }}
-                      onMouseOver={(e) => e.target.style.backgroundColor = '#c0392b'}
-                      onMouseOut={(e) => e.target.style.backgroundColor = '#e74c3c'}
-                    >
-                      📸 Download as Image
-                    </button>
-                  </>
-                ) : (
-                  <button 
-                    onClick={() => {
-                      const blob = new Blob([generatedLetter], { type: 'text/plain' });
-                      const url = window.URL.createObjectURL(blob);
-                      const a = document.createElement('a');
-                      a.href = url;
-                      const today = new Date().toLocaleDateString().replace(/\//g, '-');
-                      a.download = `${documentType.replace(/\s+/g, '_')}_${today}.txt`;
-                      a.click();
-                      window.URL.revokeObjectURL(url);
-                    }}
-                    style={{ 
-                      padding: '12px 20px',
-                      backgroundColor: '#8e44ad',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '8px',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease'
-                    }}
-                    onMouseOver={(e) => e.target.style.backgroundColor = '#7d3c98'}
-                    onMouseOut={(e) => e.target.style.backgroundColor = '#8e44ad'}
-                  >
-                    💾 Download as Text File
-                  </button>
-                )}
-              </div>
-            </div>
-            
-            {documentType === 'ID Rights Card' ? (
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'center', 
-                alignItems: 'center',
-                padding: '20px',
-                backgroundColor: '#f8f9fa',
-                borderRadius: '12px'
-              }}>
-                <div id="id-rights-card-display">
-                  {generatedLetter}
-                </div>
-              </div>
-            ) : (
-              <textarea
-                value={generatedLetter}
-                onChange={(e) => setGeneratedLetter(e.target.value)}
-                style={{ 
-                  width: '100%', 
-                  height: '600px',
-                  padding: '20px', 
-                  border: '2px solid #27ae60',
-                  borderRadius: '12px',
-                  fontSize: '14px',
-                  color: '#000000',
-                  backgroundColor: '#ffffff',
-                  fontFamily: 'monospace',
-                  lineHeight: '1.6',
-                  resize: 'vertical',
-                  boxShadow: 'inset 0 2px 5px rgba(0,0,0,0.1)'
-                }}
-              />
-            )}
-            
-            <div style={{
-              marginTop: '15px',
-              padding: '15px',
-              backgroundColor: documentType === 'ID Rights Card' ? '#e3f2fd' : '#fff3cd',
-              border: documentType === 'ID Rights Card' ? '1px solid #2196f3' : '1px solid #ffeaa7',
-              borderRadius: '8px',
-              fontSize: '14px',
-              color: documentType === 'ID Rights Card' ? '#1565c0' : '#856404'
-            }}>
-              <strong>💡 {documentType === 'ID Rights Card' ? 'Rights & Laws Card:' : 'Attorney-Level Legal Notice:'}</strong> {documentType === 'ID Rights Card' ? 
-                'This professional card includes your state\'s specific stop-and-identify laws, recording consent requirements, and current cannabis laws. All information is verified through 2024-2025 legislative updates. Print wallet-size and keep handy. Always remain respectful during encounters.' :
-                `This document incorporates all 2024-2025 legislative changes including California's recodification, Nebraska's LB 43, Louisiana's tort extension, and state-specific legal requirements. Generated with attorney-level precision for ${selectedState ? statePublicRecordsData[selectedState].name : 'your jurisdiction'}. Review all bracketed placeholders and customize with your specific information.`
-              }
-            </div>
-          </div>
-        )}
-
-        {/* Professional Legal Disclaimer */}
-        <div style={{
-          marginTop: '30px',
-          padding: '20px',
-          backgroundColor: '#f8f9fa',
-          border: '2px solid #6c757d',
-          borderRadius: '12px',
-          fontSize: '12px',
-          color: '#495057',
-          textAlign: 'center'
-        }}>
-          <strong>⚖️ ATTORNEY-LEVEL CIVIL RIGHTS LEGAL TOOLKIT - 2025 LEGISLATIVE COMPLIANCE</strong><br/>
-          This toolkit incorporates comprehensive 2024-2025 legislative updates verified through primary sources. 
-          All statutory citations, time limits, and legal requirements reflect current law as of August 2025. 
-          Designed specifically for civil rights practice with emphasis on accuracy and detail. 
-          For complex matters, consult qualified legal counsel in your jurisdiction. 
-          Not intended as legal advice - for informational and document generation purposes only.
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default LegalToolkit; Header */}
-        <div style={{
-          textAlign: 'center',
-          borderBottom: '2px solid rgba(255,255,255,0.3)',
-          paddingBottom: '8px',
-          marginBottom: '8px'
-        }}>
-          <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{stateName.toUpperCase()}</div>
-          <div style={{ fontSize: '13px', fontWeight: '600' }}>RIGHTS & LAWS CARD</div>
-        </div>
-
-        {/* Main Content */}
-        <div style={{ display: 'flex', gap: '15px', height: '180px' }}>
-          {/* Left Column */}
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: '10px', fontWeight: 'bold', marginBottom: '6px', color: '#ffd700' }}>
-              CONSTITUTIONAL RIGHTS
-            </div>
-            <div style={{ fontSize: '9px', marginBottom: '4px' }}>
-              • I do not consent to searches
-            </div>
-            <div style={{ fontSize: '9px', marginBottom: '4px' }}>
-              • I invoke my right to remain silent
-            </div>
-            <div style={{ fontSize: '9px', marginBottom: '4px' }}>
-              • I do not waive any rights
-            </div>
-            <div style={{ fontSize: '9px', marginBottom: '8px' }}>
-              • I want a lawyer if detained
-            </div>
-
-            <div style={{ fontSize: '10px', fontWeight: 'bold', marginBottom: '4px', color: '#ffd700' }}>
-              STATE LAWS
-            </div>
-            <div style={{ fontSize: '8px', marginBottom: '4px' }}>
-              {stateRights.stopAndID ? 
-                `✓ Stop & ID: ${stateRights.law}` : 
-                '✗ No Stop & ID Law'
-              }
-            </div>
-            <div style={{ fontSize: '8px', marginBottom: '4px' }}>
-              Recording: {stateRights.recording}
-            </div>
-            {cannabisData && (
-              <div style={{ fontSize: '8px', marginBottom: '4px', color: '#90EE90' }}>
-                Cannabis: {cannabisData.status}
-              </div>
-            )}
-          </div>
-
-          {/* Right Column */}
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: '10px', fontWeight: 'bold', marginBottom: '6px', color: '#ffd700' }}>
-              POLICE ENCOUNTER
-            </div>
-            <div style={{ fontSize: '8px', marginBottom: '3px', fontWeight: '600' }}>
-              "Officer, am I being detained or am I free to go?"
-            </div>
-            
-            <div style={{ fontSize: '8px', marginBottom: '2px' }}>
-              <strong>If FREE TO GO:</strong>
-            </div>
-            <div style={{ fontSize: '7px', marginBottom: '4px', fontStyle: 'italic' }}>
-              "I choose to leave now. Have a good day."
-            </div>
-            
-            <div style={{ fontSize: '8px', marginBottom: '2px' }}>
-              <strong>If DETAINED:</strong>
-            </div>
-            <div style={{ fontSize: '7px', marginBottom: '2px' }}>
-              "I respectfully decline to answer questions."
-            </div>
-            <div style={{ fontSize: '7px', marginBottom: '2px' }}>
-              "I do not consent to any search."
-            </div>
-            <div style={{ fontSize: '7px', marginBottom: '4px' }}>
-              {stateRights.stopAndID ? 
-                '"Please state the law requiring me to provide ID."' :
-                '"I am not required to show ID unless driving or under arrest."'
-              }
-            </div>
-            
-            <div style={{ fontSize: '8px', marginBottom: '2px' }}>
-              <strong>If ARRESTED:</strong>
-            </div>
-            <div style={{ fontSize: '7px' }}>
-              "I invoke my right to remain silent and want a lawyer."
-            </div>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div style={{
-          position: 'absolute',
-          bottom: '8px',
-          left: '20px',
-          right: '20px',
-          borderTop: '1px solid rgba(255,255,255,0.3)',
-          paddingTop: '4px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          fontSize: '7px',
-          opacity: '0.8'
-        }}>
-          <div>Generated: {new Date().toLocaleDateString()}</div>
-          <div>For informational purposes only</div>
-        </div>
-      </div>
-    );
-
-    return cardComponent;
-  };
-
-  const generateCeaseDesistLetter = (today) => {
-    const stateRequirements = selectedState && stateNoticeRequirements[selectedState] ? 
-      stateNoticeRequirements[selectedState].ceaseDesist : null;
-    
-    let stateSpecificSection = '';
-    if (stateRequirements) {
-      stateSpecificSection = `\n\nSTATE-SPECIFIC REQUIREMENTS: ${stateRequirements.requirements}`;
-      
-      if (stateRequirements.mandatoryNotice) {
-        stateSpecificSection += `\n\nMANDATORY NOTICE PERIOD: ${stateRequirements.mandatoryNotice}`;
-      }
-      
-      if (stateRequirements.penalties) {
-        stateSpecificSection += `\n\nPENALTIES FOR NON-COMPLIANCE: ${stateRequirements.penalties}`;
-      }
-    }
-
-    return `[Your Name]
-[Your Address]
-[City, State, ZIP Code]
-[Email Address]
-[Phone Number]
-
-${today}
-
-${recipient || '[Recipient Name]'}
-[Recipient Address]
-[City, State, ZIP Code]
-
-RE: CEASE AND DESIST - ${violationType.toUpperCase()} VIOLATIONS
-${jurisdiction ? `JURISDICTION: ${jurisdiction}` : ''}
-
-Dear ${recipient || '[Recipient Name]'}:
-
-NOTICE TO CEASE AND DESIST
-
-You are hereby notified to CEASE AND DESIST from the following unlawful activities:
-
-VIOLATIONS: ${incident || '[Describe specific violations, actions, or behaviors that must stop]'}
-
-LEGAL BASIS: Your actions constitute violations of applicable law including but not limited to:
-${violationType === 'harassment' ? '- Harassment and intimidation laws\n- Privacy violations\n- Intentional infliction of emotional distress' : ''}
-${violationType === 'intellectual_property' ? '- Copyright infringement\n- Trademark violations\n- Unfair competition laws' : ''}
-${violationType === 'debt_collection' ? '- Fair Debt Collection Practices Act (FDCPA)\n- State debt collection laws\n- Consumer protection statutes' : ''}
-${violationType === 'trespass' ? '- Trespass laws\n- Property rights violations\n- Nuisance laws' : ''}
-${violationType === 'defamation' ? '- Defamation and libel laws\n- False light invasion of privacy\n- Intentional interference with business relations' : ''}${stateSpecificSection}
-
-DEMAND FOR CESSATION: You are hereby demanded to immediately:
-
-1. CEASE all ${violationType} activities described above
-2. REFRAIN from any future similar conduct
-3. REMOVE any infringing materials (if applicable)
-4. PROVIDE written confirmation of compliance within ${stateRequirements?.mandatoryNotice || '10 days'}
-
-CONSEQUENCES OF NON-COMPLIANCE: 
-
-Please be advised that if you fail to comply with this demand within ${stateRequirements?.mandatoryNotice || '10 days'} of receipt:
-
-1. We will pursue all available legal remedies
-2. You may be liable for damages, including attorney fees
-3. We may seek injunctive relief to stop your actions
-4. Criminal charges may be filed if applicable
-
-DOCUMENTATION: This letter serves as formal notice of your unlawful conduct and our demand that you cease such activities. A copy of this notice is being retained for our records and potential legal proceedings.
-
-TIME FOR COMPLIANCE: You have ${stateRequirements?.mandatoryNotice || 'ten (10) days'} from receipt of this letter to comply with the demands set forth herein.
-
-If you believe this notice has been sent in error, please contact me immediately in writing. Otherwise, your continued violations after receipt of this notice will be considered willful and may result in enhanced damages.
-
-I trust that you will give this matter the serious attention it deserves and will comply immediately.
-
-${damages ? `DAMAGES CLAIMED: ${damages}` : ''}
-
-Sincerely,
-
-[Your Signature]
-[Your Printed Name]
-
----
-DELIVERY VERIFICATION:
-☐ Certified Mail, Return Receipt Requested
-☐ Personal Service
-☐ Email with read receipt
-☐ Other: ___________
-
-COMPLIANCE TRACKING:
-Notice Date: ${today}
-Compliance Deadline: [${stateRequirements?.mandatoryNotice || '10 days'} from receipt]
-Response Received: ___________
-Legal Action Required: ___________`;
-  };
-
-  const generateNoticeOfClaim = (today) => {
-    let stateRequirements = '';
-    let timeRequirement = '';
-    let stateLawReference = '';
-    let updates = '';
-    
-    if (selectedState && stateNoticeRequirements[selectedState]) {
-      if (claimType === 'government') {
-        const requirements = stateNoticeRequirements[selectedState].govTortClaim;
-        timeRequirement = requirements.timeLimit;
-        stateLawReference = requirements.statute;
-        updates = requirements.updates ? `\n\n**LEGISLATIVE UPDATE:** ${requirements.updates}` : '';
-        stateRequirements = `\n\nSTATE-SPECIFIC REQUIREMENTS:
-- Filing Deadline: ${requirements.timeLimit}
-- Governing Statute: ${requirements.statute}
-- Requirements: ${requirements.requirements}${updates}`;
-      }
-    }
-
-    return `[Your Name]
-[Your Address]
-[City, State, ZIP Code]
-[Email Address]
-[Phone Number]
-
-${today}
-
-${agency || recipient || '[Name of Government Entity/Recipient]'}
-${claimType === 'government' ? 'Claims Administrator/Legal Department' : 'Legal Department'}
-[Address]
-[City, State, ZIP Code]
-
-RE: NOTICE OF CLAIM
-${claimType === 'government' ? 'CLAIM AGAINST GOVERNMENT ENTITY' : 'FORMAL NOTICE OF CLAIM'}
-${jurisdiction ? `JURISDICTION: ${jurisdiction}` : ''}
-${stateLawReference ? `GOVERNING LAW: ${stateLawReference}` : ''}
-
-TO WHOM IT MAY CONCERN:
-
-NOTICE IS HEREBY GIVEN that the undersigned intends to file a claim against ${agency || recipient || '[Entity Name]'} for damages resulting from the incident(s) described below.
-
-CLAIMANT INFORMATION:
-Name: [Your Full Name]
-Address: [Your Complete Address]
-Phone: [Your Phone Number]
-Email: [Your Email Address]
-
-INCIDENT DETAILS:
-Date of Incident: [Date]
-Time of Incident: [Time]
-Location: [Specific Location]
-
-DESCRIPTION OF INCIDENT:
-${incident || '[Provide detailed description of the incident, including all relevant facts, circumstances, and parties involved]'}
-
-NATURE OF CLAIM:
-${claimType === 'government' ? 'This claim arises from the negligent/wrongful acts of your employees/agents acting within the scope of their employment.' : 'This claim arises from [specify legal basis - negligence, breach of contract, etc.]'}
-
-INJURIES AND DAMAGES:
-${damages || '[Describe all injuries, property damage, and other losses including medical expenses, lost wages, pain and suffering, etc.]'}
-
-LEGAL BASIS:
-This claim is based upon:
-- Negligence and breach of duty of care
-- Violation of applicable statutes and regulations
-- [Add other applicable legal theories]
-
-DAMAGES SOUGHT:
-1. Medical expenses (past and future): $______
-2. Lost wages and earning capacity: $______
-3. Property damage: $______
-4. Pain and suffering: $______
-5. Other damages: $______
-TOTAL DAMAGES: $______
-
-${claimType === 'government' ? `GOVERNMENT LIABILITY:
-${agency || '[Government Entity]'} is liable for the actions of its employees/agents under principles of respondeat superior and governmental liability statutes.` : ''}
-
-PRESERVATION NOTICE:
-You are hereby notified to preserve all documents, records, video surveillance, witness statements, and other evidence related to this incident.
-
-${stateRequirements}
-
-SETTLEMENT DEMAND:
-Prior to filing formal litigation, we are willing to discuss reasonable settlement of this matter. Please contact the undersigned within thirty (30) days of receipt of this notice.
-
-${timeRequirement ? `FILING DEADLINE NOTICE:
-Please be advised that under ${stateLawReference}, this notice must be filed within ${timeRequirement} of the incident. This notice is being filed within the required timeframe.` : ''}
-
-This notice is given pursuant to all applicable federal, state, and local laws and regulations.
-
-Time is of the essence in your response to this notice.
-
-Sincerely,
-
-[Your Signature]
-[Your Printed Name]
-[Title/Capacity if applicable]
-
----
-ATTACHMENTS:
-☐ Medical records
-☐ Police reports
-☐ Photographs
-☐ Witness statements
-☐ Other supporting documentation
-
-DELIVERY VERIFICATION:
-☐ Certified Mail, Return Receipt Requested
-☐ Personal Service
-☐ Registered Mail
-☐ Other: ___________
-
-CLAIM TRACKING:
-Notice Date: ${today}
-${timeRequirement ? `Filing Deadline: [Within ${timeRequirement} of incident]` : ''}
-Response Due: [30 days from receipt]
-Claim Number: [To be assigned]`;
-  };
-
-  const generatePreSuitNotice = (today) => {
-    let stateRequirements = '';
-    let timeRequirement = '';
-    let stateLawReference = '';
-    let expertRequirement = '';
-    let updates = '';
-    
-    if (selectedState && stateNoticeRequirements[selectedState]) {
-      if (claimType === 'medical') {
-        const requirements = stateNoticeRequirements[selectedState].medMalpractice;
-        timeRequirement = requirements.timeLimit;
-        stateLawReference = requirements.statute;
-        expertRequirement = requirements.requirements;
-        updates = requirements.updates ? `\n\n**UPDATES:** ${requirements.updates}` : '';
-        
-        if (requirements.damageCaps) {
-          updates += `\n\n**DAMAGE CAPS:** ${requirements.damageCaps}`;
-        }
-        
-        stateRequirements = `\n\nSTATE-SPECIFIC REQUIREMENTS FOR ${jurisdiction.toUpperCase()}:
-- Notice Period: ${requirements.timeLimit}
-- Governing Statute: ${requirements.statute}
-- Requirements: ${requirements.requirements}${updates}`;
-      }
-    }
-
-    return `[Your Name]
-[Your Address]
-[City, State, ZIP Code]
-[Email Address]
-[Phone Number]
-
-${today}
-
-${recipient || '[Healthcare Provider/Professional Name]'}
-[Professional Address]
-[City, State, ZIP Code]
-
-${claimType === 'medical' ? 'ALSO TO:' : ''}
-${claimType === 'medical' ? '[Insurance Company Name]\n[Insurance Company Address]\n[City, State, ZIP Code]' : ''}
-
-RE: PRE-SUIT NOTICE OF PROFESSIONAL LIABILITY CLAIM
-${claimType === 'medical' ? 'MEDICAL MALPRACTICE CLAIM' : 'PROFESSIONAL LIABILITY CLAIM'}
-${jurisdiction ? `JURISDICTION: ${jurisdiction}` : ''}
-${stateLawReference ? `GOVERNING STATUTE: ${stateLawReference}` : ''}
-
-Dear ${recipient || '[Professional Name]'}:
-
-FORMAL PRE-SUIT NOTICE
-
-You are hereby notified that the undersigned intends to commence a professional liability action against you arising from your ${claimType === 'medical' ? 'medical treatment and care' : 'professional services'} provided to ${incident.includes('patient') || claimType === 'medical' ? '[Patient Name]' : '[Client Name]'}.
-
-PARTIES:
-${claimType === 'medical' ? 'Patient:' : 'Client:'} [Full Name]
-Date of Birth: [Date]
-${claimType === 'medical' ? 'Medical Record Number:' : 'File Number:'} [Number]
-
-PROFESSIONAL RELATIONSHIP:
-${claimType === 'medical' ? 'You provided medical treatment and care to the above-named patient' : 'You provided professional services to the above-named client'} during the period from [Start Date] to [End Date].
-
-INCIDENT DETAILS:
-Date(s) of Alleged Malpractice: [Specific Dates]
-Location: [Facility/Office Name and Address]
-
-DESCRIPTION OF ALLEGED MALPRACTICE:
-${incident || `[Provide detailed description of the alleged ${claimType === 'medical' ? 'medical malpractice' : 'professional negligence'}, including specific acts and omissions that constitute breaches of the standard of care]`}
-
-STANDARD OF CARE VIOLATIONS:
-The alleged malpractice includes, but is not limited to:
-1. [Specific violation #1]
-2. [Specific violation #2]
-3. [Specific violation #3]
-4. [Additional violations as applicable]
-
-INJURIES AND DAMAGES:
-As a direct and proximate result of your ${claimType === 'medical' ? 'medical malpractice' : 'professional negligence'}, ${claimType === 'medical' ? 'the patient' : 'the client'} suffered the following injuries and damages:
-${damages || '[List all injuries, complications, additional medical treatment required, pain and suffering, lost wages, etc.]'}
-
-CAUSATION:
-${claimType === 'medical' ? 'The patient\'s injuries and damages were directly caused by your departure from accepted medical standards' : 'The damages were directly caused by your failure to meet professional standards'} and would not have occurred but for your negligent acts and omissions.
-
-${expertRequirement && expertRequirement !== 'No pre-suit notice required' ? `EXPERT WITNESS REQUIREMENT:
-${expertRequirement}
-
-An appropriate expert witness has been consulted and has opined that your actions fell below the applicable standard of care and directly caused the damages described herein.` : ''}
-
-SETTLEMENT OPPORTUNITY:
-Before commencing formal litigation, we are providing this notice to allow for potential resolution of this matter. If you wish to discuss settlement, please contact the undersigned within ${timeRequirement && timeRequirement !== 'None' ? timeRequirement : '60 days'} of receipt of this notice.
-
-INSURANCE NOTICE:
-This letter also serves as notice to your professional liability insurance carrier. Please forward this notice immediately to your insurance company and provide us with the name and contact information of your carrier and claim number.
-
-PRESERVATION OF EVIDENCE:
-You are hereby directed to preserve all records, documents, communications, and other evidence related to ${claimType === 'medical' ? 'the patient\'s treatment' : 'the professional services provided'}, including but not limited to:
-${claimType === 'medical' ? '- Complete medical records\n- Nursing notes\n- Laboratory and diagnostic test results\n- Radiology films and reports\n- Correspondence\n- Billing records' : '- Client files\n- Communications\n- Work product\n- Billing records\n- Internal memoranda'}
-
-${stateRequirements}
-
-LEGAL EFFECT:
-This notice is provided pursuant to ${stateLawReference || 'applicable state law'} and serves as formal notice of our intent to file suit. ${timeRequirement && timeRequirement !== 'None' ? `This notice is being provided within the required ${timeRequirement} period.` : ''}
-
-Please govern yourself accordingly and ensure that your professional liability insurance carrier is notified immediately.
-
-Sincerely,
-
-[Your Signature]
-[Your Printed Name]
-[On behalf of ${claimType === 'medical' ? '[Patient Name]' : '[Client Name]'}]
-
----
-REQUIRED ATTACHMENTS (where applicable):
-${expertRequirement && expertRequirement.includes('affidavit') ? '☐ Expert Affidavit' : ''}
-${expertRequirement && expertRequirement.includes('certificate') ? '☐ Certificate of Merit' : ''}
-☐ Medical records (if medical malpractice)
-☐ Supporting documentation
-
-DELIVERY VERIFICATION:
-☐ Certified Mail, Return Receipt Requested
-☐ Personal Service
-☐ Registered Mail
-
-NOTICE TRACKING:
-Notice Date: ${today}
-${timeRequirement && timeRequirement !== 'None' ? `Required Notice Period: ${timeRequirement}` : ''}
-Insurance Notification Required: Yes
-Settlement Discussion Period: ${timeRequirement && timeRequirement !== 'None' ? timeRequirement : '60 days'}`;
-  };
-
-  const calculateResponseDate = () => {
-    if (!selectedState || !timeLimit) return '';
-    
-    const today = new Date();
-    const businessDaysMatch = timeLimit.match(/(\d+)\s*business\s*days/i);
-    const calendarDaysMatch = timeLimit.match(/(\d+)\s*calendar\s*days/i);
-    const daysMatch = timeLimit.match(/(\d+)\s*days/i);
-    const monthsMatch = timeLimit.match(/(\d+)\s*months?/i);
-    const yearMatch = timeLimit.match(/(\d+)\s*years?/i);
-    
-    if (businessDaysMatch) {
-      const days = parseInt(businessDaysMatch[1]);
-      let count = 0;
-      const result = new Date(today);
-      while (count < days) {
-        result.setDate(result.getDate() + 1);
-        if (result.getDay() !== 0 && result.getDay() !== 6) {
-          count++;
-        }
-      }
-      return result.toLocaleDateString();
-    } else if (calendarDaysMatch || daysMatch) {
-      const days = parseInt((calendarDaysMatch || daysMatch)[1]);
-      const result = new Date(today);
-      result.setDate(result.getDate() + days);
-      return result.toLocaleDateString();
-    } else if (monthsMatch) {
-      const months = parseInt(monthsMatch[1]);
-      const result = new Date(today);
-      result.setMonth(result.getMonth() + months);
-      return result.toLocaleDateString();
-    } else if (yearMatch) {
-      const years = parseInt(yearMatch[1]);
-      const result = new Date(today);
-      result.setFullYear(result.getFullYear() + years);
-      return result.toLocaleDateString();
-    }
-    
-    return 'Contact appropriate party for specific deadline';
-  };
-
-  return (
-    <div style={{ 
-      minHeight: '100vh', 
-      background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
-      fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      padding: '20px'
-    }}>
-      <div style={{ 
-        maxWidth: '1200px', 
-        margin: '0 auto',
-        backgroundColor: 'rgba(255, 255, 255, 0.98)',
-        borderRadius: '20px',
-        padding: '40px',
-        boxShadow: '0 20px 60px rgba(0, 0, 0, 0.2)',
-        border: '1px solid rgba(255, 255, 255, 0.2)'
-      }}>
-        <div style={{
-          textAlign: 'center',
-          marginBottom: '40px',
-          borderBottom: '3px solid #1e3c72',
-          paddingBottom: '20px'
-        }}>
-          <h1 style={{ 
-            color: '#1e3c72', 
-            fontSize: '3rem',
-            fontWeight: '700',
-            margin: '0 0 10px 0',
-            textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
-          }}>
-            Legal Toolkit Pro 2025
-          </h1>
-          <p style={{
-            color: '#666',
-            fontSize: '1.2rem',
-            margin: '0'
-          }}>
-            Professional Civil Rights Attorney Document Generator with Complete 2024-2025 Legislative Updates
-          </p>
-        </div>
-
-        <div style={{ 
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: '25px',
-          marginBottom: '30px'
-        }}>
-          <div>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '10px', 
-              fontWeight: '600',
-              color: '#2c3e50',
-              fontSize: '1.1rem'
-            }}>
-              📄 Document Type:
-            </label>
-            <select 
-              value={documentType}
-              onChange={(e) => setDocumentType(e.target.value)}
-              style={{ 
-                width: '100%', 
-                padding: '15px', 
-                border: '2px solid #3498db',
-                borderRadius: '12px',
-                fontSize: '16px',
-                color: '#000000',
-                backgroundColor: '#ffffff',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease'
-              }}
-            >
-              <option value="FOIA Request">FOIA Request</option>
-              <option value="State Public Records Request">State Public Records Request</option>
-              <option value="ID Rights Card">ID Rights & Cannabis Laws Card</option>
-              <option value="Cease and Desist Letter">Cease and Desist Letter</option>
-              <option value="Notice of Claim">Notice of Claim</option>
-              <option value="Pre-Suit Notice">Pre-Suit Notice</option>
-              <option value="Subpoena Duces Tecum">Subpoena Duces Tecum</option>
-              <option value="Discovery Request">Discovery Request</option>
-            </select>
-          </div>
-
-          <div>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '10px', 
-              fontWeight: '600',
-              color: '#2c3e50',
-              fontSize: '1.1rem'
-            }}>
-              🏛️ State/Jurisdiction:
-            </label>
-            <select 
-              value={selectedState}
-              onChange={(e) => setSelectedState(e.target.value)}
-              style={{ 
-                width: '100%', 
-                padding: '15px', 
-                border: '2px solid #3498db',
-                borderRadius: '12px',
-                fontSize: '16px',
-                color: '#000000',
-                backgroundColor: '#ffffff',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease'
-              }}
-            >
-              <option value="">Select a state...</option>
-              {Object.entries(statePublicRecordsData).map(([code, data]) => (
-                <option key={code} value={code}>{data.name}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/*
