@@ -1,1283 +1,1021 @@
-// src/LegalToolkit.jsx
-// Civil Rights Legal Toolkit Pro 2025 — Single-file React component
-// Purpose: Generate attorney-style templates (FOIA, State PRA, Cease & Desist, Notice of Claim, Pre-Suit Notice,
-//          Subpoena Duces Tecum, Discovery Requests) + State rights card. Includes state datasets and deadline calc.
-// Notes: Inline styles retained for portability. Replace datasets with authoritative sources for production.
+import React, { useEffect, useMemo, useState } from "react";
 
-import React, { useEffect, useState } from 'react';
+/**
+ * Civil Rights Legal Toolkit Pro 2025
+ * - Cleaner Tailwind UI
+ * - ID cards show cannabis possession + cultivation (when known), key statutes, recording rules
+ * - Stop-&-ID specific guidance, plus Pot Brothers at Law "4 Simple Steps" (concise phrasing)
+ * - Quick Mode to generate forms with fewer, simpler fields
+ * - Clipboard, PNG download, wallet-size print for ID cards
+ *
+ * NOTE: Cannabis and statute data are summarized for convenience; verify locally before relying in practice.
+ */
 
-/* =============================================================
-   STATE DATASETS (summaries; not legal advice)
-   ============================================================= */
-
-// Updated Public Records Database with sample Legislative Changes
+// ===================== DATA =====================
+// Public Records (FOIA/state) quick reference
 const statePublicRecordsData = {
-  AL: { name: 'Alabama', statute: 'Alabama Open Records Act (Code of Alabama § 36-12-40)', timeLimit: '7-10 business days' },
-  AK: { name: 'Alaska', statute: 'Alaska Public Records Act (AS § 40.25.110-40.25.220)', timeLimit: '10 business days' },
-  AZ: { name: 'Arizona', statute: 'Arizona Public Records Law (A.R.S. § 39-121)', timeLimit: 'Promptly (no specific timeframe)' },
-  AR: { name: 'Arkansas', statute: 'Arkansas Freedom of Information Act (A.C.A. § 25-19-101)', timeLimit: '3 business days' },
-  CA: { name: 'California', statute: 'California Public Records Act (Gov. Code §§ 7920.000 et seq.) — Recodified 2023', timeLimit: '10 calendar days', updates: 'AB 473 recodification effective Jan 1, 2023' },
-  CO: { name: 'Colorado', statute: 'Colorado Open Records Act (C.R.S. § 24-72-201)', timeLimit: '3 business days' },
-  CT: { name: 'Connecticut', statute: 'Connecticut Freedom of Information Act (C.G.S. § 1-200)', timeLimit: '4 business days' },
-  DE: { name: 'Delaware', statute: 'Delaware Freedom of Information Act (29 Del. C. § 10001)', timeLimit: '15 business days' },
-  FL: { name: 'Florida', statute: 'Florida Sunshine Law (F.S. § 119.01)', timeLimit: 'Reasonable time' },
-  GA: { name: 'Georgia', statute: 'Georgia Open Records Act (O.C.G.A. § 50-18-70)', timeLimit: '3 business days' },
-  HI: { name: 'Hawaii', statute: 'Hawaii Uniform Information Practices Act (HRS § 92F)', timeLimit: '10 business days' },
-  ID: { name: 'Idaho', statute: 'Idaho Public Records Act (Idaho Code § 74-101)', timeLimit: '3 business days' },
-  IL: { name: 'Illinois', statute: 'Illinois Freedom of Information Act (5 ILCS 140/)', timeLimit: '5 business days' },
-  IN: { name: 'Indiana', statute: 'Indiana Access to Public Records Act (IC § 5-14-3)', timeLimit: '24 hours (readily available records)' },
-  IA: { name: 'Iowa', statute: 'Iowa Open Records Law (Iowa Code § 22)', timeLimit: 'As soon as reasonably possible' },
-  KS: { name: 'Kansas', statute: 'Kansas Open Records Act (K.S.A. § 45-215)', timeLimit: '3 business days' },
-  KY: { name: 'Kentucky', statute: 'Kentucky Open Records Act (KRS § 61.870)', timeLimit: '3 business days' },
-  LA: { name: 'Louisiana', statute: 'Louisiana Public Records Act (R.S. 44:1)', timeLimit: '3 business days' },
-  ME: { name: 'Maine', statute: 'Maine Freedom of Access Act (1 M.R.S. § 401)', timeLimit: 'Reasonable time' },
-  MD: { name: 'Maryland', statute: 'Maryland Public Information Act (GP § 4-101)', timeLimit: '30 days' },
-  MA: { name: 'Massachusetts', statute: 'Massachusetts Public Records Law (M.G.L. c. 66)', timeLimit: '10 business days' },
-  MI: { name: 'Michigan', statute: 'Michigan Freedom of Information Act (MCL § 15.231)', timeLimit: '5 business days' },
-  MN: { name: 'Minnesota', statute: 'Minnesota Data Practices Act (M.S. § 13.01)', timeLimit: 'Immediately (if readily available)' },
-  MS: { name: 'Mississippi', statute: 'Mississippi Public Records Act (Miss. Code § 25-61-1)', timeLimit: '7 business days' },
-  MO: { name: 'Missouri', statute: 'Missouri Sunshine Law (R.S.Mo. § 610.010)', timeLimit: '3 business days' },
-  MT: { name: 'Montana', statute: 'Montana Right to Know Act (MCA § 2-6-101)', timeLimit: 'Reasonable time' },
-  NE: { name: 'Nebraska', statute: 'Nebraska Public Records Statutes (Neb. Rev. Stat. § 84-712)', timeLimit: '4 business days max', updates: 'LB 43 effective July 19, 2024 (fee & timing changes)' },
-  NV: { name: 'Nevada', statute: 'Nevada Public Records Act (NRS § 239)', timeLimit: '5 business days' },
-  NH: { name: 'New Hampshire', statute: 'Right-to-Know Law (RSA § 91-A)', timeLimit: '5 business days' },
-  NJ: { name: 'New Jersey', statute: 'Open Public Records Act (N.J.S.A. § 47:1A-1)', timeLimit: '7 business days' },
-  NM: { name: 'New Mexico', statute: 'Inspection of Public Records Act (NMSA § 14-2-1)', timeLimit: '3 business days' },
-  NY: { name: 'New York', statute: 'Freedom of Information Law (Public Officers Law § 84)', timeLimit: '5 business days' },
-  NC: { name: 'North Carolina', statute: 'Public Records Law (N.C.G.S. § 132-1)', timeLimit: 'As promptly as possible' },
-  ND: { name: 'North Dakota', statute: 'Open Records Statute (NDCC § 44-04-18)', timeLimit: '3 business days' },
-  OH: { name: 'Ohio', statute: 'Ohio Public Records Act (R.C. § 149.43)', timeLimit: 'Promptly' },
-  OK: { name: 'Oklahoma', statute: 'Open Records Act (51 O.S. § 24A.1)', timeLimit: 'Reasonable time' },
-  OR: { name: 'Oregon', statute: 'Public Records Law (ORS § 192.410)', timeLimit: 'Reasonable time' },
-  PA: { name: 'Pennsylvania', statute: 'Right-to-Know Law (65 P.S. § 67.101)', timeLimit: '5 business days' },
-  RI: { name: 'Rhode Island', statute: 'Access to Public Records Act (R.I.G.L. § 38-2-1)', timeLimit: '10 business days' },
-  SC: { name: 'South Carolina', statute: 'Freedom of Information Act (S.C. Code § 30-4-10)', timeLimit: '15 business days' },
-  SD: { name: 'South Dakota', statute: 'Sunshine Law (SDCL § 1-27-1)', timeLimit: 'Reasonable time' },
-  TN: { name: 'Tennessee', statute: 'Public Records Act (T.C.A. § 10-7-503)', timeLimit: '7 business days' },
-  TX: { name: 'Texas', statute: 'Public Information Act (Gov. Code § 552.001)', timeLimit: '10 business days' },
-  UT: { name: 'Utah', statute: 'GRAMA (Utah Code § 63G-2-101)', timeLimit: '5-10 business days', updates: '2025 changes: ALJ replacing State Records Committee' },
-  VT: { name: 'Vermont', statute: 'Public Records Act (1 V.S.A. § 315)', timeLimit: '3 business days' },
-  VA: { name: 'Virginia', statute: 'FOIA (Va. Code § 2.2-3700)', timeLimit: '5 business days' },
-  WA: { name: 'Washington', statute: 'Public Records Act (RCW § 42.56)', timeLimit: '5 business days' },
-  WV: { name: 'West Virginia', statute: 'FOIA (W. Va. Code § 29B-1-1)', timeLimit: '5 business days' },
-  WI: { name: 'Wisconsin', statute: 'Open Records Law (Wis. Stat. § 19.31)', timeLimit: 'As soon as practicable' },
-  WY: { name: 'Wyoming', statute: 'Public Records Act (Wyo. Stat. § 16-4-201)', timeLimit: '3 business days' },
-  DC: { name: 'District of Columbia', statute: 'DC FOIA (DC Code § 2-531)', timeLimit: '15 business days' },
+  AL: { name: "Alabama", statute: "Alabama Open Records Act (Ala. Code § 36-12-40)", timeLimit: "7–10 business days" },
+  AK: { name: "Alaska", statute: "Alaska Public Records Act (AS § 40.25.110–220)", timeLimit: "10 business days" },
+  AZ: { name: "Arizona", statute: "Arizona Public Records Law (A.R.S. § 39-121)", timeLimit: "Promptly (no fixed deadline)" },
+  AR: { name: "Arkansas", statute: "Arkansas FOIA (A.C.A. § 25-19-101)", timeLimit: "3 business days" },
+  CA: { name: "California", statute: "California Public Records Act (Gov. Code §§ 7920.000 et seq.)", timeLimit: "10 calendar days", updates: "Recodified by AB 473, effective Jan 1, 2023" },
+  CO: { name: "Colorado", statute: "Colorado Open Records Act (C.R.S. § 24-72-201)", timeLimit: "3 business days" },
+  CT: { name: "Connecticut", statute: "Connecticut FOIA (C.G.S. § 1-200)", timeLimit: "4 business days" },
+  DE: { name: "Delaware", statute: "Delaware FOIA (29 Del. C. § 10001)", timeLimit: "15 business days" },
+  FL: { name: "Florida", statute: "Florida Public Records (F.S. ch. 119)", timeLimit: "Reasonable time" },
+  GA: { name: "Georgia", statute: "Georgia Open Records Act (O.C.G.A. § 50-18-70)", timeLimit: "3 business days" },
+  HI: { name: "Hawaii", statute: "Hawaii UIPA (HRS § 92F)", timeLimit: "10 business days" },
+  ID: { name: "Idaho", statute: "Idaho Public Records (Idaho Code § 74-101)", timeLimit: "3 business days" },
+  IL: { name: "Illinois", statute: "Illinois FOIA (5 ILCS 140)", timeLimit: "5 business days" },
+  IN: { name: "Indiana", statute: "Access to Public Records (IC § 5-14-3)", timeLimit: "Prompt (24h if readily available)" },
+  IA: { name: "Iowa", statute: "Iowa Open Records (Iowa Code § 22)", timeLimit: "As soon as reasonably possible" },
+  KS: { name: "Kansas", statute: "KORA (K.S.A. § 45-215)", timeLimit: "3 business days" },
+  KY: { name: "Kentucky", statute: "Open Records (KRS § 61.870)", timeLimit: "3 business days" },
+  LA: { name: "Louisiana", statute: "Public Records Act (R.S. 44:1)", timeLimit: "3 business days" },
+  ME: { name: "Maine", statute: "Freedom of Access Act (1 M.R.S. § 401)", timeLimit: "Reasonable time" },
+  MD: { name: "Maryland", statute: "Public Information Act (GP § 4-101)", timeLimit: "30 days" },
+  MA: { name: "Massachusetts", statute: "Public Records Law (M.G.L. c. 66)", timeLimit: "10 business days" },
+  MI: { name: "Michigan", statute: "Michigan FOIA (MCL § 15.231)", timeLimit: "5 business days" },
+  MN: { name: "Minnesota", statute: "Data Practices Act (Minn. Stat. § 13.01)", timeLimit: "Immediately if readily available" },
+  MS: { name: "Mississippi", statute: "Public Records Act (Miss. Code § 25-61-1)", timeLimit: "7 business days" },
+  MO: { name: "Missouri", statute: "Sunshine Law (RSMo § 610.010)", timeLimit: "3 business days" },
+  MT: { name: "Montana", statute: "Right to Know (MCA § 2-6-1001)", timeLimit: "Reasonable time" },
+  NE: { name: "Nebraska", statute: "Public Records Statutes (Neb. Rev. Stat. § 84-712)", timeLimit: "4 business days max", updates: "LB 43 (effective Jul 19, 2024)" },
+  NV: { name: "Nevada", statute: "NPRA (NRS § 239)", timeLimit: "5 business days" },
+  NH: { name: "New Hampshire", statute: "Right-to-Know (RSA § 91-A)", timeLimit: "5 business days" },
+  NJ: { name: "New Jersey", statute: "OPRA (N.J.S.A. § 47:1A-1)", timeLimit: "7 business days" },
+  NM: { name: "New Mexico", statute: "IPRA (NMSA § 14-2-1)", timeLimit: "3 business days" },
+  NY: { name: "New York", statute: "FOIL (Public Officers Law § 84)", timeLimit: "5 business days" },
+  NC: { name: "North Carolina", statute: "Public Records Law (N.C.G.S. § 132-1)", timeLimit: "Promptly" },
+  ND: { name: "North Dakota", statute: "Open Records (NDCC § 44-04-18)", timeLimit: "3 business days" },
+  OH: { name: "Ohio", statute: "Public Records (R.C. § 149.43)", timeLimit: "Promptly" },
+  OK: { name: "Oklahoma", statute: "Open Records (51 O.S. § 24A.1)", timeLimit: "Promptly (≈5 business days)" },
+  OR: { name: "Oregon", statute: "Public Records (ORS § 192.410)", timeLimit: "Reasonable time" },
+  PA: { name: "Pennsylvania", statute: "Right-to-Know (65 P.S. § 67.101)", timeLimit: "5 business days" },
+  RI: { name: "Rhode Island", statute: "APRA (R.I.G.L. § 38-2-1)", timeLimit: "10 business days" },
+  SC: { name: "South Carolina", statute: "FOIA (S.C. Code § 30-4-10)", timeLimit: "15 business days" },
+  SD: { name: "South Dakota", statute: "Public Records (SDCL § 1-27-1)", timeLimit: "Reasonable time" },
+  TN: { name: "Tennessee", statute: "TPRA (T.C.A. § 10-7-503)", timeLimit: "7 business days" },
+  TX: { name: "Texas", statute: "Public Information Act (Gov. Code ch. 552)", timeLimit: "10 business days" },
+  UT: { name: "Utah", statute: "GRAMA (Utah Code § 63G-2-101)", timeLimit: "5–10 business days", updates: "2025 change: ALJ replacing State Records Committee" },
+  VT: { name: "Vermont", statute: "Public Records Act (1 V.S.A. § 315)", timeLimit: "3 business days" },
+  VA: { name: "Virginia", statute: "VFOIA (Va. Code § 2.2-3700)", timeLimit: "5 business days" },
+  WA: { name: "Washington", statute: "PRA (RCW § 42.56)", timeLimit: "5 business days" },
+  WV: { name: "West Virginia", statute: "FOIA (W. Va. Code § 29B-1-1)", timeLimit: "5 business days" },
+  WI: { name: "Wisconsin", statute: "Open Records (Wis. Stat. § 19.31)", timeLimit: "As soon as practicable" },
+  WY: { name: "Wyoming", statute: "Public Records (Wyo. Stat. § 16-4-201)", timeLimit: "3 business days" },
+  DC: { name: "District of Columbia", statute: "DC FOIA (DC Code § 2-531)", timeLimit: "15 business days" },
 };
 
-// Cannabis Laws (condensed sample; extend as needed)
-const cannabisLaws = {
-  AK: { status: 'Recreational & Medical', enacted: '2014', possession: '1 oz; 6 plants (3 mature)', details: 'Ballot Measure 2' },
-  AZ: { status: 'Recreational & Medical', enacted: '2020', possession: '1 oz; 6 plants', details: 'Prop 207' },
-  CA: { status: 'Recreational & Medical', enacted: '2016', possession: '1 oz; 6 plants; 8g concentrates', details: 'Prop 64' },
-  CO: { status: 'Recreational & Medical', enacted: '2012', possession: '1 oz; 6 plants', details: 'Amendment 64' },
-  CT: { status: 'Recreational & Medical', enacted: '2021', possession: '1.5 oz; 6 plants', details: 'SB 1201' },
-  DE: { status: 'Recreational & Medical', enacted: '2023', possession: '1 oz (no home grow)', details: 'HB 1 & 2' },
-  FL: { status: 'Medical Only', enacted: '2016', possession: 'Qualified patients', details: 'Amendment 2' },
-  GA: { status: 'Medical Only (Low-THC)', enacted: '2015', possession: 'Low-THC oil', details: 'Haleigh’s Hope Act' },
-  IL: { status: 'Recreational & Medical', enacted: '2019', possession: '1 oz (no home grow rec.)', details: 'CRTA' },
-  MD: { status: 'Recreational & Medical', enacted: '2022', possession: '1.5 oz; 2 plants', details: 'Question 4' },
-  MA: { status: 'Recreational & Medical', enacted: '2016', possession: '1 oz; 6 plants', details: 'Question 4' },
-  MI: { status: 'Recreational & Medical', enacted: '2018', possession: '2.5 oz; 12 plants', details: 'Proposal 1' },
-  MN: { status: 'Recreational & Medical', enacted: '2023', possession: '2 oz; 8 plants', details: 'HF100' },
-  MO: { status: 'Recreational & Medical', enacted: '2022', possession: '3 oz; 6 plants', details: 'Amendment 3' },
-  MT: { status: 'Recreational & Medical', enacted: '2020', possession: '1 oz; 4 plants', details: 'CI-118' },
-  NV: { status: 'Recreational & Medical', enacted: '2016', possession: '1 oz; 6 plants (distance rule)', details: 'Question 2' },
-  NJ: { status: 'Recreational & Medical', enacted: '2020', possession: '1 oz', details: 'Public Question 1' },
-  NM: { status: 'Recreational & Medical', enacted: '2021', possession: '2 oz; 6 mature', details: 'CRA' },
-  NY: { status: 'Recreational & Medical', enacted: '2021', possession: '3 oz; 6 plants', details: 'MRTA' },
-  OH: { status: 'Recreational & Medical', enacted: '2023', possession: '2.5 oz; 6 plants', details: 'Issue 2' },
-  OR: { status: 'Recreational & Medical', enacted: '2014', possession: '1 oz; 4 plants', details: 'Measure 91' },
-  PA: { status: 'Medical Only', enacted: '2016', possession: 'Qualified patients', details: 'MMA' },
-  RI: { status: 'Recreational & Medical', enacted: '2022', possession: '1 oz; 3 mature', details: 'RIC Act' },
-  VT: { status: 'Recreational & Medical', enacted: '2018', possession: '1 oz; 6 plants (2 mature)', details: 'H.511' },
-  VA: { status: 'Recreational & Medical', enacted: '2021', possession: '1 oz; 4 plants', details: 'Legislative' },
-  WA: { status: 'Recreational & Medical', enacted: '2012', possession: '1 oz (no home grow rec.)', details: 'I-502' },
-  DC: { status: 'Recreational & Medical', enacted: '2014', possession: '2 oz; 6 plants', details: 'Initiative 71' },
-  IN: { status: 'CBD Only', enacted: '2018', possession: 'CBD <0.3% THC', details: 'Industrial Hemp' },
-  ID: { status: 'Fully Illegal', enacted: 'N/A', possession: 'Illegal', details: 'No medical/recreational/CBD' },
-  KS: { status: 'Fully Illegal', enacted: 'N/A', possession: 'Illegal', details: 'No programs' },
-  SC: { status: 'Fully Illegal', enacted: 'N/A', possession: 'Illegal', details: 'No programs' },
-  WY: { status: 'Fully Illegal', enacted: 'N/A', possession: 'Illegal', details: 'No programs' },
+// Recording consent (statewide general rule label)
+const recordingConsent = {
+  // two-party states
+  CA: "Two-party consent (in-person/phone)", CT: "Two-party consent", DE: "Two-party consent",
+  FL: "Two-party consent", IL: "Two-party consent (context-specific)", MD: "Two-party consent",
+  MA: "Two-party consent", MT: "Two-party consent", NH: "Two-party consent", PA: "Two-party consent",
+  WA: "Two-party consent",
 };
 
-// State Stop-and-Identify + Recording (condensed; extend as needed)
+// Stop-and-identify quick matrix
 const stateIDRights = {
-  AL: { stopAndID: true, law: 'Ala. Code § 15-5-30', idRequired: 'Name/address upon lawful stop', recording: 'One-party consent' },
-  AK: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Only driving/arrest/licensing', recording: 'One-party consent' },
-  AZ: { stopAndID: true, law: 'A.R.S. § 13-2412', idRequired: 'True full name during detention', recording: 'One-party consent' },
-  AR: { stopAndID: true, law: 'A.C.A. § 5-71-213', idRequired: 'Name if lawfully stopped', recording: 'One-party consent' },
-  CA: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'Two-party consent' },
-  CO: { stopAndID: true, law: 'C.R.S. § 16-3-103', idRequired: 'Name/address; ID if available', recording: 'One-party consent' },
-  CT: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'Two-party consent' },
-  DE: { stopAndID: true, law: '11 Del. C. § 1902', idRequired: 'Identify if detained', recording: 'Two-party consent' },
-  FL: { stopAndID: true, law: 'F.S. § 856.021', idRequired: 'Identify if detained', recording: 'Two-party consent' },
-  GA: { stopAndID: true, law: 'O.C.G.A. § 16-11-36', idRequired: 'Name/address if detained', recording: 'One-party consent' },
-  HI: { stopAndID: true, law: 'HRS 291C-172 (traffic contexts)', idRequired: 'Traffic-related', recording: 'One-party consent' },
-  ID: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'One-party consent' },
-  IL: { stopAndID: true, law: '725 ILCS 5/107-14', idRequired: 'Identify if detained', recording: 'Two-party consent' },
-  IN: { stopAndID: true, law: 'IC § 34-28-5-3.5', idRequired: 'Name if detained', recording: 'One-party consent' },
-  IA: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'One-party consent' },
-  KS: { stopAndID: true, law: 'K.S.A. § 22-2402', idRequired: 'Name if detained', recording: 'One-party consent' },
-  KY: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'One-party consent' },
-  LA: { stopAndID: true, law: 'La. R.S. § 14:108', idRequired: 'Name if detained', recording: 'One-party consent' },
-  ME: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'One-party consent' },
-  MD: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'Two-party consent' },
-  MA: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'Two-party consent' },
-  MI: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'One-party consent' },
-  MN: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'One-party consent' },
-  MS: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'One-party consent' },
-  MO: { stopAndID: true, law: 'R.S.Mo. § 84.710 (KC/STL)', idRequired: 'Name in certain cities', recording: 'One-party consent' },
-  MT: { stopAndID: true, law: 'MCA § 46-5-401', idRequired: 'Name if detained', recording: 'Two-party consent' },
-  NE: { stopAndID: true, law: 'Neb. Rev. Stat. § 29-829', idRequired: 'Name if detained', recording: 'One-party consent' },
-  NV: { stopAndID: true, law: 'NRS § 171.123', idRequired: 'Name if detained', recording: 'One-party consent' },
-  NH: { stopAndID: true, law: 'RSA § 594:2', idRequired: 'Name/address/destination', recording: 'Two-party consent' },
-  NJ: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'One-party consent' },
-  NM: { stopAndID: true, law: 'NMSA § 30-22-3', idRequired: 'Name if detained', recording: 'One-party consent' },
-  NY: { stopAndID: true, law: 'CPL § 140.50', idRequired: 'Name/address/explanation', recording: 'One-party consent' },
-  NC: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'One-party consent' },
-  ND: { stopAndID: true, law: 'NDCC § 29-29-21', idRequired: 'Name if detained', recording: 'One-party consent' },
-  OH: { stopAndID: true, law: 'ORC § 2921.29', idRequired: 'Name/address/DOB if detained', recording: 'One-party consent' },
-  OK: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'One-party consent' },
-  OR: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'One-party (two-party in-person)' },
-  PA: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'Two-party consent' },
-  RI: { stopAndID: true, law: 'R.I.G.L. § 12-7-1', idRequired: 'Name/address/destination', recording: 'One-party consent' },
-  SC: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'One-party consent' },
-  SD: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'One-party consent' },
-  TN: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'One-party consent' },
-  TX: { stopAndID: true, law: 'Tex. Penal Code § 38.02', idRequired: 'Name/address (arrest/detention)', recording: 'One-party consent' },
-  UT: { stopAndID: true, law: 'Utah Code § 77-7-15', idRequired: 'Name/address/DOB during stop', recording: 'One-party consent' },
-  VT: { stopAndID: true, law: '24 V.S.A. § 1983 (limited)', idRequired: 'Municipal contexts', recording: 'One-party consent' },
-  VA: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'One-party consent' },
-  WA: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'Two-party consent' },
-  WV: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'One-party consent' },
-  WI: { stopAndID: true, law: 'Wis. Stat. § 968.24', idRequired: 'Name if detained (no penalty for refusal)', recording: 'One-party consent' },
-  WY: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'One-party consent' },
-  DC: { stopAndID: false, law: 'No stop-and-identify statute', idRequired: 'Driving/arrest/licensing', recording: 'One-party consent' },
+  AL: { stopAndID: true, law: "Ala. Code § 15-5-30", requires: "Provide name/address on RS stop" },
+  AK: { stopAndID: false, law: "No general stop-and-identify statute" },
+  AZ: { stopAndID: true, law: "A.R.S. § 13-2412", requires: "Provide true full name on lawful detention" },
+  AR: { stopAndID: true, law: "A.C.A. § 5-71-213", requires: "Name on lawful stop" },
+  CA: { stopAndID: false, law: "No general stop-and-identify statute" },
+  CO: { stopAndID: true, law: "C.R.S. § 16-3-103", requires: "Name/address; show ID if available" },
+  CT: { stopAndID: false, law: "No general stop-and-identify statute" },
+  DE: { stopAndID: true, law: "11 Del. C. § 1902", requires: "Identify self on RS stop" },
+  FL: { stopAndID: true, law: "F.S. § 856.021", requires: "Name on lawful detention" },
+  GA: { stopAndID: true, law: "O.C.G.A. § 16-11-36", requires: "Name/address on lawful detention" },
+  HI: { stopAndID: true, law: "HRS 291C-172", requires: "Traffic context; ID on citation" },
+  ID: { stopAndID: false, law: "No general stop-and-identify statute" },
+  IL: { stopAndID: true, law: "725 ILCS 5/107-14", requires: "Identify self on stop" },
+  IN: { stopAndID: true, law: "IC § 34-28-5-3.5", requires: "Name on RS stop" },
+  IA: { stopAndID: false, law: "No general stop-and-identify statute" },
+  KS: { stopAndID: true, law: "K.S.A. § 22-2402", requires: "Name on RS stop" },
+  KY: { stopAndID: false, law: "No general stop-and-identify statute" },
+  LA: { stopAndID: true, law: "La. R.S. § 14:108", requires: "Identify self on RS stop" },
+  ME: { stopAndID: false, law: "No general stop-and-identify statute" },
+  MD: { stopAndID: false, law: "No general stop-and-identify statute" },
+  MA: { stopAndID: false, law: "No general stop-and-identify statute" },
+  MI: { stopAndID: false, law: "No general stop-and-identify statute" },
+  MN: { stopAndID: false, law: "No general stop-and-identify statute" },
+  MS: { stopAndID: false, law: "No general stop-and-identify statute" },
+  MO: { stopAndID: true, law: "R.S.Mo. § 84.710 (KC/STL)", requires: "Name on local stops" },
+  MT: { stopAndID: true, law: "MCA § 46-5-401", requires: "Name on RS stop" },
+  NE: { stopAndID: true, law: "Neb. Rev. Stat. § 29-829", requires: "Name on RS stop" },
+  NV: { stopAndID: true, law: "NRS § 171.123", requires: "Name only on lawful detention" },
+  NH: { stopAndID: true, law: "RSA § 594:2", requires: "Name/address/destination on RS stop" },
+  NJ: { stopAndID: false, law: "No general stop-and-identify statute" },
+  NM: { stopAndID: true, law: "NMSA § 30-22-3", requires: "Name on RS stop" },
+  NY: { stopAndID: true, law: "CPL § 140.50", requires: "Name/address and explanation on stop" },
+  NC: { stopAndID: false, law: "No general stop-and-identify statute" },
+  ND: { stopAndID: true, law: "NDCC § 29-29-21", requires: "Name on RS stop" },
+  OH: { stopAndID: true, law: "R.C. § 2921.29", requires: "Name/address/DOB on detention" },
+  OK: { stopAndID: false, law: "No general stop-and-identify statute" },
+  OR: { stopAndID: false, law: "No general stop-and-identify statute" },
+  PA: { stopAndID: false, law: "No general stop-and-identify statute" },
+  RI: { stopAndID: true, law: "R.I.G.L. § 12-7-1", requires: "Name/address/destination" },
+  SC: { stopAndID: false, law: "No general stop-and-identify statute" },
+  SD: { stopAndID: false, law: "No general stop-and-identify statute" },
+  TN: { stopAndID: false, law: "No general stop-and-identify statute" },
+  TX: { stopAndID: true, law: "Tex. Penal Code § 38.02", requires: "Name/address if arrested; identify on detention context" },
+  UT: { stopAndID: true, law: "Utah Code § 77-7-15", requires: "Full name/address/DOB on valid stop" },
+  VT: { stopAndID: true, law: "24 V.S.A. § 1983", requires: "Local ordinance context" },
+  VA: { stopAndID: false, law: "No general stop-and-identify statute" },
+  WA: { stopAndID: false, law: "No general stop-and-identify statute" },
+  WV: { stopAndID: false, law: "No general stop-and-identify statute" },
+  WI: { stopAndID: true, law: "Wis. Stat. § 968.24", requires: "Identify self on stop (no penalty for refusal)" },
+  WY: { stopAndID: false, law: "No general stop-and-identify statute" },
+  DC: { stopAndID: false, law: "No general stop-and-identify statute" },
 };
 
-// State-specific notice requirements (subset; extend as needed)
+// Cannabis laws (summary). Each includes: status, possession, cultivation, details.
+// If cultivation is unknown, we mark "Varies / see details" to avoid implying permission.
+const cannabisLaws = {
+  // Recreational + Medical
+  AK: { status: "Recreational & Medical", possession: "1 oz; 6 plants total (3 mature)", cultivation: "Up to 6 plants (3 mature)", details: "Ballot Measure 2 (2014)" },
+  AZ: { status: "Recreational & Medical", possession: "1 oz; 5g concentrates", cultivation: "6 plants per adult", details: "Prop 207 (2020)" },
+  CA: { status: "Recreational & Medical", possession: "1 oz; 8g concentrates", cultivation: "6 plants per residence", details: "Prop 64 (2016)" },
+  CO: { status: "Recreational & Medical", possession: "1 oz", cultivation: "6 plants (3 mature)", details: "Amendment 64 (2012)" },
+  CT: { status: "Recreational & Medical", possession: "1.5 oz; 6 plants (homegrow)", cultivation: "6 plants (3 mature)", details: "SB 1201 (2021)" },
+  DE: { status: "Recreational & Medical", possession: "1 oz (no retail early)", cultivation: "Homegrow not allowed", details: "HB 1 & 2 (2023)" },
+  IL: { status: "Recreational & Medical", possession: "1 oz (residents)", cultivation: "Recreational homegrow not allowed (medical only)", details: "CRTA (2019)" },
+  ME: { status: "Recreational & Medical", possession: "2.5 oz", cultivation: "6 mature plants", details: "Question 1 (2016)" },
+  MD: { status: "Recreational & Medical", possession: "1.5 oz", cultivation: "2 plants per household", details: "Question 4 (2022)" },
+  MA: { status: "Recreational & Medical", possession: "1 oz (10 oz at home)", cultivation: "6 plants (12 per household)", details: "Question 4 (2016)" },
+  MI: { status: "Recreational & Medical", possession: "2.5 oz", cultivation: "Up to 12 plants", details: "Proposal 1 (2018)" },
+  MN: { status: "Recreational & Medical", possession: "2 oz (public)", cultivation: "Up to 8 plants (4 mature)", details: "HF100 (2023)" },
+  MO: { status: "Recreational & Medical", possession: "3 oz", cultivation: "6 plants with registration", details: "Amendment 3 (2022)" },
+  MT: { status: "Recreational & Medical", possession: "1 oz", cultivation: "4 plants / 4 seedlings", details: "CI 118 (2020)" },
+  NV: { status: "Recreational & Medical", possession: "1 oz; 3.5g concentrates", cultivation: "6 plants if 25+ miles from dispensary", details: "Question 2 (2016)" },
+  NJ: { status: "Recreational & Medical", possession: "1 oz", cultivation: "Homegrow not allowed", details: "Public Question 1 (2020)" },
+  NM: { status: "Recreational & Medical", possession: "2 oz; 16g extract", cultivation: "6 mature (12 per household)", details: "CRA (2021)" },
+  NY: { status: "Recreational & Medical", possession: "3 oz", cultivation: "Up to 6 plants (when regs permit)", details: "MRTA (2021)" },
+  OH: { status: "Recreational & Medical", possession: "2.5 oz; 15g extracts", cultivation: "6 plants per adult; 12 per household", details: "Issue 2 (2023)" },
+  OR: { status: "Recreational & Medical", possession: "1 oz public; 8 oz home", cultivation: "4 plants", details: "Measure 91 (2014)" },
+  RI: { status: "Recreational & Medical", possession: "1 oz (10 oz at home)", cultivation: "3 mature / 3 immature", details: "RICCA (2022)" },
+  VT: { status: "Recreational & Medical", possession: "1 oz", cultivation: "2 mature / 4 immature", details: "H.511 (2018)" },
+  VA: { status: "Recreational & Medical", possession: "1 oz", cultivation: "4 plants per household", details: "2021 law; retail delayed" },
+  WA: { status: "Recreational & Medical", possession: "1 oz (no homegrow)", cultivation: "Homegrow not allowed (rec)", details: "I-502 (2012)" },
+  DC: { status: "Recreational & Medical", possession: "2 oz", cultivation: "6 plants (3 mature)", details: "Initiative 71 (2014)" },
+
+  // Medical-only or limited
+  AL: { status: "Medical Only", possession: "Qualified patients per program", cultivation: "Homegrow not allowed", details: "Compassion Act (2021)" },
+  AR: { status: "Medical Only", possession: "2.5 oz / 14 days (patients)", cultivation: "Homegrow not allowed", details: "AMMA (2016)" },
+  FL: { status: "Medical Only", possession: "State-regulated (e.g., 2.5 oz smokable / 35 days)", cultivation: "Homegrow not allowed", details: "Amendment 2 (2016)" },
+  GA: { status: "Medical (Low-THC)", possession: "Low-THC oil ≤5% (patients)", cultivation: "Homegrow not allowed", details: "Haleigh's Hope (2015)" },
+  HI: { status: "Medical Only", possession: "4 oz (patients)", cultivation: "Up to 10 plants (patients)", details: "2000 law; dispensaries 2017" },
+  LA: { status: "Medical Only", possession: "Non-smokable forms; program limits", cultivation: "Homegrow not allowed", details: "2015 law; limited producers" },
+  MS: { status: "Medical Only", possession: "Program limits (e.g., daily 3.5g / monthly cap)", cultivation: "Homegrow not allowed", details: "Mississippi Medical Cannabis Act (2022)" },
+  NH: { status: "Medical Only", possession: "2 oz / month (patients)", cultivation: "Homegrow generally restricted", details: "2013 program" },
+  ND: { status: "Medical Only", possession: "3 oz (patients)", cultivation: "Limited / program rules", details: "Measure 5 (2016)" },
+  OK: { status: "Medical Only", possession: "3 oz flower; program limits", cultivation: "6 mature / 6 seedlings (patients)", details: "SQ 788 (2018)" },
+  PA: { status: "Medical Only", possession: "Program limits (non-smokable historically)", cultivation: "Homegrow not allowed", details: "2016 law" },
+  SD: { status: "Medical Only", possession: "3 oz (patients)", cultivation: "State rules; limited", details: "Measure 26 (2020)" },
+  UT: { status: "Medical Only", possession: "Program limits", cultivation: "Homegrow not allowed", details: "Prop 2 (2018)" },
+  WV: { status: "Medical Only", possession: "Program limits", cultivation: "Homegrow not allowed", details: "2017 law" },
+
+  // CBD / Decrim
+  IN: { status: "CBD Only", possession: "CBD <0.3% THC", cultivation: "Not applicable", details: "2018 hemp law" },
+  IA: { status: "CBD (patients)", possession: "CBD <3% THC (patients)", cultivation: "Not applicable", details: "Medical Cannabidiol Act" },
+  KY: { status: "Medical starting 2025", possession: "Program-defined", cultivation: "Homegrow not allowed", details: "SB 47 (2023)" },
+  NC: { status: "Decriminalized", possession: "≤0.5 oz civil", cultivation: "Illegal", details: "Local discretion varies" },
+  TN: { status: "CBD (patients)", possession: "CBD oil for patients", cultivation: "Not applicable", details: "2015 law" },
+  TX: { status: "CBD (low-THC)", possession: "Low-THC CBD (patients)", cultivation: "Not applicable", details: "Compassionate Use (2015)" },
+  WI: { status: "CBD Only", possession: "CBD <0.3% THC", cultivation: "Not applicable", details: "2017 program" },
+
+  // Fully illegal
+  ID: { status: "Fully Illegal", possession: "Illegal", cultivation: "Illegal", details: "No medical/recreational/CBD" },
+  KS: { status: "Fully Illegal", possession: "Illegal", cultivation: "Illegal", details: "No program" },
+  SC: { status: "Fully Illegal", possession: "Illegal", cultivation: "Illegal", details: "No program" },
+  WY: { status: "Fully Illegal", possession: "Illegal", cultivation: "Illegal", details: "No program" },
+};
+
+// Notice requirements (subset retained for generator auto-fill)
 const stateNoticeRequirements = {
-  AL: {
-    govTortClaim: { timeLimit: '1 year', statute: 'Ala. Code § 11-47-190', requirements: 'Written notice required' },
-    medMalpractice: { timeLimit: '90 days', statute: 'Ala. Code § 6-5-484', requirements: 'Pre-suit notice with expert affidavit' },
-    ceaseDesist: { requirements: 'No specific statutory requirements' },
-  },
-  AZ: {
-    govTortClaim: { timeLimit: '180 days', statute: 'A.R.S. § 12-821.01', requirements: 'Notice within 180 days' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'No pre-suit notice required' },
-    ceaseDesist: { requirements: 'Contract/consumer statutes may supply remedies' },
-  },
   CA: {
-    govTortClaim: { timeLimit: '6 months', statute: 'Gov. Code § 911.2', requirements: 'Government claim within 6 months' },
-    medMalpractice: { timeLimit: '90 days', statute: 'CCP § 364', requirements: '90-day notice (often with expert declaration)' },
-    ceaseDesist: { requirements: 'Use relevant Civil/Business & Professions Code sections' },
-  },
-  CO: {
-    govTortClaim: { timeLimit: '182 days', statute: 'C.R.S. § 24-10-109', requirements: 'Notice within 182 days' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'No pre-suit notice required' },
-    ceaseDesist: { requirements: 'C.R.S. § 6-1-105 (CCPA) for some claims' },
-  },
-  FL: {
-    govTortClaim: { timeLimit: '3 years', statute: 'F.S. § 768.28', requirements: 'Pre-suit notice before suit' },
-    medMalpractice: { timeLimit: '90 days', statute: 'F.S. § 766.106', requirements: 'Pre-suit investigation and notice' },
-    ceaseDesist: { requirements: 'FDUTPA may apply' },
-  },
-  IL: {
-    govTortClaim: { timeLimit: '1 year', statute: '745 ILCS 10/8-101', requirements: 'Notice within 1 year' },
-    medMalpractice: { timeLimit: '90 days', statute: '735 ILCS 5/2-622', requirements: 'Affidavit/merit' },
-    ceaseDesist: { requirements: 'Consumer Fraud Act may apply' },
+    govTortClaim: { timeLimit: "6 months", statute: "Gov. Code § 911.2", requirements: "Submit government claim within 6 months" },
+    medMalpractice: { timeLimit: "90 days", statute: "CCP § 364", requirements: "Pre-suit notice" },
+    ceaseDesist: { requirements: "Check specific statutory scheme for claim type" },
   },
   LA: {
-    govTortClaim: { timeLimit: '2 years', statute: 'La. R.S. § 13:5106', requirements: 'Notice per statute' },
-    medMalpractice: { timeLimit: 'Panel required', statute: 'La. R.S. § 40:1299.47', requirements: 'Medical review panel' },
-    ceaseDesist: { requirements: 'LUTPA may apply' },
+    govTortClaim: {
+      timeLimit: "2 years",
+      statute: "La. R.S. § 13:5106 (extended by HB 315/Act 423)",
+      requirements: "Notice within 2 years",
+      updates: "Act 423 (July 2024) extended personal injury from 1y to 2y",
+    },
+    medMalpractice: { timeLimit: "Review panel required", statute: "La. R.S. § 40:1231.8", requirements: "Medical review panel" },
+    ceaseDesist: { requirements: "LUTPA may apply" },
   },
   MA: {
-    govTortClaim: { timeLimit: '2 years', statute: 'M.G.L. c. 258 § 4', requirements: 'Presentment within 2 years' },
-    medMalpractice: { timeLimit: '182 days', statute: 'M.G.L. c. 231 § 60B', requirements: 'Tribunal/offer of proof process' },
-    ceaseDesist: { requirements: 'Chapter 93A requires 30-day demand letter for consumers' },
-  },
-  MI: {
-    govTortClaim: { timeLimit: '1 year', statute: 'MCL § 691.1404', requirements: 'Notice within 1 year' },
-    medMalpractice: { timeLimit: '182 days', statute: 'MCL § 600.2912b', requirements: 'Notice + affidavit of merit' },
-    ceaseDesist: { requirements: 'MCPA may apply' },
+    govTortClaim: { timeLimit: "2 years", statute: "M.G.L. c. 258 § 4", requirements: "Presentment within 2 years" },
+    medMalpractice: { timeLimit: "182 days", statute: "M.G.L. c. 231 § 60B", requirements: "Tribunal process" },
+    ceaseDesist: { requirements: "Ch. 93A – 30-day demand before suit", mandatoryNotice: "30 days" },
   },
   MS: {
-    govTortClaim: { timeLimit: '1 year', statute: 'Miss. Code § 11-46-11', requirements: 'Notice within 1 year' },
-    medMalpractice: { timeLimit: '60 days', statute: 'Miss. Code § 15-1-36', requirements: '60-day notice; expert' },
-    ceaseDesist: { requirements: 'MCPA may apply' },
-  },
-  MO: {
-    govTortClaim: { timeLimit: '90 days', statute: 'R.S.Mo. § 537.600', requirements: 'Notice for state claims' },
-    medMalpractice: { timeLimit: '90 days', statute: 'R.S.Mo. § 538.225', requirements: 'Affidavit within 90 days' },
-    ceaseDesist: { requirements: 'MMPA may apply' },
+    govTortClaim: { timeLimit: "1 year", statute: "Miss. Code § 11-46-11", requirements: "Written notice within 1 year" },
+    medMalpractice: { timeLimit: "60 days", statute: "Miss. Code § 15-1-36", requirements: "Pre-suit notice with expert" },
+    ceaseDesist: { requirements: "No specific statute; use consumer protection where applicable" },
   },
   NE: {
-    govTortClaim: { timeLimit: '1 year', statute: 'Neb. Rev. Stat. § 13-919', requirements: 'Notice within 1 year' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'Expert affidavit typically at filing' },
-    ceaseDesist: { requirements: 'Consumer Protection Act may apply' },
-  },
-  NJ: {
-    govTortClaim: { timeLimit: '90 days', statute: 'N.J.S.A. § 59:8-8', requirements: 'Notice within 90 days; limited extension' },
-    medMalpractice: { timeLimit: '60 days', statute: 'N.J.S.A. § 2A:53A-27', requirements: 'Affidavit of merit (same specialty)' },
-    ceaseDesist: { requirements: 'CFA may apply; no fixed statutory response time' },
-  },
-  TX: {
-    govTortClaim: { timeLimit: '6 months (often shorter local deadlines)', statute: 'Tex. Civ. Prac. & Rem. Code', requirements: 'Notice to governmental unit' },
-    medMalpractice: { timeLimit: '60 days', statute: 'Tex. Civ. Prac. & Rem. § 74.051', requirements: 'Notice + authorization form' },
-    ceaseDesist: { requirements: 'DTPA may apply' },
-  },
-  DC: {
-    govTortClaim: { timeLimit: '6 months', statute: 'D.C. Code § 12-309', requirements: 'Notice within 6 months' },
-    medMalpractice: { timeLimit: 'None', statute: 'No pre-suit notice required', requirements: 'Expert needed at case stage' },
-    ceaseDesist: { requirements: 'CPPA may apply' },
+    govTortClaim: { timeLimit: "1 year", statute: "Neb. Rev. Stat. § 13-919", requirements: "Notice within 1 year" },
+    medMalpractice: { timeLimit: "None", statute: "No pre-suit notice required", requirements: "Expert affidavit at suit" },
+    ceaseDesist: { requirements: "Nebraska Consumer Protection Act may apply" },
   },
 };
 
-/* =============================================================
-   COMPONENT
-   ============================================================= */
+// ===================== HELPERS =====================
+function addBusinessDays(from, days) {
+  const d = new Date(from);
+  let count = 0;
+  while (count < days) {
+    d.setDate(d.getDate() + 1);
+    const wd = d.getDay();
+    if (wd !== 0 && wd !== 6) count++;
+  }
+  return d;
+}
 
-const LegalToolkit = () => {
-  // Form state
-  const [documentType, setDocumentType] = useState('FOIA Request');
-  const [selectedState, setSelectedState] = useState('');
-  const [jurisdiction, setJurisdiction] = useState('');
-  const [agency, setAgency] = useState('');
-  const [recipient, setRecipient] = useState('');
-  const [incident, setIncident] = useState('');
-  const [damages, setDamages] = useState('');
-  const [claimType, setClaimType] = useState('general');
-  const [violationType, setViolationType] = useState('harassment');
+function calculateResponseDate(timeLimit) {
+  if (!timeLimit) return "";
+  const today = new Date();
+  const biz = timeLimit.match(/(\d+)\s*business/i);
+  const cal = timeLimit.match(/(\d+)\s*calendar/i) || timeLimit.match(/(\d+)\s*days?/i);
+  const months = timeLimit.match(/(\d+)\s*months?/i);
+  const years = timeLimit.match(/(\d+)\s*years?/i);
+  if (biz) return addBusinessDays(today, parseInt(biz[1], 10)).toLocaleDateString();
+  if (cal) {
+    const d = new Date(today);
+    d.setDate(d.getDate() + parseInt(cal[1], 10));
+    return d.toLocaleDateString();
+  }
+  if (months) {
+    const d = new Date(today);
+    d.setMonth(d.getMonth() + parseInt(months[1], 10));
+    return d.toLocaleDateString();
+  }
+  if (years) {
+    const d = new Date(today);
+    d.setFullYear(d.getFullYear() + parseInt(years[1], 10));
+    return d.toLocaleDateString();
+  }
+  return "Check statute for deadline";
+}
 
-  // Litigation fields
-  const [plaintiffName, setPlaintiffName] = useState('');
-  const [defendantName, setDefendantName] = useState('');
-  const [caseNumber, setCaseNumber] = useState('');
-  const [courtName, setCourtName] = useState('');
-  const [discoveryType, setDiscoveryType] = useState('interrogatories');
+// Pot Brothers at Law – 4 concise steps (paraphrased)
+const FOUR_STEPS = [
+  "Keep it brief. Do not volunteer details.",
+  "Ask: ‘Am I being detained, or am I free to go?’",
+  "Invoke the 5th: ‘I choose to remain silent.’",
+  "Request counsel: ‘I want my lawyer.’",
+];
 
-  // Auto-populated legal bits
-  const [timeLimit, setTimeLimit] = useState('');
-  const [statute, setStatute] = useState('');
+// ===================== COMPONENT =====================
+export default function LegalToolkit() {
+  // Core state
+  const [documentType, setDocumentType] = useState("FOIA Request");
+  const [selectedState, setSelectedState] = useState("");
+  const [jurisdiction, setJurisdiction] = useState("");
+  const [agency, setAgency] = useState("");
+  const [recipient, setRecipient] = useState("");
+  const [incident, setIncident] = useState("");
+  const [damages, setDamages] = useState("");
+  const [generatedLetter, setGeneratedLetter] = useState("");
+  const [timeLimit, setTimeLimit] = useState("");
+  const [statute, setStatute] = useState("");
 
-  // Output
-  const [generatedLetter, setGeneratedLetter] = useState('');
+  // Litigation-specific
+  const [plaintiffName, setPlaintiffName] = useState("");
+  const [defendantName, setDefendantName] = useState("");
+  const [caseNumber, setCaseNumber] = useState("");
+  const [courtName, setCourtName] = useState("");
+  const [discoveryType, setDiscoveryType] = useState("interrogatories");
+  const [claimType, setClaimType] = useState("general");
 
-  // Auto-populate when state/doc/claim changes
+  // UX
+  const [quickMode, setQuickMode] = useState(true);
+
+  // Auto-populate on selection
   useEffect(() => {
     if (!selectedState) {
-      setJurisdiction('');
-      setTimeLimit('');
-      setStatute('');
+      setJurisdiction("");
+      setTimeLimit("");
+      setStatute("");
       return;
     }
-
     const stateData = statePublicRecordsData[selectedState];
     if (!stateData) return;
 
-    if (documentType === 'FOIA Request' || documentType === 'State Public Records Request') {
-      setJurisdiction(stateData.name);
-      setTimeLimit(stateData.timeLimit || '');
-      setStatute(stateData.statute || '');
-      return;
-    }
+    setJurisdiction(stateData.name);
 
-    if (documentType === 'ID Rights Card' && stateIDRights[selectedState]) {
+    if (documentType === "FOIA Request" || documentType === "State Public Records Request") {
+      setTimeLimit(stateData.timeLimit);
+      setStatute(stateData.statute);
+    } else if (documentType === "ID Rights Card") {
       const rights = stateIDRights[selectedState];
-      setJurisdiction(stateData.name);
-      setTimeLimit(rights.stopAndID ? 'Stop-and-identify jurisdiction' : 'No stop-and-identify law');
-      setStatute(rights.law);
-      return;
-    }
-
-    if (stateNoticeRequirements[selectedState]) {
-      setJurisdiction(stateData.name);
-      if (documentType === 'Notice of Claim' && claimType === 'government') {
-        const req = stateNoticeRequirements[selectedState].govTortClaim;
-        if (req) { setTimeLimit(req.timeLimit || ''); setStatute(req.statute || ''); }
-        return;
+      if (rights) {
+        setStatute(rights.law);
+        setTimeLimit(rights.stopAndID ? "Stop-and-Identify state" : "No general stop-and-identify");
+      } else {
+        setStatute("");
+        setTimeLimit("");
       }
-      if (documentType === 'Pre-Suit Notice' && claimType === 'medical') {
-        const req = stateNoticeRequirements[selectedState].medMalpractice;
-        if (req) { setTimeLimit(req.timeLimit || ''); setStatute(req.statute || ''); }
-        return;
+    } else if (documentType === "Notice of Claim" && stateNoticeRequirements[selectedState]) {
+      const req = stateNoticeRequirements[selectedState].govTortClaim;
+      if (req) {
+        setTimeLimit(req.timeLimit);
+        setStatute(req.statute);
       }
+    } else if (documentType === "Pre-Suit Notice" && stateNoticeRequirements[selectedState]) {
+      const req = stateNoticeRequirements[selectedState].medMalpractice;
+      if (req) {
+        setTimeLimit(req.timeLimit);
+        setStatute(req.statute);
+      }
+    } else {
+      setTimeLimit("");
+      setStatute("");
     }
-  }, [selectedState, documentType, claimType]);
+  }, [selectedState, documentType]);
 
-  /* =====================
-     Generators
-     ===================== */
+  const foiaDeadline = useMemo(() => calculateResponseDate(timeLimit), [timeLimit]);
 
-  const generateLetter = () => {
+  // ============== GENERATORS (trimmed for brevity but complete outputs) ==============
+  const generateFOIARequest = () => {
     const today = new Date().toLocaleDateString();
-    let out = '';
-    switch (documentType) {
-      case 'FOIA Request':
-        out = generateFOIARequest(today);
-        break;
-      case 'State Public Records Request':
-        out = generateFOIARequest(today); // Reuse with state hook info
-        break;
-      case 'Cease and Desist Letter':
-        out = generateCeaseDesistLetter(today);
-        break;
-      case 'Notice of Claim':
-        out = generateNoticeOfClaim(today);
-        break;
-      case 'Pre-Suit Notice':
-        out = generatePreSuitNotice(today);
-        break;
-      case 'Subpoena Duces Tecum':
-        out = generateSubpoenaDucesTecum(today);
-        break;
-      case 'Discovery Request':
-        out = generateDiscoveryRequest(today);
-        break;
-      case 'ID Rights Card':
-        out = generateIDRightsCard();
-        break;
-      default:
-        out = '';
-    }
-    setGeneratedLetter(out);
-  };
-
-  const generateFOIARequest = (today) => {
     const stateData = selectedState ? statePublicRecordsData[selectedState] : null;
-    const updates = stateData?.updates ? `\n\n**LEGISLATIVE UPDATE:** ${stateData.updates}` : '';
-
+    const updates = stateData?.updates ? `\n\nLEGISLATIVE UPDATE: ${stateData.updates}` : "";
     return `[Your Name]
 [Your Address]
-[City, State, ZIP Code]
-[Email Address]
-[Phone Number]
+[City, State ZIP]
+[Email] | [Phone]
 
 ${today}
 
-${agency || '[Agency Name]'}
-FOIA Officer/Records Custodian
+${agency || "[Agency Name]"}
+FOIA/Records Officer
 [Agency Address]
-[City, State, ZIP Code]
+[City, State ZIP]
 
-Re: ${documentType === 'FOIA Request' ? 'Freedom of Information Act Request' : 'Public Records Request'} — EXPEDITED PROCESSING REQUESTED
+Re: Public Records Request (Expedited)
 
-Dear Records Officer:
+Pursuant to 5 U.S.C. § 552 and any applicable state law${selectedState ? ` (including ${stateData.statute})` : ""}, I request the following records:
 
-Pursuant to ${documentType === 'FOIA Request' ? 'the Freedom of Information Act, 5 U.S.C. § 552' : 'applicable state public records laws'}${selectedState ? `, including ${statute}` : ''}, I request access to and copies of the following records:
+SUBJECT: ${incident || "[Describe records with specific dates, people, terms]"}
+JURISDICTION: ${jurisdiction || "[Jurisdiction]"}
+${selectedState ? `STATE STATUTE & TIMELINE: ${stateData.statute}; response ${stateData.timeLimit}.` : ""}${updates}
 
-SUBJECT MATTER: ${incident || '[Describe precisely the records sought: dates, custodians, formats, keywords, case #s]'}
-JURISDICTION: ${jurisdiction || '[Jurisdiction]'}
-${selectedState ? `APPLICABLE STATE LAW: This request is also made under ${statute}, which provides response within ${timeLimit}.` : ''}${updates}
+FORMAT: Electronic (searchable PDF/native w/ metadata).
+FEE WAIVER: Public interest; please advise if costs exceed $50.
+SEGREGABILITY: Provide Vaughn index for any redactions; release non-exempt portions.
+PRESERVATION: Suspend destruction of responsive materials.
 
-SPECIFICATIONS
-• Time Period: [e.g., Jan 1, 2024 – Dec 31, 2024]
-• Record Types: emails, reports, policies, audio/video, databases, metadata
-• Custodians: [names/departments]
-• Keywords/IDs: [terms, case numbers]
-• Format: Electronic; searchable PDFs or native with metadata
-
-FEE WAIVER
-This is in the public interest and not for commercial use. If fees exceed $50, provide an estimate before processing.
-
-EXPEDITED PROCESSING
-[Select if applicable]
-☐ Urgency to inform the public   ☐ Exceptional media interest   ☐ Constitutional rights at stake
-
-SEGREGABILITY & PARTIAL DISCLOSURE
-If exemptions apply, produce a Vaughn index and release all reasonably segregable portions.
-
-PRESERVATION
-Please preserve all responsive records during processing.
-
-${selectedState ? `RESPONSE TIMEFRAME: Under ${statute}, please acknowledge and respond within ${timeLimit}.` : 'Please respond within statutory timeframes and acknowledge receipt.'}
-
-Thank you for your prompt attention.
+Please acknowledge receipt and provide an estimated completion date.
 
 Sincerely,
-
-[Your Signature]
-[Your Printed Name]
-[Organization, if any]
-
-—
-DELIVERY
-☐ Email  ☐ Certified Mail (RRR)  ☐ Portal  ☐ Hand Delivery
-TRACKING
-Request Date: ${today}
-Response Due: [${calculateResponseDate() || 'calculate based on law'}]
-Request # (agency assigns): ______`;
+[Your Name]
+`;
   };
 
-  const generateIDRightsCard = () => {
-    const stateName = selectedState ? statePublicRecordsData[selectedState]?.name : '[STATE]';
-    const rights = selectedState ? stateIDRights[selectedState] : null;
-    const canna = selectedState ? cannabisLaws[selectedState] : null;
-    if (!rights) return 'Please select a state to generate your Civil Rights & Laws Reference Card';
+  const generateCeaseDesist = () => {
+    const today = new Date().toLocaleDateString();
+    const recRule = recordingConsent[selectedState] || "One-party consent (check local exceptions)";
+    return `[Your Name]\n[Address]\n[City, State ZIP]\n[Email] | [Phone]\n\n${today}\n\n${recipient || "[Recipient]"}\n[Address]\n\nRE: FORMAL CEASE AND DESIST – ${jurisdiction || "[Jurisdiction]"}\n\nYou are hereby demanded to cease and desist from the conduct described below.\n\nVIOLATIONS:\n${incident || "[Describe dates, acts, links, witnesses]"}\n\nLEGAL BASIS:\n• Applicable federal/state laws; consumer protection and civil remedies\n• Recording rules in your state: ${recRule}\n\nDEMAND:\n• Immediate cessation; preserve evidence; confirm in 10 business days.\n• Remove/rectify offending content or actions.\n\nFailure to comply may result in injunctions, damages, and fees.\n\nSincerely,\n[Your Name]\n`;
+  };
+
+  const generateNoticeOfClaim = () => {
+    const today = new Date().toLocaleDateString();
+    const stateData = stateNoticeRequirements[selectedState]?.govTortClaim;
+    const tl = stateData?.timeLimit ? `Under ${stateData.statute}, deadline: ${stateData.timeLimit}.` : "";
+    return `[Your Name]\n[Address]\n[City, State ZIP]\n[Email] | [Phone]\n\n${today}\n\n${agency || recipient || "[Entity/Agency]"}\nClaims/Risk Management\n[Address]\n\nRE: NOTICE OF CLAIM – ${jurisdiction || "[Jurisdiction]"}\n\nIncident: ${incident || "[Date, time, location, facts]"}\nDamages: ${damages || "[Medical, wage loss, property, non-economic]"}\n\nThis notice preserves all rights and seeks resolution pre-litigation. ${tl}\nPlease acknowledge and provide claims handling contact within 30 days.\n\nSincerely,\n[Your Name]\n`;
+  };
+
+  const generatePreSuit = () => {
+    const today = new Date().toLocaleDateString();
+    const med = stateNoticeRequirements[selectedState]?.medMalpractice;
+    return `PRE-SUIT NOTICE – ${claimType.toUpperCase()}\nJurisdiction: ${jurisdiction || "[Jurisdiction]"}\nStatute: ${med?.statute || "[Applicable law]"}\n\nAllegations: ${incident || "[Chronology of negligent acts; standard-of-care breaches]"}\nDamages: ${damages || "[Itemize]"}\n\nNotice period: ${med?.timeLimit || "[State-specific or none]"}.\nPlease forward to liability carrier and confirm adjuster details.\n`;
+  };
+
+  const generateDiscovery = () => {
+    const today = new Date().toLocaleDateString();
+    const title = discoveryType === "interrogatories" ? "INTERROGATORIES" : discoveryType === "requests_for_production" ? "REQUESTS FOR PRODUCTION" : "REQUESTS FOR ADMISSION";
+    return `${courtName || "[COURT]"}\n${jurisdiction || "[JURISDICTION]"}\n\n${plaintiffName || "[PLAINTIFF]"} v. ${defendantName || "[DEFENDANT]"}\nCase No.: ${caseNumber || "[NUMBER]"}\n\nPLAINTIFF'S ${title} (SET ONE)\n\nDefinitions, instructions, and ${title.toLowerCase()} tailored to: ${incident || "[Subject matter]"}.\nResponses due in 30 days unless modified by rule or order.\nDate: ${today}\n`;
+  };
+
+  const generateSubpoena = () => {
+    const today = new Date().toLocaleDateString();
+    return `${courtName || "[COURT]"}\n${jurisdiction || "[JURISDICTION]"}\n\nSUBPOENA DUCES TECUM\nTO: ${recipient || "[Witness/Records Custodian]"}\n\nAppear/produce on: [Date/Time/Place].\nDocuments requested: ${incident || "[Specific categories with dates and formats incl. metadata]"}.\nPrivilege log required for any withholdings.\nDate: ${today}`;
+  };
+
+  const generateLetter = () => {
+    switch (documentType) {
+      case "FOIA Request":
+      case "State Public Records Request":
+        return generateFOIARequest();
+      case "Cease and Desist Letter":
+        return generateCeaseDesist();
+      case "Notice of Claim":
+        return generateNoticeOfClaim();
+      case "Pre-Suit Notice":
+        return generatePreSuit();
+      case "Discovery Request":
+        return generateDiscovery();
+      case "Subpoena Duces Tecum":
+        return generateSubpoena();
+      case "ID Rights Card":
+        return "[Select a state to render the card below]";
+      default:
+        return "";
+    }
+  };
+
+  // ID Card JSX (visual) – uses selected state
+  const IdCard = () => {
+    if (!selectedState) return null;
+    const stateName = statePublicRecordsData[selectedState]?.name || "[STATE]";
+    const rights = stateIDRights[selectedState];
+    const foia = statePublicRecordsData[selectedState];
+    const weed = cannabisLaws[selectedState];
+    const recRule = recordingConsent[selectedState] || "One-party consent (check local exceptions)";
+
+    const stopHowTo = rights?.stopAndID
+      ? [
+          "Stay calm; keep hands visible.",
+          "Ask: ‘Am I being detained, or am I free to go?’",
+          "If detained: give required ID info only (per statute).",
+          "Do not consent to searches; say so clearly.",
+          "You may record consistent with consent rules.",
+          "Invoke your rights: remain silent and request a lawyer.",
+        ]
+      : [
+          "Ask: ‘Am I being detained, or am I free to go?’",
+          "If free, leave calmly. If detained: you generally are not required to identify unless driving/under arrest.",
+          "Do not consent to searches; state your refusal.",
+          "You may record consistent with consent rules.",
+          "Remain silent and request a lawyer if questioned.",
+        ];
 
     return (
-      <div id="id-rights-card" style={{
-        width: '400px', height: '300px', background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
-        borderRadius: '15px', padding: '20px', color: 'white', fontFamily: 'Arial, sans-serif',
-        fontSize: '11px', lineHeight: 1.3, position: 'relative', boxShadow: '0 8px 20px rgba(0,0,0,0.3)', border: '2px solid #fff',
-      }}>
-        <div style={{ textAlign: 'center', borderBottom: '2px solid rgba(255,255,255,0.3)', paddingBottom: 8, marginBottom: 8 }}>
-          <div style={{ fontSize: 16, fontWeight: 'bold' }}>{(stateName || '').toUpperCase()}</div>
-          <div style={{ fontSize: 13, fontWeight: 600 }}>CIVIL RIGHTS & LAWS REFERENCE CARD</div>
-        </div>
-        <div style={{ display: 'flex', gap: 15, height: 200 }}>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 10, fontWeight: 'bold', marginBottom: 6, color: '#ffd700' }}>CONSTITUTIONAL RIGHTS</div>
-            <div style={{ fontSize: 9, marginBottom: 4 }}>• I do not consent to searches</div>
-            <div style={{ fontSize: 9, marginBottom: 4 }}>• I invoke my right to remain silent</div>
-            <div style={{ fontSize: 9, marginBottom: 4 }}>• I do not waive any rights</div>
-            <div style={{ fontSize: 9, marginBottom: 8 }}>• I want a lawyer if detained</div>
+      <div className="w-full flex justify-center">
+        <div className="w-[860px] rounded-2xl border shadow-xl bg-white overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-indigo-900 to-indigo-700 text-white p-6">
+            <h2 className="text-2xl font-bold tracking-wide text-center">{stateName.toUpperCase()} – CIVIL RIGHTS & LAWS REFERENCE CARD</h2>
+            <p className="text-center text-sm opacity-90 mt-1">Professional quick-reference • Updated 2025</p>
+          </div>
 
-            <div style={{ fontSize: 10, fontWeight: 'bold', marginBottom: 4, color: '#ffd700' }}>STATE LAWS</div>
-            <div style={{ fontSize: 8, marginBottom: 4 }}>
-              {rights.stopAndID ? `✓ Stop & ID: ${rights.law}` : '✗ No Stop & ID Law'}
+          {/* Body */}
+          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Left */}
+            <div className="space-y-4">
+              <section className="rounded-xl border p-4">
+                <h3 className="font-semibold text-slate-800 mb-2">Key Rights</h3>
+                <ul className="text-sm text-slate-700 list-disc pl-5 space-y-1">
+                  <li>I do not consent to searches.</li>
+                  <li>I choose to remain silent.</li>
+                  <li>I do not waive any rights.</li>
+                  <li>I want a lawyer if detained or arrested.</li>
+                </ul>
+              </section>
+
+              <section className="rounded-xl border p-4">
+                <h3 className="font-semibold text-slate-800 mb-2">State Statutes & Recording</h3>
+                <div className="text-sm text-slate-700 space-y-1">
+                  <p><span className="font-medium">ID / Stop-&-Identify:</span> {rights?.law || "[Check local law]"}</p>
+                  <p><span className="font-medium">Recording Rule:</span> {recRule}</p>
+                  <p><span className="font-medium">Public Records:</span> {foia?.statute}</p>
+                  <p><span className="font-medium">FOIA Timeline:</span> {foia?.timeLimit}</p>
+                </div>
+              </section>
+
+              <section className="rounded-xl border p-4">
+                <h3 className="font-semibold text-slate-800 mb-2">Cannabis – Possession & Cultivation</h3>
+                {weed ? (
+                  <div className="text-sm text-slate-700 space-y-1">
+                    <p><span className="font-medium">Status:</span> {weed.status}</p>
+                    <p><span className="font-medium">Possession:</span> {weed.possession || "See details"}</p>
+                    <p><span className="font-medium">Cultivation:</span> {weed.cultivation || "Varies / see details"}</p>
+                    {weed.details && <p className="text-slate-500 text-xs">{weed.details}</p>}
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-700">No cannabis entry found for this state.</p>
+                )}
+              </section>
             </div>
-            <div style={{ fontSize: 8, marginBottom: 4 }}>Recording: {rights.recording}</div>
-            {canna && (
-              <div style={{ fontSize: 8, marginBottom: 4, color: '#90EE90' }}>Cannabis: {canna.status}</div>
-            )}
-            <div style={{ fontSize: 8, marginBottom: 4 }}>FOIA Response: {selectedState ? statePublicRecordsData[selectedState]?.timeLimit : 'N/A'}</div>
+
+            {/* Right */}
+            <div className="space-y-4">
+              <section className="rounded-xl border p-4">
+                <h3 className="font-semibold text-slate-800 mb-2">Police Contact – What to Do</h3>
+                <ol className="text-sm text-slate-700 list-decimal pl-5 space-y-1">
+                  {stopHowTo.map((s, i) => (
+                    <li key={i}>{s}</li>
+                  ))}
+                </ol>
+                {rights?.stopAndID && rights.requires && (
+                  <p className="mt-2 text-xs text-slate-500">Stop-&-ID requirement in this state: {rights.requires}</p>
+                )}
+              </section>
+
+              <section className="rounded-xl border p-4">
+                <h3 className="font-semibold text-slate-800 mb-1">Pot Brothers at Law – 4 Simple Steps</h3>
+                <ul className="text-sm text-slate-700 list-disc pl-5 space-y-1">
+                  {FOUR_STEPS.map((s, i) => (
+                    <li key={i}>{s}</li>
+                  ))}
+                </ul>
+                <p className="text-[10px] text-slate-500 mt-2">Provided for educational quick-reference.</p>
+              </section>
+            </div>
           </div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 10, fontWeight: 'bold', marginBottom: 6, color: '#ffd700' }}>POLICE ENCOUNTER SCRIPT</div>
-            <div style={{ fontSize: 8, marginBottom: 3, fontWeight: 600 }}>"Officer, am I being detained or free to go?"</div>
-            <div style={{ fontSize: 8 }}>If FREE TO GO:</div>
-            <div style={{ fontSize: 7, marginBottom: 4, fontStyle: 'italic' }}>
-              "I choose to leave now."
+
+          {/* Footer */}
+          <div className="px-6 pb-6">
+            <div className="rounded-xl bg-slate-50 border p-4 text-xs text-slate-500">
+              Generated {new Date().toLocaleDateString()} • Civil Rights Legal Toolkit Pro 2025 • Verify rules locally before relying.
             </div>
-            <div style={{ fontSize: 8 }}>If DETAINED:</div>
-            <div style={{ fontSize: 7 }}>"I respectfully decline to answer questions."</div>
-            <div style={{ fontSize: 7, marginBottom: 4 }}>"I do not consent to any search."</div>
-            <div style={{ fontSize: 7, marginBottom: 4 }}>
-              {rights.stopAndID ? '"Please state the law requiring ID."' : '"I am not required to show ID unless driving or under arrest."'}
-            </div>
-            <div style={{ fontSize: 8 }}>If ARRESTED:</div>
-            <div style={{ fontSize: 7, marginBottom: 4 }}>"I want a lawyer."</div>
-            <div style={{ fontSize: 8 }}>EMERGENCY CONTACTS</div>
-            <div style={{ fontSize: 7 }}>Attorney: __________</div>
-            <div style={{ fontSize: 7 }}>Emergency: _________</div>
           </div>
-        </div>
-        <div style={{ position: 'absolute', bottom: 8, left: 20, right: 20, borderTop: '1px solid rgba(255,255,255,0.3)', paddingTop: 4, display: 'flex', justifyContent: 'space-between', fontSize: 7, opacity: 0.8 }}>
-          <div>Generated: {new Date().toLocaleDateString()}</div>
-          <div>Civil Rights Toolkit Pro 2025</div>
         </div>
       </div>
     );
   };
 
-  const generateCeaseDesistLetter = (today) => {
-    const req = selectedState ? stateNoticeRequirements[selectedState]?.ceaseDesist : null;
-    let stateSection = '';
-    if (req?.requirements) stateSection += `\n\nSTATE-SPECIFIC REQUIREMENTS: ${req.requirements}`;
-
-    return `[Your Name]
-[Your Address]
-[City, State, ZIP]
-[Email] | [Phone]
-
-${today}
-
-${recipient || '[Recipient Name]'}
-[Address]
-[City, State, ZIP]
-
-RE: FORMAL CEASE AND DESIST — ${violationType.toUpperCase()}
-${jurisdiction ? `JURISDICTION: ${jurisdiction}\n` : ''}REFERENCE: [Matter #]
-
-SENT VIA CERTIFIED MAIL (RRR)
-
-Dear ${recipient || '[Recipient]'}:
-
-You are hereby DEMANDED to immediately CEASE AND DESIST from the following conduct:
-
-SPECIFIC VIOLATIONS
-${incident || '[Describe detailed conduct, dates, locations, witnesses, evidence]'}
-
-LEGAL BASIS
-[Identify federal/state/local statutes, civil claims, and contract terms violated]
-
-DEMANDS
-1) Cease all unlawful conduct immediately.
-2) Remove/retract offending materials or actions.
-3) Preserve all related evidence.
-4) Provide written confirmation within ${req?.mandatoryNotice || 'ten (10) business days'}.
-${stateSection}
-
-DAMAGES/HARM
-${damages || '[Describe monetary losses, reputational harm, emotional distress, business impacts]'}
-
-NOTICE
-Failure to comply may result in legal action seeking injunctive relief, damages (including statutory/treble where applicable), fees, and costs.
-
-Sincerely,
-
-[Your Signature]
-[Your Printed Name]
-[Title/Capacity]
-
-—
-DELIVERY LOG
-Notice Date: ${today} | Response Due: [${req?.mandatoryNotice || '10 business days'}]
-Method(s): ☐ Certified Mail ☐ Email ☐ Personal Service ☐ Other`;
-  };
-
-  const generateNoticeOfClaim = (today) => {
-    const req = selectedState && claimType === 'government' ? stateNoticeRequirements[selectedState]?.govTortClaim : null;
-    const timeReq = req?.timeLimit || '';
-    const lawRef = req?.statute || '';
-
-    const stateRequirements = req
-      ? `\n\nSTATE REQUIREMENTS\n• Filing Deadline: ${timeReq}\n• Governing Statute: ${lawRef}\n• Procedural Requirements: ${req.requirements}`
-      : '';
-
-    return `[Your Name]\n[Your Address]\n[City, State, ZIP]\n[Email] | [Phone]\n\n${today}\n\n${agency || recipient || '[Government Entity/Recipient]'}\n${claimType === 'government' ? 'Claims Administrator/Risk Management' : 'Legal Department'}\n[Address]\n[City, State, ZIP]\n\nRE: FORMAL NOTICE OF CLAIM — ${claimType === 'government' ? 'GOVERNMENT LIABILITY' : 'CIVIL LIABILITY'}\n${jurisdiction ? `JURISDICTION: ${jurisdiction}\n` : ''}${lawRef ? `GOVERNING LAW: ${lawRef}\n` : ''}CLAIM VALUE: ${damages || '$[AMOUNT]'}\n\nSENT VIA CERTIFIED MAIL (RRR)\n\nTO WHOM IT MAY CONCERN:\n\nNOTICE is given of a claim for substantial damages arising from the incident described below.\n\nINCIDENT DETAILS\n• Date/Time: [Date/Time]\n• Location: [Full address & specific location]\n• Witnesses: [Names/contacts]\n\nFACTUAL NARRATIVE\n${incident || '[Provide chronological, detailed description with all relevant facts]'}\n\nTHEORIES OF LIABILITY\n• Negligence/Gross Negligence\n• Failure to train/supervise\n• Dangerous condition of public property\n• Constitutional violations (42 U.S.C. § 1983) [if applicable]\n• Statutory/regulatory violations\n\nDAMAGES\n• Medical expenses, future care\n• Lost wages/earning capacity\n• Property damage\n• Pain/suffering, emotional distress\n• Other consequential losses\n\nTOTAL CLAIM VALUE: ${damages || '$[TOTAL]'}\n${stateRequirements}\n\nEVIDENCE PRESERVATION DEMAND\nPreserve all documents, ESI, video, communications, policies, and training related to this matter.\n\nSETTLEMENT\nOpen to early resolution. Please acknowledge within thirty (30) days and provide insurance/claims handling details.\n${timeReq ? `\nCRITICAL DEADLINE\nThis notice is submitted within ${timeReq} as required under ${lawRef}.` : ''}\n\nRespectfully,\n\n[Your Signature]\n[Your Printed Name]\n[Capacity]\n\nATTACHMENTS\n☐ Medical bills/records  ☐ Photos/Video  ☐ Incident/Police Reports  ☐ Witness Statements  ☐ Wage Proof\n\nDELIVERY\n☐ Certified Mail  ☐ Personal Service  ☐ Email (if authorized)  ☐ Registered Mail\nTRACKING\nNotice Date: ${today} | Response Deadline: 30 days | Ref #: ______`;
-  };
-
-  const generatePreSuitNotice = (today) => {
-    let timeRequirement = '';
-    let lawRef = '';
-    let expertReq = '';
-    let updates = '';
-
-    if (selectedState && stateNoticeRequirements[selectedState]?.medMalpractice && claimType === 'medical') {
-      const s = stateNoticeRequirements[selectedState].medMalpractice;
-      timeRequirement = s.timeLimit || '';
-      lawRef = s.statute || '';
-      expertReq = s.requirements || '';
-      updates = s.updates ? `\n\nLEGISLATIVE UPDATES: ${s.updates}` : '';
-    }
-
-    const settlementWindow = timeRequirement && timeRequirement !== 'None' ? timeRequirement : 'sixty (60) days';
-
-    return `[Your Name]\n[Your Address]\n[City, State, ZIP]\n[Email] | [Phone]\n\n${today}\n\n${recipient || '[Professional/Provider Name]'}\n[License #]\n[Address]\n[City, State, ZIP]\n\n${claimType === 'medical' ? 'ALSO TO: [Liability Insurer]\n[Address]\n\nALSO TO: [Hospital/Facility Risk Management]\n[Address]' : ''}\n\nRE: FORMAL PRE-SUIT NOTICE OF PROFESSIONAL LIABILITY CLAIM\n${claimType === 'medical' ? 'MEDICAL MALPRACTICE AND PROFESSIONAL NEGLIGENCE' : 'PROFESSIONAL NEGLIGENCE'}\n${jurisdiction ? `JURISDICTION: ${jurisdiction}\n` : ''}${lawRef ? `GOVERNING STATUTE: ${lawRef}\n` : ''}CLAIM VALUE: ${damages || '$[SUBSTANTIAL DAMAGES]'}\n\nSENT VIA CERTIFIED MAIL (RRR)\n\nPARTIES/RELATIONSHIP\n${claimType === 'medical' ? 'Patient' : 'Client'}: [Full Name] | DOB: [DOB] | ${claimType === 'medical' ? 'MRN' : 'File #'}: [#]\n\nCARE/SERVICE PERIOD\n[Start Date] through [End Date] at [Facility/Office].\n\nFACTUAL BASIS\n${incident || `[Detailed, chronological description of alleged ${claimType === 'medical' ? 'malpractice' : 'professional negligence'} with dates, acts/omissions, and consequences.]`}\n\nSTANDARD OF CARE VIOLATIONS\n1) [Specific violation #1]\n2) [Specific violation #2]\n3) [Specific violation #3]\n\nDAMAGES\n• Medical/professional costs\n• Lost wages/earning capacity\n• Future care/rehabilitation\n• Non-economic damages\n\nCAUSATION\nExpert testimony will establish that the injuries were directly caused by the departures from accepted standards.\n\n${expertReq && expertReq !== 'No pre-suit notice required' ? `EXPERT CERTIFICATION\n${expertReq}` : ''}
-${updates}
-\nSETTLEMENT WINDOW\nIf you wish to discuss resolution, contact undersigned within ${settlementWindow} of receipt of this notice.\n\nEVIDENCE PRESERVATION DEMAND\nPreserve ALL records/ESI including communications, diagnostics, images, billing, policies, training, and device logs.\n\nINSURANCE NOTICE\nImmediately notify all potentially applicable liability carriers and provide carrier details, limits, and claim numbers.\n\nThis notice is provided pursuant to ${lawRef || 'applicable law'} and preserves all rights.\n\nSincerely,\n\n[Your Signature]\n[Your Printed Name]\n[On behalf of ${claimType === 'medical' ? '[Patient Name]' : '[Client Name]'}]\n\nATTACHMENTS\n${expertReq?.toLowerCase().includes('affidavit') ? '☐ Expert Affidavit\n' : ''}${expertReq?.toLowerCase().includes('certificate') ? '☐ Certificate of Merit\n' : ''}☐ Records summary  ☐ Damages worksheet  ☐ Supporting docs\n\nDELIVERY & TRACKING\nNotice Date: ${today} | Required Period: ${timeRequirement || 'N/A'} | Settlement Period: ${settlementWindow}`;
-  };
-
-  const generateSubpoenaDucesTecum = (today) => {
-    return `${courtName || '[COURT NAME]'}\n${jurisdiction || '[JURISDICTION]'}\n\n${plaintiffName || '[PLAINTIFF]'},  Plaintiff,\n\nv.                                  Case No. ${caseNumber || '[CASE #]'}\n\n${defendantName || '[DEFENDANT]'},  Defendant.\n\nSUBPOENA DUCES TECUM\n\nTO: ${recipient || '[WITNESS/RECORDS CUSTODIAN NAME]'}\n    [Address]\n    [City, State, ZIP]\n\nYOU ARE COMMANDED to appear at the time, date, and place below to testify and produce the documents/ESI/objects described.\n\nAPPEARANCE\n• Date: [Date]   • Time: [Time]   • Location: [Courtroom/Deposition Location]\n\nDOCUMENTS TO PRODUCE\n${incident || '[Describe categories with specificity, including time range, custodians, and formats]'}\n\nINCLUDING (non-exclusive)\n1) Contracts/agreements\n2) Emails/texts/chats related to the subject\n3) Policies/procedures/training\n4) Incident/accident reports\n5) Photos/videos/audio\n6) Accounting and payment records\n7) Logs/metadata/forensic artifacts\n8) Any related third-party communications\n\nTIME RANGE\n[Start Date] through [End Date]\n\nFORMAT\nProduce natively with metadata. If not feasible, produce text-searchable PDFs with load files/metadata.\n\nPRIVILEGE LOG\nIf withholding, provide a log identifying each item and basis for privilege.\n\nINSPECTION\nInspection/copying at [Location] during business hours by appointment.\n\nCOMPLIANCE\nFailure to comply may result in contempt and sanctions as provided by law.\n\nOBJECTIONS\nServe written objections within [#] days of service.\n\n${selectedState ? `APPLICABLE LAW\nIssued pursuant to ${statute} and applicable rules of civil procedure.` : 'Issued pursuant to applicable rules of civil procedure.'}\n\nWITNESS FEES\nWitness entitled to statutory fee and mileage.\n\nDate: ${today}\n\n______________________________\n[Attorney Name], [Bar #]\nAttorney for ${plaintiffName || '[Plaintiff]'}\n[Law Firm]\n[Address] | [City, State, ZIP] | [Phone] | [Email]\n\nCERTIFICATE OF SERVICE\nService by: ☐ Personal  ☐ Certified Mail  ☐ Email  ☐ Other\nDate: ______  Time: ______  Location: ______\n\n______________________________\n[Server Signature]`;
-  };
-
-  const generateDiscoveryRequest = (today) => {
-    const title =
-      discoveryType === 'interrogatories'
-        ? 'INTERROGATORIES'
-        : discoveryType === 'requests_for_production'
-        ? 'REQUESTS FOR PRODUCTION OF DOCUMENTS'
-        : discoveryType === 'requests_for_admission'
-        ? 'REQUESTS FOR ADMISSION'
-        : 'DISCOVERY REQUESTS';
-
-    return `${courtName || '[COURT NAME]'}\n${jurisdiction || '[JURISDICTION]'}\n\n${plaintiffName || '[PLAINTIFF]'},  Plaintiff,\n\nv.                                  Case No. ${caseNumber || '[CASE #]'}\n\n${defendantName || '[DEFENDANT]'},  Defendant.\n\n${(plaintiffName || '[PLAINTIFF]').toUpperCase()}'S ${title} TO ${(defendantName || '[DEFENDANT]').toUpperCase()} (SET ONE)\n\nTO: ${defendantName || '[Defendant]'}\n[Defendant Address]\n\nYOU ARE REQUESTED to respond to the following ${title.toLowerCase()} per the rules of civil procedure.\n\nDEFINITIONS & INSTRUCTIONS\n1) "You/Your" includes the party and all agents/representatives.\n2) "Document" includes ESI and any stored information.\n3) "Communication" covers written/oral/electronic transfers.\n4) "Identify (person)": name, address, phone, role.\n5) "Identify (document)": date, author, recipients, type, subject, custodian, location.\n6) Continuing duty to supplement.\n7) If unable to fully respond, answer to the extent possible and explain limitations.\n\n$${discoveryType === 'interrogatories' ? `
-INTERROGATORIES
-1) State your full name, aliases, current address, and contact information.
-2) Identify all persons with knowledge of the incident.
-3) Describe in detail your actions related to ${incident || '[the subject matter]' }.
-4) Identify all documents in your possession relating to ${incident || '[the subject matter]' }.
-5) State all facts supporting your denials/defenses.
-6) Identify all expert witnesses and the subject of testimony.
-7) Describe all damages you claim.
-8) Identify all insurance potentially covering these claims.
-9) State whether you have given any statements; identify details.
-10) Identify all lawsuits you have been a party to in the past ten (10) years.
-` : ''}
-$${discoveryType === 'requests_for_production' ? `
-REQUESTS FOR PRODUCTION
-1) All documents supporting your answers to interrogatories.
-2) All documents relating to ${incident || '[the subject matter]' }.
-3) All communications with third parties regarding the subject.
-4) All photos/videos/audio regarding the subject.
-5) All policies/procedures/contracts in effect at the time.
-6) All training materials and manuals relevant to the subject.
-7) All incident/accident reports.
-8) All insurance policies and endorsements that may cover the claims.
-9) All expert reports/analyses relating to the subject.
-10) All emails/texts/social media posts relating to the subject.
-` : ''}
-$${discoveryType === 'requests_for_admission' ? `
-REQUESTS FOR ADMISSION
-1) Admit you were present at the location where ${incident || '[the incident]'} occurred.
-2) Admit you had knowledge of the facts alleged in the complaint.
-3) Admit the genuineness of documents attached to the complaint.
-4) Admit you received notice of ${incident || '[the relevant circumstances]' }.
-5) Admit you failed to follow applicable policies/procedures.
-6) Admit your actions were a proximate cause of the alleged damages.
-7) Admit you have no evidence supporting affirmative defenses.
-8) Admit the statements attributed to you are accurate.
-9) Admit you have insurance that may apply.
-10) Admit you consulted experts regarding ${incident || '[the subject matter]' }.
-` : ''}
-
-PRIVILEGE LOG
-If withholding on privilege, provide a log identifying type, subject, date, author, recipients, custodian, and privilege.
-
-ESI FORMAT
-Produce natively with metadata; if not reasonably usable, PDF with available metadata.\n\n${selectedState ? `APPLICABLE LAW\nRequests propounded pursuant to ${statute} and applicable rules.` : 'Requests propounded pursuant to applicable rules.'}
-\nRESPONSES DUE: 30 days from service unless otherwise ordered.
-\nDate: ${today}\n\nRespectfully submitted,\n\n______________________________\n[Attorney Name], [Bar #]\nAttorney for ${plaintiffName || '[Plaintiff]'}\n[Law Firm] | [Address] | [Phone] | [Email]\n\nCERTIFICATE OF SERVICE\nServed via: ☐ Email ☐ U.S. Mail ☐ Hand Delivery ☐ Other\nDate: ______   Signature: ____________________`;
-  };
-
-  const calculateResponseDate = () => {
-    if (!selectedState || !timeLimit) return '';
-
-    const today = new Date();
-    const businessDaysMatch = timeLimit.match(/(\d+)\s*business\s*days/i);
-    const calendarDaysMatch = timeLimit.match(/(\d+)\s*calendar\s*days/i);
-    const daysMatch = timeLimit.match(/(\d+)\s*days/i);
-    const monthsMatch = timeLimit.match(/(\d+)\s*months?/i);
-    const yearsMatch = timeLimit.match(/(\d+)\s*years?/i);
-
-    if (businessDaysMatch) {
-      const days = parseInt(businessDaysMatch[1], 10);
-      let count = 0;
-      const result = new Date(today);
-      while (count < days) {
-        result.setDate(result.getDate() + 1);
-        const dow = result.getDay();
-        if (dow !== 0 && dow !== 6) count++;
-      }
-      return result.toLocaleDateString();
-    }
-
-    if (calendarDaysMatch || daysMatch) {
-      const days = parseInt((calendarDaysMatch || daysMatch)[1], 10);
-      const result = new Date(today);
-      result.setDate(result.getDate() + days);
-      return result.toLocaleDateString();
-    }
-
-    if (monthsMatch) {
-      const months = parseInt(monthsMatch[1], 10);
-      const result = new Date(today);
-      result.setMonth(result.getMonth() + months);
-      return result.toLocaleDateString();
-    }
-
-    if (yearsMatch) {
-      const years = parseInt(yearsMatch[1], 10);
-      const result = new Date(today);
-      result.setFullYear(result.getFullYear() + years);
-      return result.toLocaleDateString();
-    }
-
-    return 'Contact appropriate party for specific deadline';
-  };
-
-  /* =====================
-     UI
-     ===================== */
-
+  // ============== RENDER ==============
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
-        fontFamily:
-          'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        padding: 20,
-      }}
-    >
-      <div
-        style={{
-          maxWidth: 1200,
-          margin: '0 auto',
-          backgroundColor: 'rgba(255, 255, 255, 0.98)',
-          borderRadius: 20,
-          padding: 40,
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.2)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-        }}
-      >
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 40, borderBottom: '3px solid #1e3c72', paddingBottom: 20 }}>
-          <h1 style={{ color: '#1e3c72', fontSize: '3rem', fontWeight: 700, margin: '0 0 10px', textShadow: '2px 2px 4px rgba(0,0,0,0.1)' }}>
-            Civil Rights Legal Toolkit Pro 2025
-          </h1>
-          <p style={{ color: '#666', fontSize: '1.2rem', margin: 0 }}>
-            Attorney-Level Document Generator • 2024–2025 Legislative Placeholders • Professional Practice
-          </p>
-        </div>
-
-        {/* Primary selectors */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 25, marginBottom: 30 }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: 10, fontWeight: 600, color: '#2c3e50', fontSize: '1.1rem' }}>📄 Document Type:</label>
-            <select
-              value={documentType}
-              onChange={(e) => setDocumentType(e.target.value)}
-              style={{ width: '100%', padding: 15, border: '2px solid #3498db', borderRadius: 12, fontSize: 16, color: '#000', backgroundColor: '#fff', cursor: 'pointer' }}
-            >
-              <option value="FOIA Request">FOIA Request (Enhanced)</option>
-              <option value="State Public Records Request">State Public Records Request</option>
-              <option value="ID Rights Card">Civil Rights & Laws Reference Card</option>
-              <option value="Cease and Desist Letter">Professional Cease and Desist Letter</option>
-              <option value="Notice of Claim">Formal Notice of Claim</option>
-              <option value="Pre-Suit Notice">Pre-Suit Professional Liability Notice</option>
-              <option value="Subpoena Duces Tecum">Subpoena Duces Tecum</option>
-              <option value="Discovery Request">Discovery Requests (Interrogatories/RFP/RFA)</option>
-            </select>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-sky-50 font-sans">
+      <div className="max-w-7xl mx-auto p-6">
+        {/* Heading */}
+        <div className="rounded-3xl bg-white/90 backdrop-blur border shadow-xl p-8 mb-6">
+          <div className="text-center border-b pb-4">
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-indigo-900 drop-shadow-sm">
+              Civil Rights Legal Toolkit Pro 2025
+            </h1>
+            <p className="text-slate-600 mt-2">
+              Attorney-level document generator • Legislative snapshots 2024–2025 • Clean, fast UI
+            </p>
           </div>
 
-          <div>
-            <label style={{ display: 'block', marginBottom: 10, fontWeight: 600, color: '#2c3e50', fontSize: '1.1rem' }}>🏛️ State/Jurisdiction:</label>
-            <select
-              value={selectedState}
-              onChange={(e) => setSelectedState(e.target.value)}
-              style={{ width: '100%', padding: 15, border: '2px solid #3498db', borderRadius: 12, fontSize: 16, color: '#000', backgroundColor: '#fff', cursor: 'pointer' }}
-            >
-              <option value="">Select a state…</option>
-              {Object.entries(statePublicRecordsData).map(([code, data]) => (
-                <option key={code} value={code}>
-                  {data.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+          {/* Controls */}
+          <div className="grid md:grid-cols-4 gap-4 mt-6">
+            <div className="col-span-2">
+              <label className="block text-sm font-semibold text-slate-700 mb-1">📄 Document Type</label>
+              <select
+                value={documentType}
+                onChange={(e) => setDocumentType(e.target.value)}
+                className="w-full rounded-xl border px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option>FOIA Request</option>
+                <option>State Public Records Request</option>
+                <option>ID Rights Card</option>
+                <option>Cease and Desist Letter</option>
+                <option>Notice of Claim</option>
+                <option>Pre-Suit Notice</option>
+                <option>Subpoena Duces Tecum</option>
+                <option>Discovery Request</option>
+              </select>
+            </div>
 
-        {/* Dynamic primary fields */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 25, marginBottom: 30 }}>
-          <div>
-            <label style={{ display: 'block', marginBottom: 10, fontWeight: 600, color: '#2c3e50', fontSize: '1.1rem' }}>
-              {documentType === 'FOIA Request' || documentType === 'State Public Records Request'
-                ? '🏢 Agency/Records Custodian:'
-                : documentType === 'Subpoena Duces Tecum' || documentType === 'Discovery Request'
-                ? '👤 Witness/Respondent Name:'
-                : '👤 Recipient/Target:'}
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">🏛️ State/Jurisdiction</label>
+              <select
+                value={selectedState}
+                onChange={(e) => setSelectedState(e.target.value)}
+                className="w-full rounded-xl border px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="">Select a state…</option>
+                {Object.entries(statePublicRecordsData).map(([code, data]) => (
+                  <option key={code} value={code}>
+                    {data.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-end justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <input
+                  id="quickMode"
+                  type="checkbox"
+                  checked={quickMode}
+                  onChange={(e) => setQuickMode(e.target.checked)}
+                  className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                />
+                <label htmlFor="quickMode" className="text-sm font-semibold text-slate-700">⚡ Quick Mode</label>
+              </div>
+              {documentType !== "ID Rights Card" && (
+                <button
+                  onClick={() => setGeneratedLetter(generateLetter())}
+                  className="ml-auto inline-flex items-center justify-center rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-3 shadow"
+                >
+                  🚀 Generate
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Simple / Advanced Inputs */}
+          <div className="grid md:grid-cols-2 gap-4 mt-6">
+            {/* Recipient/Agency */}
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">
+                {documentType === "FOIA Request" || documentType === "State Public Records Request"
+                  ? "🏢 Agency/Records Custodian"
+                  : documentType === "Subpoena Duces Tecum" || documentType === "Discovery Request"
+                  ? "👤 Witness/Respondent Name"
+                  : "👤 Recipient/Target"}
+              </label>
+              <input
+                value={documentType === "FOIA Request" || documentType === "State Public Records Request" ? agency : recipient}
+                onChange={(e) =>
+                  documentType === "FOIA Request" || documentType === "State Public Records Request"
+                    ? setAgency(e.target.value)
+                    : setRecipient(e.target.value)
+                }
+                placeholder={quickMode ? "Short name is fine" : "Full legal/official name"}
+                className="w-full rounded-xl border px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+
+            {/* Jurisdiction */}
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 mb-1">📍 Jurisdiction</label>
+              <input
+                value={jurisdiction}
+                onChange={(e) => setJurisdiction(e.target.value)}
+                placeholder="Auto-fills from state"
+                className={`w-full rounded-xl border px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 ${selectedState ? "bg-emerald-50 border-emerald-400 focus:ring-emerald-500" : "focus:ring-indigo-500"}`}
+              />
+            </div>
+          </div>
+
+          {/* Conditional: Damages */}
+          {(documentType === "Notice of Claim" || documentType === "Pre-Suit Notice" || documentType === "Cease and Desist Letter") && (
+            <div className="mt-4">
+              <label className="block text-sm font-semibold text-slate-700 mb-1">💰 Damages / Settlement Demand</label>
+              <textarea
+                value={damages}
+                onChange={(e) => setDamages(e.target.value)}
+                placeholder={quickMode ? "e.g., $75k med + $20k wages" : "Detail medical, wages, pain/suffering, punitive, method of calculation"}
+                className="w-full min-h-[110px] rounded-xl border px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500"
+              />
+            </div>
+          )}
+
+          {/* Main narrative / subject */}
+          <div className="mt-4">
+            <label className="block text-sm font-semibold text-slate-700 mb-1">
+              📝 {documentType === "FOIA Request" || documentType === "State Public Records Request"
+                ? "Records Requested (be specific)"
+                : documentType === "ID Rights Card"
+                ? "Additional Notes (optional)"
+                : documentType === "Cease and Desist Letter"
+                ? "Violation Description"
+                : documentType === "Notice of Claim"
+                ? "Incident Description"
+                : documentType === "Pre-Suit Notice"
+                ? "Malpractice/Negligence Description"
+                : documentType === "Subpoena Duces Tecum"
+                ? "Docs/Materials to be Produced"
+                : documentType === "Discovery Request"
+                ? "Case Facts & Discovery Scope"
+                : "Subject"}
             </label>
-            <input
-              type="text"
-              value={documentType === 'FOIA Request' || documentType === 'State Public Records Request' ? agency : recipient}
-              onChange={(e) =>
-                documentType === 'FOIA Request' || documentType === 'State Public Records Request'
-                  ? setAgency(e.target.value)
-                  : setRecipient(e.target.value)
-              }
-              placeholder={
-                documentType === 'FOIA Request' || documentType === 'State Public Records Request'
-                  ? 'Enter agency or department name'
-                  : documentType === 'Subpoena Duces Tecum' || documentType === 'Discovery Request'
-                  ? 'Enter witness/respondent name'
-                  : 'Enter recipient name'
-              }
-              style={{ width: '100%', padding: 15, border: '2px solid #3498db', borderRadius: 12, fontSize: 16, color: '#000', backgroundColor: '#fff' }}
-            />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', marginBottom: 10, fontWeight: 600, color: '#2c3e50', fontSize: '1.1rem' }}>📍 Jurisdiction:</label>
-            <input
-              type="text"
-              value={jurisdiction}
-              onChange={(e) => setJurisdiction(e.target.value)}
-              placeholder="Auto-populates from state selection"
-              style={{ width: '100%', padding: 15, border: selectedState ? '2px solid #27ae60' : '2px solid #3498db', borderRadius: 12, fontSize: 16, color: '#000', backgroundColor: selectedState ? '#f8fff8' : '#fff' }}
-            />
-          </div>
-        </div>
-
-        {/* Damages field for certain docs */}
-        {(documentType === 'Notice of Claim' || documentType === 'Pre-Suit Notice' || documentType === 'Cease and Desist Letter') && (
-          <div style={{ marginBottom: 25 }}>
-            <label style={{ display: 'block', marginBottom: 10, fontWeight: 600, color: '#2c3e50', fontSize: '1.1rem' }}>💰 Damages/Settlement Demand:</label>
             <textarea
-              value={damages}
-              onChange={(e) => setDamages(e.target.value)}
-              placeholder="Monetary damages, injuries, economic losses, punitive claim, and methodology."
-              style={{ width: '100%', height: 120, padding: 15, border: '2px solid #e74c3c', borderRadius: 12, fontSize: 16, color: '#000', backgroundColor: '#fff', resize: 'vertical', lineHeight: 1.5 }}
+              value={incident}
+              onChange={(e) => setIncident(e.target.value)}
+              placeholder={quickMode
+                ? "Short bullets or keywords are fine"
+                : "Add exact dates, people, terms, categories, formats, and time range"}
+              className="w-full min-h-[160px] rounded-xl border px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
-        )}
 
-        {/* Subject/incident area */}
-        <div style={{ marginBottom: 30 }}>
-          <label style={{ display: 'block', marginBottom: 10, fontWeight: 600, color: '#2c3e50', fontSize: '1.1rem' }}>
-            📝
-            {documentType === 'FOIA Request' || documentType === 'State Public Records Request'
-              ? ' Records Requested (Be Specific):'
-              : documentType === 'ID Rights Card'
-              ? ' Additional Legal Information (Optional):'
-              : documentType === 'Cease and Desist Letter'
-              ? ' Detailed Violation Description:'
-              : documentType === 'Notice of Claim'
-              ? ' Comprehensive Incident Description:'
-              : documentType === 'Pre-Suit Notice'
-              ? ' Professional Malpractice/Negligence Description:'
-              : documentType === 'Subpoena Duces Tecum'
-              ? ' Documents/Materials to be Produced:'
-              : documentType === 'Discovery Request'
-              ? ' Case Facts and Discovery Scope:'
-              : ' Subject Matter:'}
-          </label>
-          <textarea
-            value={incident}
-            onChange={(e) => setIncident(e.target.value)}
-            placeholder={
-              documentType === 'FOIA Request' || documentType === 'State Public Records Request'
-                ? 'Describe specific records, time periods, custodians, keywords, formats.'
-                : documentType === 'ID Rights Card'
-                ? 'Optional: notes for your state (ordinances, contacts, recent changes).'
-                : documentType === 'Cease and Desist Letter'
-                ? 'Specific violations with dates/times/locations, witnesses, and evidence.'
-                : documentType === 'Notice of Claim'
-                ? 'Chronological incident facts: who/what/when/where/how and immediate aftermath.'
-                : documentType === 'Pre-Suit Notice'
-                ? 'Standard of care breaches, dates of treatment/services, causal chain, resulting injuries.'
-                : documentType === 'Subpoena Duces Tecum'
-                ? 'List precise categories, date ranges, custodians, and formats.'
-                : documentType === 'Discovery Request'
-                ? 'Key issues in dispute, timeframes, witnesses, and evidence sought.'
-                : 'Describe the subject matter.'
-            }
-            style={{ width: '100%', height: 200, padding: 15, border: '2px solid #3498db', borderRadius: 12, fontSize: 16, color: '#000', backgroundColor: '#fff', resize: 'vertical', lineHeight: 1.5 }}
-          />
+          {/* Litigation extras */}
+          {(documentType === "Subpoena Duces Tecum" || documentType === "Discovery Request") && (
+            <div className="mt-6 rounded-2xl border bg-amber-50 p-4">
+              <h3 className="text-amber-900 font-semibold mb-3">⚖️ Litigation Fields</h3>
+              <div className="grid md:grid-cols-4 gap-3">
+                <input className="rounded-xl border px-3 py-2" placeholder="Plaintiff" value={plaintiffName} onChange={(e) => setPlaintiffName(e.target.value)} />
+                <input className="rounded-xl border px-3 py-2" placeholder="Defendant" value={defendantName} onChange={(e) => setDefendantName(e.target.value)} />
+                <input className="rounded-xl border px-3 py-2" placeholder="Case No." value={caseNumber} onChange={(e) => setCaseNumber(e.target.value)} />
+                <input className="rounded-xl border px-3 py-2" placeholder="Court Name" value={courtName} onChange={(e) => setCourtName(e.target.value)} />
+              </div>
+              {documentType === "Discovery Request" && (
+                <div className="mt-3">
+                  <select className="rounded-xl border px-3 py-2" value={discoveryType} onChange={(e) => setDiscoveryType(e.target.value)}>
+                    <option value="interrogatories">Interrogatories</option>
+                    <option value="requests_for_production">Requests for Production</option>
+                    <option value="requests_for_admission">Requests for Admission</option>
+                  </select>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Claim / Violation pickers */}
+          {(documentType === "Notice of Claim" || documentType === "Pre-Suit Notice") && (
+            <div className="mt-4">
+              <label className="block text-sm font-semibold text-slate-700 mb-1">🎯 Claim Type</label>
+              <select
+                value={claimType}
+                onChange={(e) => setClaimType(e.target.value)}
+                className="w-full rounded-xl border px-4 py-3"
+              >
+                {documentType === "Notice of Claim" && (
+                  <>
+                    <option value="government">Government/Municipal Tort</option>
+                    <option value="general">General Civil Liability</option>
+                  </>
+                )}
+                {documentType === "Pre-Suit Notice" && (
+                  <>
+                    <option value="medical">Medical Malpractice</option>
+                    <option value="legal">Legal Malpractice</option>
+                    <option value="professional">Other Professional Liability</option>
+                  </>
+                )}
+              </select>
+            </div>
+          )}
         </div>
 
-        {/* Cannabis panel */}
+        {/* Cannabis quick panel */}
         {selectedState && cannabisLaws[selectedState] && (
-          <div style={{ backgroundColor: '#f0f8ff', border: '2px solid #4169e1', borderRadius: 15, padding: 20, marginBottom: 25, boxShadow: '0 4px 15px rgba(65,105,225,0.1)' }}>
-            <h3 style={{ color: '#4169e1', marginTop: 0, marginBottom: 15, fontSize: '1.3rem', fontWeight: 600 }}>
-              🌿 {statePublicRecordsData[selectedState].name} Cannabis Laws — Civil Rights Impact
-            </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 15 }}>
-              <div>
-                <strong>Legal Status:</strong> {cannabisLaws[selectedState].status}
-              </div>
-              {cannabisLaws[selectedState].enacted && (
-                <div>
-                  <strong>Enacted:</strong> {cannabisLaws[selectedState].enacted}
-                </div>
-              )}
-              <div>
-                <strong>Possession Limits:</strong> {cannabisLaws[selectedState].possession}
-              </div>
+          <div className="rounded-3xl border shadow bg-white p-6 mb-6">
+            <h3 className="text-lg font-semibold text-indigo-800 mb-2">🌿 {statePublicRecordsData[selectedState].name} – Cannabis Summary</h3>
+            <div className="grid sm:grid-cols-3 gap-3 text-sm">
+              <div><span className="font-medium">Status:</span> {cannabisLaws[selectedState].status}</div>
+              <div><span className="font-medium">Possession:</span> {cannabisLaws[selectedState].possession || "See details"}</div>
+              <div><span className="font-medium">Cultivation:</span> {cannabisLaws[selectedState].cultivation || "Varies / see details"}</div>
             </div>
-            <div style={{ marginTop: 10, fontSize: 14, color: '#666' }}>
-              <strong>Details:</strong> {cannabisLaws[selectedState].details}
-            </div>
-            {(cannabisLaws[selectedState].status === 'Fully Illegal' || cannabisLaws[selectedState].status?.includes('CBD')) && (
-              <div style={{ marginTop: 10, padding: 10, backgroundColor: '#ffebee', borderRadius: 8, fontSize: 14, color: '#c62828' }}>
-                <strong>⚠️ Civil Rights Notice:</strong> Possession remains restricted/illegal. Know your rights.
+            {cannabisLaws[selectedState].details && (
+              <p className="text-xs text-slate-500 mt-2">{cannabisLaws[selectedState].details}</p>
+            )}
+            {cannabisLaws[selectedState].status?.includes("Illegal") && (
+              <div className="mt-3 text-sm rounded-lg border border-rose-300 bg-rose-50 text-rose-700 p-3">
+                ⚠️ Possession remains illegal. Know your rights during police encounters.
               </div>
             )}
           </div>
         )}
 
-        {/* Litigation fields */}
-        {(documentType === 'Subpoena Duces Tecum' || documentType === 'Discovery Request') && (
-          <div style={{ backgroundColor: '#fff8e1', border: '2px solid #ffa726', borderRadius: 15, padding: 20, marginBottom: 25 }}>
-            <h3 style={{ color: '#f57c00', marginTop: 0, marginBottom: 20 }}>⚖️ Litigation Document Fields</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 20 }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#2c3e50' }}>Plaintiff Name:</label>
-                <input type="text" value={plaintiffName} onChange={(e) => setPlaintiffName(e.target.value)} placeholder="Enter plaintiff name" style={{ width: '100%', padding: 12, border: '2px solid #ffa726', borderRadius: 8, fontSize: 14 }} />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#2c3e50' }}>Defendant Name:</label>
-                <input type="text" value={defendantName} onChange={(e) => setDefendantName(e.target.value)} placeholder="Enter defendant name" style={{ width: '100%', padding: 12, border: '2px solid #ffa726', borderRadius: 8, fontSize: 14 }} />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#2c3e50' }}>Case Number:</label>
-                <input type="text" value={caseNumber} onChange={(e) => setCaseNumber(e.target.value)} placeholder="Enter case number" style={{ width: '100%', padding: 12, border: '2px solid #ffa726', borderRadius: 8, fontSize: 14 }} />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#2c3e50' }}>Court Name:</label>
-                <input type="text" value={courtName} onChange={(e) => setCourtName(e.target.value)} placeholder="Enter court name" style={{ width: '100%', padding: 12, border: '2px solid #ffa726', borderRadius: 8, fontSize: 14 }} />
-              </div>
-            </div>
-            {documentType === 'Discovery Request' && (
-              <div style={{ marginTop: 20 }}>
-                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#2c3e50' }}>Discovery Type:</label>
-                <select value={discoveryType} onChange={(e) => setDiscoveryType(e.target.value)} style={{ width: '100%', padding: 12, border: '2px solid #ffa726', borderRadius: 8, fontSize: 14, cursor: 'pointer' }}>
-                  <option value="interrogatories">Interrogatories</option>
-                  <option value="requests_for_production">Requests for Production of Documents</option>
-                  <option value="requests_for_admission">Requests for Admission</option>
-                </select>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Claim/Violation pickers */}
-        {(documentType === 'Notice of Claim' || documentType === 'Pre-Suit Notice') && (
-          <div style={{ marginBottom: 25 }}>
-            <label style={{ display: 'block', marginBottom: 10, fontWeight: 600, color: '#2c3e50', fontSize: '1.1rem' }}>🎯 Claim Type:</label>
-            <select value={claimType} onChange={(e) => setClaimType(e.target.value)} style={{ width: '100%', padding: 15, border: '2px solid #e74c3c', borderRadius: 12, fontSize: 16, color: '#000', backgroundColor: '#fff', cursor: 'pointer' }}>
-              {documentType === 'Notice of Claim' && (
-                <>
-                  <option value="government">Government/Municipal Tort Claim</option>
-                  <option value="general">General Civil Liability Claim</option>
-                </>
-              )}
-              {documentType === 'Pre-Suit Notice' && (
-                <>
-                  <option value="medical">Medical Malpractice</option>
-                  <option value="legal">Legal Malpractice</option>
-                  <option value="professional">Other Professional Liability</option>
-                </>
-              )}
-            </select>
-          </div>
-        )}
-
-        {documentType === 'Cease and Desist Letter' && (
-          <div style={{ marginBottom: 25 }}>
-            <label style={{ display: 'block', marginBottom: 10, fontWeight: 600, color: '#2c3e50', fontSize: '1.1rem' }}>⚠️ Violation Type:</label>
-            <select value={violationType} onChange={(e) => setViolationType(e.target.value)} style={{ width: '100%', padding: 15, border: '2px solid #e74c3c', borderRadius: 12, fontSize: 16, color: '#000', backgroundColor: '#fff', cursor: 'pointer' }}>
-              <option value="harassment">Harassment/Intimidation/Stalking</option>
-              <option value="intellectual_property">Intellectual Property Infringement</option>
-              <option value="debt_collection">Improper Debt Collection Practices</option>
-              <option value="trespass">Trespass/Property Rights Violations</option>
-              <option value="defamation">Defamation/Libel/False Statements</option>
-              <option value="contract">Contract Violations/Breach</option>
-              <option value="privacy">Privacy Violations/Identity Theft</option>
-            </select>
-          </div>
-        )}
-
-        {/* Auto-populated legal info */}
+        {/* Auto statutes panel */}
         {selectedState && (
-          <div style={{ backgroundColor: '#e8f5e8', border: '2px solid #27ae60', borderRadius: 15, padding: 25, marginBottom: 30, boxShadow: '0 4px 15px rgba(39,174,96,0.1)' }}>
-            <h3 style={{ color: '#27ae60', marginTop: 0, marginBottom: 20, fontSize: '1.3rem', fontWeight: 600 }}>
-              📋 Auto-Populated Legal Information for {statePublicRecordsData[selectedState].name}
-            </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: 20 }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#2c3e50', fontSize: '1rem' }}>⚖️ Applicable Statute:</label>
-                <div style={{ padding: 12, border: '2px solid #27ae60', borderRadius: 8, fontSize: 14, color: '#000', backgroundColor: '#fff', fontFamily: 'monospace', wordBreak: 'break-word' }}>
-                  {statute || 'Select document type for statute information'}
-                </div>
+          <div className="rounded-3xl border shadow bg-white p-6 mb-6">
+            <h3 className="text-lg font-semibold text-emerald-800 mb-3">📋 Auto‑Populated Legal Info – {statePublicRecordsData[selectedState].name}</h3>
+            <div className="grid md:grid-cols-3 gap-3 text-sm">
+              <div className="rounded-xl border p-3">
+                <div className="text-slate-600 text-xs">Applicable Statute</div>
+                <div className="font-mono text-slate-900 text-sm break-words">{statute || "Select document type for statute"}</div>
               </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#2c3e50', fontSize: '1rem' }}>⏰ Time Requirement:</label>
-                <div style={{ padding: 12, border: '2px solid #27ae60', borderRadius: 8, fontSize: 16, color: '#000', backgroundColor: '#fff', fontWeight: 600 }}>
-                  {timeLimit || 'Select document type for time requirements'}
-                </div>
+              <div className="rounded-xl border p-3">
+                <div className="text-slate-600 text-xs">Time Requirement</div>
+                <div className="text-slate-900 font-semibold">{timeLimit || "Select document type"}</div>
               </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#2c3e50', fontSize: '1rem' }}>📅 Deadline Calculation:</label>
-                <div style={{ padding: 12, border: '2px solid #e74c3c', borderRadius: 8, fontSize: 16, color: '#000', backgroundColor: '#fff5f5', fontWeight: 600 }}>
-                  {calculateResponseDate() || 'Select document type for deadline calculation'}
-                </div>
+              <div className="rounded-xl border p-3">
+                <div className="text-slate-600 text-xs">Deadline (calc.)</div>
+                <div className="text-slate-900 font-semibold">{foiaDeadline || "—"}</div>
               </div>
-              {statePublicRecordsData[selectedState]?.updates && (
-                <div style={{ gridColumn: '1 / -1' }}>
-                  <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, color: '#e74c3c', fontSize: '1rem' }}>🚨 2024–2025 Legislative Updates:</label>
-                  <div style={{ padding: 12, border: '2px solid #e74c3c', borderRadius: 8, fontSize: 14, color: '#000', backgroundColor: '#fff5f5', fontWeight: 600 }}>
-                    {statePublicRecordsData[selectedState].updates}
-                  </div>
-                </div>
-              )}
             </div>
+            {statePublicRecordsData[selectedState]?.updates && (
+              <div className="mt-3 rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm">
+                🚨 Legislative Update: {statePublicRecordsData[selectedState].updates}
+              </div>
+            )}
           </div>
         )}
 
-        {/* Generate button */}
-        <button
-          onClick={generateLetter}
-          style={{ width: '100%', padding: 20, backgroundColor: '#3498db', color: '#fff', border: 'none', borderRadius: 12, fontSize: 20, fontWeight: 700, cursor: 'pointer', marginBottom: 30, textTransform: 'uppercase', letterSpacing: 1, boxShadow: '0 4px 15px rgba(52,152,219,0.3)' }}
-          onMouseOver={(e) => {
-            e.currentTarget.style.backgroundColor = '#2980b9';
-            e.currentTarget.style.transform = 'translateY(-2px)';
-            e.currentTarget.style.boxShadow = '0 6px 20px rgba(52,152,219,0.4)';
-          }}
-          onMouseOut={(e) => {
-            e.currentTarget.style.backgroundColor = '#3498db';
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 4px 15px rgba(52,152,219,0.3)';
-          }}
-        >
-          🚀 Generate {documentType === 'ID Rights Card' ? 'Civil Rights Reference Card' : 'Legal Document'}
-        </button>
+        {/* Generate button for ID card */}
+        {documentType === "ID Rights Card" && (
+          <div className="rounded-3xl border shadow bg-white p-6 mb-6">
+            <div className="flex flex-wrap items-center gap-3 mb-4">
+              <button
+                onClick={() => setGeneratedLetter(generateLetter())}
+                className="inline-flex items-center justify-center rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-3 shadow"
+              >
+                Render Card Content
+              </button>
+              <button
+                onClick={() => {
+                  // Copy text snapshot
+                  const foia = statePublicRecordsData[selectedState];
+                  const rights = stateIDRights[selectedState];
+                  const weed = cannabisLaws[selectedState];
+                  const stateName = foia?.name || "[STATE]";
+                  const recRule = recordingConsent[selectedState] || "One-party consent";
+                  const text = `${stateName} – Civil Rights & Laws Reference Card\n\nRIGHTS:\n• No consent to searches\n• Remain silent\n• Do not waive rights\n• Ask for a lawyer\n\nSTATUTES:\nID / Stop-&-ID: ${rights?.law || "[N/A]"}\nRecording: ${recRule}\nPublic Records: ${foia?.statute} (Timeline: ${foia?.timeLimit})\n\nCANNABIS:\nStatus: ${weed?.status || "[N/A]"}\nPossession: ${weed?.possession || "[See details]"}\nCultivation: ${weed?.cultivation || "Varies / see details"}\n\nPOLICE CONTACT:\n- ${rights?.stopAndID ? "Provide required identifying info if lawfully detained." : "Ask if you are detained; ID not required unless driving or under arrest."}\n- Do not consent to searches.\n- You may record consistent with consent rules.\n- Remain silent and request a lawyer.\n\nPOT BROTHERS – 4 STEPS:\n1) Keep it brief.\n2) Am I being detained or free to go?\n3) I choose to remain silent.\n4) I want my lawyer.`;
+                  navigator.clipboard.writeText(text);
+                }}
+                className="rounded-xl border px-4 py-3 font-semibold text-slate-700 hover:bg-slate-50"
+              >
+                📋 Copy Card Text
+              </button>
+              <button
+                onClick={() => {
+                  // Canvas PNG export
+                  const canvas = document.createElement("canvas");
+                  canvas.width = 1200;
+                  canvas.height = 800;
+                  const ctx = canvas.getContext("2d");
+                  // Background
+                  const g = ctx.createLinearGradient(0, 0, 1200, 800);
+                  g.addColorStop(0, "#1e3a8a");
+                  g.addColorStop(1, "#1d4ed8");
+                  ctx.fillStyle = g;
+                  ctx.fillRect(0, 0, 1200, 800);
+                  // Frame
+                  ctx.strokeStyle = "#fff";
+                  ctx.lineWidth = 6;
+                  ctx.strokeRect(12, 12, 1176, 776);
+                  ctx.fillStyle = "#fff";
+                  ctx.textAlign = "center";
+                  ctx.font = "bold 40px Arial";
+                  const stateName = statePublicRecordsData[selectedState]?.name || "STATE";
+                  ctx.fillText(`${stateName} – CIVIL RIGHTS & LAWS`, 600, 80);
+                  ctx.font = "600 26px Arial";
+                  ctx.fillText("Reference Card (2025)", 600, 118);
+                  // Columns
+                  ctx.textAlign = "left";
+                  const L = 70, R = 640, Y0 = 170, LH = 34;
+                  const rights = stateIDRights[selectedState];
+                  const foia = statePublicRecordsData[selectedState];
+                  const weed = cannabisLaws[selectedState];
+                  const recRule = recordingConsent[selectedState] || "One-party consent";
+
+                  // Left blocks
+                  ctx.fillStyle = "#ffd700"; ctx.font = "bold 24px Arial"; ctx.fillText("KEY RIGHTS", L, Y0);
+                  ctx.fillStyle = "#fff"; ctx.font = "18px Arial";
+                  const leftLines = [
+                    "• I do not consent to searches",
+                    "• I choose to remain silent",
+                    "• I do not waive any rights",
+                    "• I want a lawyer if detained/arrested",
+                  ];
+                  leftLines.forEach((t, i) => ctx.fillText(t, L, Y0 + (i + 1) * LH));
+
+                  let y = Y0 + (leftLines.length + 1.6) * LH;
+                  ctx.fillStyle = "#ffd700"; ctx.font = "bold 24px Arial"; ctx.fillText("STATE STATUTES", L, y); y += LH;
+                  ctx.fillStyle = "#fff"; ctx.font = "16px Arial";
+                  ctx.fillText(`ID / Stop-&-ID: ${rights?.law || "[N/A]"}`, L, y); y += LH;
+                  ctx.fillText(`Recording: ${recRule}`, L, y); y += LH;
+                  ctx.fillText(`Public Records: ${foia?.statute || "[N/A]"}`, L, y); y += LH;
+                  ctx.fillText(`FOIA Timeline: ${foia?.timeLimit || "[N/A]"}`, L, y); y += LH * 1.2;
+
+                  ctx.fillStyle = "#ffd700"; ctx.font = "bold 24px Arial"; ctx.fillText("CANNABIS", L, y); y += LH;
+                  ctx.fillStyle = "#90EE90"; ctx.font = "18px Arial";
+                  ctx.fillText(`Status: ${weed?.status || "[N/A]"}`, L, y); y += LH;
+                  ctx.fillText(`Possession: ${weed?.possession || "[See details]"}`, L, y); y += LH;
+                  ctx.fillText(`Cultivation: ${weed?.cultivation || "Varies / see details"}`, L, y); y += LH;
+
+                  // Right blocks – Stop guidance + 4 steps
+                  ctx.fillStyle = "#ffd700"; ctx.font = "bold 24px Arial"; ctx.fillText("POLICE CONTACT – WHAT TO DO", R, Y0);
+                  ctx.fillStyle = "#fff"; ctx.font = "16px Arial";
+                  const guide = rights?.stopAndID
+                    ? [
+                        "• Stay calm; hands visible",
+                        "• Ask if detained or free to go",
+                        "• If detained: give required ID only",
+                        "• Do not consent to searches",
+                        "• You may record (follow consent rules)",
+                        "• Remain silent; ask for a lawyer",
+                      ]
+                    : [
+                        "• Ask if detained or free to go",
+                        "• If free, leave calmly",
+                        "• If detained: ID generally not required unless driving/arrested",
+                        "• Do not consent to searches",
+                        "• You may record (consent rules)",
+                        "• Remain silent; ask for a lawyer",
+                      ];
+                  guide.forEach((t, i) => ctx.fillText(t, R, Y0 + (i + 1) * LH));
+
+                  let yr = Y0 + (guide.length + 1.6) * LH;
+                  ctx.fillStyle = "#ffd700"; ctx.font = "bold 22px Arial"; ctx.fillText("POT BROTHERS – 4 STEPS", R, yr); yr += LH;
+                  ctx.fillStyle = "#fff"; ctx.font = "16px Arial";
+                  FOUR_STEPS.forEach((t, i) => {
+                    ctx.fillText(`${i + 1}) ${t}`, R, yr + i * LH);
+                  });
+
+                  // Footer
+                  ctx.textAlign = "center";
+                  ctx.fillStyle = "rgba(255,255,255,0.85)"; ctx.font = "14px Arial";
+                  ctx.fillText(`Generated ${new Date().toLocaleDateString()} • Civil Rights Toolkit Pro 2025`, 600, 760);
+
+                  canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `${stateName.replace(/\s+/g, "_")}_Civil_Rights_Card.png`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  });
+                }}
+                className="rounded-xl border px-4 py-3 font-semibold text-slate-700 hover:bg-slate-50"
+              >
+                📸 Download PNG
+              </button>
+              <button
+                onClick={() => {
+                  const stateName = statePublicRecordsData[selectedState]?.name || "State";
+                  const rights = stateIDRights[selectedState];
+                  const foia = statePublicRecordsData[selectedState];
+                  const weed = cannabisLaws[selectedState];
+                  const recRule = recordingConsent[selectedState] || "One-party consent";
+                  const w = window.open("", "_blank");
+                  w.document.write(`<!doctype html><html><head><title>${stateName} Wallet Card</title><style>
+                    body{font-family:ui-sans-serif,system-ui,Segoe UI,Roboto; margin:.5in}
+                    .card{width:3.5in;height:2.25in;background:linear-gradient(135deg,#1e3a8a,#1d4ed8);color:#fff;border:2px solid #fff;border-radius:12px;padding:.18in;box-shadow:0 4px 10px rgba(0,0,0,.3)}
+                    .h{border-bottom:1px solid rgba(255,255,255,.3);padding-bottom:4px;margin-bottom:6px;text-align:center}
+                    .t{font-weight:800;font-size:12px}
+                    .s{font-weight:700;font-size:10px}
+                    .sec{margin-bottom:4px}
+                    .st{font-weight:700;color:#ffd700;font-size:8px;margin-bottom:1px}
+                    .tx{font-size:7px;line-height:1.2}
+                    .f{font-size:6px;text-align:center;opacity:.8;margin-top:4px}
+                    @media print{body{margin:0}}
+                  </style></head><body>
+                    <div class="card">
+                      <div class="h"><div class="t">${stateName.toUpperCase()}</div><div class="s">CIVIL RIGHTS & LAWS</div></div>
+                      <div style="display:flex;gap:8px">
+                        <div style="flex:1">
+                          <div class="sec"><div class="st">KEY RIGHTS</div><div class="tx">• No consent to searches<br/>• Remain silent<br/>• Do not waive rights<br/>• Lawyer if detained</div></div>
+                          <div class="sec"><div class="st">STATUTES</div><div class="tx">ID: ${rights?.law || "[N/A]"}<br/>Recording: ${recRule}<br/>Public Records: ${foia?.statute}<br/>Timeline: ${foia?.timeLimit}</div></div>
+                          <div class="sec"><div class="st">CANNABIS</div><div class="tx">Status: ${weed?.status || "[N/A]"}<br/>Possession: ${weed?.possession || "[See details]"}<br/>Cultivation: ${weed?.cultivation || "Varies / see details"}</div></div>
+                        </div>
+                        <div style="flex:1">
+                          <div class="sec"><div class="st">POLICE CONTACT</div><div class="tx">
+                            ${rights?.stopAndID ? "• Provide required ID if detained<br/>" : "• Ask if detained; ID not required unless driving/arrested<br/>"}
+                            • Do not consent to searches<br/>
+                            • You may record (consent rules)<br/>
+                            • Remain silent; ask for a lawyer
+                          </div></div>
+                          <div class="sec"><div class="st">POT BROTHERS – 4 STEPS</div><div class="tx">1) Keep it brief<br/>2) Detained or free to go?<br/>3) Remain silent<br/>4) I want my lawyer</div></div>
+                        </div>
+                      </div>
+                      <div class="f">Generated ${new Date().toLocaleDateString()} • Toolkit Pro 2025</div>
+                    </div>
+                  </body></html>`);
+                  w.document.close();
+                  w.print();
+                }}
+                className="rounded-xl border px-4 py-3 font-semibold text-slate-700 hover:bg-slate-50"
+              >
+                🖨️ Print Wallet Card
+              </button>
+            </div>
+            {/* Live card preview */}
+            <IdCard />
+          </div>
+        )}
 
         {/* Output */}
-        {generatedLetter && (
-          <div style={{ backgroundColor: '#f8f9fa', border: '2px solid #27ae60', borderRadius: 15, padding: 25, boxShadow: '0 4px 15px rgba(39,174,96,0.1)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 10 }}>
-              <h3 style={{ color: '#27ae60', margin: 0, fontSize: '1.4rem', fontWeight: 600 }}>📄 Generated {documentType} — 2025 Standards</h3>
-              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+        {generatedLetter && documentType !== "ID Rights Card" && (
+          <div className="rounded-3xl border shadow bg-white p-6 mb-6">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+              <h3 className="text-lg font-semibold text-emerald-700">📄 Generated {documentType}</h3>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => navigator.clipboard.writeText(generatedLetter)}
+                  className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 shadow"
+                >
+                  📋 Copy
+                </button>
                 <button
                   onClick={() => {
-                    if (documentType === 'ID Rights Card') {
-                      const stateName = selectedState ? statePublicRecordsData[selectedState].name : '[STATE NAME]';
-                      const rights = selectedState ? stateIDRights[selectedState] : null;
-                      const canna = selectedState ? cannabisLaws[selectedState] : null;
-                      if (rights) {
-                        const cardText = `${stateName} Civil Rights & Laws Reference Card\nStop & ID: ${rights.stopAndID ? 'Yes' : 'No'}\nRecording: ${rights.recording}\nCannabis: ${canna ? canna.status : 'Unknown'}\nLaw: ${rights.law}\nPublic Records Response: ${selectedState ? statePublicRecordsData[selectedState].timeLimit : 'N/A'}`;
-                        navigator.clipboard.writeText(cardText);
-                      }
-                    } else if (typeof generatedLetter === 'string') {
-                      navigator.clipboard.writeText(generatedLetter);
-                    }
+                    const blob = new Blob([generatedLetter], { type: "text/plain" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    const today = new Date().toLocaleDateString().replace(/\//g, "-");
+                    a.href = url;
+                    a.download = `${documentType.replace(/\s+/g, "_")}_${today}.txt`;
+                    a.click();
+                    URL.revokeObjectURL(url);
                   }}
-                  style={{ padding: '12px 20px', backgroundColor: '#27ae60', color: '#fff', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
-                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#219a52')}
-                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#27ae60')}
+                  className="rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold px-4 py-2 shadow"
                 >
-                  📋 Copy {documentType === 'ID Rights Card' ? 'Card Info' : 'to Clipboard'}
+                  💾 Download
                 </button>
-
-                {documentType === 'ID Rights Card' ? (
-                  <>
-                    <button
-                      onClick={() => {
-                        const stateName = selectedState ? statePublicRecordsData[selectedState].name : 'State';
-                        const rights = selectedState ? stateIDRights[selectedState] : null;
-                        const canna = selectedState ? cannabisLaws[selectedState] : null;
-                        if (!rights) return;
-
-                        const canvas = document.createElement('canvas');
-                        canvas.width = 800;
-                        canvas.height = 600;
-                        const ctx = canvas.getContext('2d');
-                        if (!ctx) return;
-
-                        const gradient = ctx.createLinearGradient(0, 0, 800, 600);
-                        gradient.addColorStop(0, '#1e3c72');
-                        gradient.addColorStop(1, '#2a5298');
-                        ctx.fillStyle = gradient;
-                        ctx.fillRect(0, 0, 800, 600);
-
-                        ctx.strokeStyle = '#fff';
-                        ctx.lineWidth = 4;
-                        ctx.strokeRect(2, 2, 796, 596);
-
-                        ctx.fillStyle = '#fff';
-                        ctx.font = 'bold 32px Arial';
-                        ctx.textAlign = 'center';
-                        ctx.fillText(stateName.toUpperCase(), 400, 80);
-                        ctx.font = 'bold 26px Arial';
-                        ctx.fillText('CIVIL RIGHTS & LAWS REFERENCE CARD', 400, 120);
-
-                        ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-                        ctx.lineWidth = 2;
-                        ctx.beginPath();
-                        ctx.moveTo(60, 140);
-                        ctx.lineTo(740, 140);
-                        ctx.stroke();
-
-                        ctx.font = '18px Arial';
-                        ctx.textAlign = 'left';
-                        ctx.fillStyle = '#ffd700';
-                        ctx.fillText('CONSTITUTIONAL RIGHTS:', 60, 180);
-
-                        ctx.fillStyle = '#fff';
-                        ctx.font = '16px Arial';
-                        ctx.fillText('• I do not consent to searches', 60, 210);
-                        ctx.fillText('• I invoke my right to remain silent', 60, 235);
-                        ctx.fillText('• I do not waive any rights', 60, 260);
-                        ctx.fillText('• I want a lawyer if detained', 60, 285);
-
-                        ctx.fillStyle = '#ffd700';
-                        ctx.font = '18px Arial';
-                        ctx.fillText('STATE LAWS:', 60, 330);
-
-                        ctx.fillStyle = '#fff';
-                        ctx.font = '14px Arial';
-                        ctx.fillText(`Stop & ID: ${rights.stopAndID ? 'YES' : 'NO'}`, 60, 360);
-                        ctx.fillText(`Recording: ${rights.recording}`, 60, 385);
-                        if (canna) {
-                          ctx.fillStyle = '#90EE90';
-                          ctx.fillText(`Cannabis: ${canna.status}`, 60, 410);
-                          ctx.fillStyle = '#fff';
-                        }
-                        ctx.fillText(`Public Records: ${selectedState ? statePublicRecordsData[selectedState].timeLimit : 'N/A'}`, 60, 435);
-
-                        ctx.fillStyle = '#ffd700';
-                        ctx.font = '18px Arial';
-                        ctx.fillText('POLICE ENCOUNTER SCRIPT:', 420, 180);
-
-                        ctx.fillStyle = '#fff';
-                        ctx.font = '14px Arial';
-                        ctx.fillText('"Officer, am I being detained or free to go?"', 420, 210);
-                        ctx.font = '12px Arial';
-                        ctx.fillText('If FREE: "I choose to leave now."', 420, 240);
-                        ctx.fillText('If DETAINED: "I decline to answer questions."', 420, 270);
-                        ctx.fillText('"I do not consent to searches."', 420, 290);
-                        if (rights.stopAndID) {
-                          ctx.fillText('"Please state the law requiring ID."', 420, 320);
-                        } else {
-                          ctx.fillText('"I am not required to show ID unless driving', 420, 320);
-                          ctx.fillText('or under arrest."', 420, 340);
-                        }
-                        ctx.fillText('If ARRESTED: "I want a lawyer."', 420, 370);
-
-                        ctx.fillStyle = '#ffd700';
-                        ctx.font = '14px Arial';
-                        ctx.fillText('EMERGENCY CONTACTS:', 420, 410);
-                        ctx.fillStyle = '#fff';
-                        ctx.font = '12px Arial';
-                        ctx.fillText('Attorney: _______________', 420, 435);
-                        ctx.fillText('Emergency: _______________', 420, 455);
-
-                        ctx.fillStyle = 'rgba(255,255,255,0.7)';
-                        ctx.font = '12px Arial';
-                        ctx.textAlign = 'center';
-                        ctx.fillText(`Generated: ${new Date().toLocaleDateString()} — Civil Rights Toolkit Pro 2025`, 400, 570);
-
-                        canvas.toBlob((blob) => {
-                          if (!blob) return;
-                          const url = URL.createObjectURL(blob);
-                          const a = document.createElement('a');
-                          a.href = url;
-                          a.download = `${stateName.replace(/\s+/g, '_')}_Civil_Rights_Card.png`;
-                          a.click();
-                          URL.revokeObjectURL(url);
-                        });
-                      }}
-                      style={{ padding: '12px 20px', backgroundColor: '#e74c3c', color: '#fff', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
-                      onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#c0392b')}
-                      onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#e74c3c')}
-                    >
-                      📸 Download as Image
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        const win = window.open('', '_blank');
-                        if (!win) return;
-                        const stateName = selectedState ? statePublicRecordsData[selectedState].name : 'State';
-                        const rights = selectedState ? stateIDRights[selectedState] : null;
-                        const canna = selectedState ? cannabisLaws[selectedState] : null;
-                        win.document.write(`
-                          <html>
-                            <head>
-                              <title>${stateName} Civil Rights & Laws Reference Card</title>
-                              <style>
-                                body { font-family: Arial, sans-serif; margin: 0.5in; background: white; }
-                                .card { width: 3.5in; height: 2.4in; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-                                  border: 2px solid #fff; border-radius: 15px; padding: 0.2in; color: white; font-size: 8px; line-height: 1.2;
-                                  page-break-inside: avoid; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
-                                .header { text-align: center; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 4px; margin-bottom: 6px; }
-                                .title { font-size: 12px; font-weight: bold; }
-                                .subtitle { font-size: 10px; font-weight: 600; }
-                                .section { margin-bottom: 6px; }
-                                .section-title { font-size: 8px; font-weight: bold; color: #ffd700; margin-bottom: 2px; }
-                                .content { font-size: 7px; }
-                                .footer { font-size: 6px; text-align: center; margin-top: 8px; opacity: 0.8; }
-                                @media print { body { margin: 0; } .card { width: 3.375in; height: 2.25in; font-size: 7px; } }
-                              </style>
-                            </head>
-                            <body>
-                              <div class="card">
-                                <div class="header">
-                                  <div class="title">${stateName.toUpperCase()}</div>
-                                  <div class="subtitle">CIVIL RIGHTS & LAWS REFERENCE</div>
-                                </div>
-                                <div style="display: flex; gap: 8px;">
-                                  <div style="flex: 1;">
-                                    <div class="section">
-                                      <div class="section-title">CONSTITUTIONAL RIGHTS</div>
-                                      <div class="content">
-                                        • I do not consent to searches<br/>
-                                        • I invoke my right to remain silent<br/>
-                                        • I do not waive any rights<br/>
-                                        • I want a lawyer if detained
-                                      </div>
-                                    </div>
-                                    ${rights ? `
-                                    <div class="section">
-                                      <div class="section-title">STATE LAWS</div>
-                                      <div class="content">
-                                        Stop & ID: ${rights.stopAndID ? 'YES' : 'NO'}<br/>
-                                        Recording: ${rights.recording}<br/>
-                                        ${canna ? `Cannabis: ${canna.status}<br/>` : ''}
-                                        Public Records: ${selectedState ? statePublicRecordsData[selectedState].timeLimit : 'N/A'}
-                                      </div>
-                                    </div>` : ''}
-                                  </div>
-                                  <div style="flex: 1;">
-                                    <div class="section">
-                                      <div class="section-title">POLICE ENCOUNTER</div>
-                                      <div class="content">
-                                        <strong>"Officer, am I being detained or free to go?"</strong><br/><br/>
-                                        <strong>If FREE:</strong> "I choose to leave now."<br/><br/>
-                                        <strong>If DETAINED:</strong> "I decline to answer questions. I do not consent to searches."<br/><br/>
-                                        <strong>If ARRESTED:</strong> "I want a lawyer."<br/><br/>
-                                        <strong>EMERGENCY:</strong><br/>
-                                        Attorney: ___________<br/>
-                                        Contact: ___________
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="footer">Generated: ${new Date().toLocaleDateString()} — Civil Rights Toolkit Pro 2025</div>
-                              </div>
-                            </body>
-                          </html>
-                        `);
-                        win.document.close();
-                        win.print();
-                      }}
-                      style={{ padding: '12px 20px', backgroundColor: '#f39c12', color: '#fff', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
-                      onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#e67e22')}
-                      onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#f39c12')}
-                    >
-                      🖨️ Print Wallet Card
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    onClick={() => {
-                      if (typeof generatedLetter !== 'string') return;
-                      const blob = new Blob([generatedLetter], { type: 'text/plain' });
-                      const url = window.URL.createObjectURL(blob);
-                      const a = document.createElement('a');
-                      a.href = url;
-                      const todayStr = new Date().toLocaleDateString().replace(/\//g, '-');
-                      a.download = `${documentType.replace(/\s+/g, '_')}_${todayStr}.txt`;
-                      a.click();
-                      window.URL.revokeObjectURL(url);
-                    }}
-                    style={{ padding: '12px 20px', backgroundColor: '#8e44ad', color: '#fff', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
-                    onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#7d3c98')}
-                    onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#8e44ad')}
-                  >
-                    💾 Download as Text File
-                  </button>
-                )}
               </div>
             </div>
-
-            {documentType === 'ID Rights Card' ? (
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: '#f8f9fa', borderRadius: 12 }}>
-                <div id="id-rights-card-display">{generatedLetter}</div>
-              </div>
-            ) : (
-              typeof generatedLetter === 'string' && (
-                <textarea
-                  value={generatedLetter}
-                  onChange={(e) => setGeneratedLetter(e.target.value)}
-                  style={{ width: '100%', height: 600, padding: 20, border: '2px solid #27ae60', borderRadius: 12, fontSize: 14, color: '#000', backgroundColor: '#fff', fontFamily: 'monospace', lineHeight: 1.6, resize: 'vertical', boxShadow: 'inset 0 2px 5px rgba(0,0,0,0.1)' }}
-                />
-              )
-            )}
-
-            <div style={{ marginTop: 15, padding: 15, backgroundColor: documentType === 'ID Rights Card' ? '#e3f2fd' : '#fff3cd', border: documentType === 'ID Rights Card' ? '1px solid #2196f3' : '1px solid #ffeaa7', borderRadius: 8, fontSize: 14, color: documentType === 'ID Rights Card' ? '#1565c0' : '#856404' }}>
-              <strong>💡 {documentType === 'ID Rights Card' ? 'Civil Rights Reference Card:' : 'Attorney-Level Legal Notice:'}</strong>{' '}
-              {documentType === 'ID Rights Card'
-                ? "Includes state stop-and-identify, recording consent, cannabis status, and public-records response timeframe. Wallet-size for quick reference."
-                : `Templates include placeholders and generalized timing/statute fields. Verify current law in ${selectedState ? statePublicRecordsData[selectedState].name : 'your jurisdiction' } before use.`}
+            <textarea
+              value={generatedLetter}
+              onChange={(e) => setGeneratedLetter(e.target.value)}
+              className="w-full min-h-[540px] font-mono text-sm rounded-xl border px-4 py-3"
+            />
+            <div className="mt-3 text-xs rounded-xl border bg-amber-50 p-3 text-amber-800">
+              💡 Review placeholders before sending. Consider local counsel for complex matters.
             </div>
           </div>
         )}
 
         {/* Disclaimer */}
-        <div style={{ marginTop: 30, padding: 20, backgroundColor: '#f8f9fa', border: '2px solid #6c757d', borderRadius: 12, fontSize: 12, color: '#495057', textAlign: 'center' }}>
-          <strong>⚖️ CIVIL RIGHTS LEGAL TOOLKIT — PROFESSIONAL USE</strong><br />
-          These templates are informational and for document generation. Laws change; verify statutes, deadlines, and procedures through primary sources or counsel. This is not legal advice.
+        <div className="rounded-3xl border bg-white shadow p-6 text-center text-sm text-slate-600">
+          <b>⚖️ CIVIL RIGHTS TOOLKIT – 2025 COMPLIANCE SNAPSHOT.</b> Data summarized for convenience and may change. Verify statutes and limits in your jurisdiction. Not legal advice.
         </div>
       </div>
     </div>
   );
-};
-
-export default LegalToolkit;
+}
