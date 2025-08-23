@@ -733,99 +733,288 @@ Counsel for ${plaintiffName || "[Plaintiff]"}`;
   };
 
   // ID RIGHTS CARD (JSX) --------------------------------------------------
-  const IDCard = () => {
-    if (!selectedState) return <em style={{ color: "#666" }}>Select a state to generate the card.</em>;
+  // --- Professional ID Card (balanced layout, statutes, cannabis limits) ---
+const generateIDRightsCard = () => {
+  const stateCode = selectedState;
+  const stateName = stateCode ? statePublicRecordsData[stateCode].name : "[STATE NAME]";
+  const rights = stateCode ? stateIDRights[stateCode] : null;
+  const cannabis = stateCode ? cannabisLaws[stateCode] : null;
+  const pr = stateCode ? statePublicRecordsData[stateCode] : null;
 
-    const stName = statePublicRecordsData[selectedState]?.name || "[STATE]";
-    const idr = stateIDRights[selectedState] || { stopAndID: false, law: "—", recording: "—" };
-    const canna = cannabisLaws[selectedState] || { status: "Unknown", possession: "See statute", cultivation: "See statute" };
-    const foia = statePublicRecordsData[selectedState] || { statute: "—", timeLimit: "—" };
+  if (!stateCode || !rights) {
+    return "Please select a state to generate your Civil Rights & Laws Reference Card";
+  }
 
-    const stopSteps = idr.stopAndID
-      ? [
-          "Stay calm. Keep hands visible.",
-          "Provide your true full name (and info required by statute).",
-          "Politely ask the legal basis for the stop.",
-          "Do not consent to searches. Ask if you are free to go.",
-        ]
-      : [
-          "Stay calm. Keep hands visible.",
-          "You generally do not have to show ID unless driving, under arrest, or otherwise required by law.",
-          "You may ask: ‘Am I being detained, or am I free to go?’.",
-          "Do not consent to searches. If detained, remain silent and ask for a lawyer.",
-        ];
+  // Derive cultivation from provided possession/details text when present
+  const possessionText = cannabis?.possession || "N/A";
+  let cultivationText = "Not allowed";
+  if (possessionText && /plant/i.test(possessionText)) {
+    const plants = possessionText.match(/\b\d+\s*plants?\b[^,]*/gi);
+    cultivationText = plants ? plants.join(", ") : cultivationText;
+  } else if (cannabis?.details && /plant/i.test(cannabis.details)) {
+    const plants = cannabis.details.match(/\b\d+\s*plants?\b[^,]*/gi);
+    cultivationText = plants ? plants.join(", ") : cultivationText;
+  } else if (possessionText && /no home cultivation/i.test(possessionText)) {
+    cultivationText = "No home cultivation";
+  }
 
-    return (
+  const stopIdTag = rights.stopAndID ? "Stop & Identify: YES" : "Stop & Identify: NO";
+  const today = new Date().toLocaleDateString();
+
+  // Card: 3.375in x 2.125in (scaled)
+  return (
+    <div
+      id="id-rights-card"
+      aria-label={`${stateName} Civil Rights & Laws Reference Card`}
+      style={{
+        width: 432,            // ~3.375in @ 128dpi
+        height: 272,           // ~2.125in @ 128dpi
+        backgroundColor: "#ffffff",
+        borderRadius: 16,
+        border: "1px solid #e5e7eb",
+        boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+        overflow: "hidden",
+        fontFamily:
+          'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+        color: "#0f172a",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      {/* Header */}
       <div
         style={{
-          width: 820,
-          padding: 20,
-          borderRadius: 16,
-          background: `linear-gradient(135deg, ${theme.brand1}, ${theme.brand2})`,
-          color: "#fff",
-          border: "2px solid #fff",
-          boxShadow: "0 10px 24px rgba(0,0,0,.25)",
+          background: "linear-gradient(135deg, #0f3d91 0%, #1e3c72 100%)",
+          color: "#ffffff",
+          padding: "10px 14px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderBottom: "1px solid rgba(255,255,255,0.2)",
         }}
       >
-        {/* Header */}
-        <div style={{ textAlign: "center", paddingBottom: 8, borderBottom: "1px solid #ffffff55" }}>
-          <div style={{ fontSize: 22, fontWeight: 900, letterSpacing: 1 }}>{stName.toUpperCase()}</div>
-          <div style={{ fontSize: 14, fontWeight: 700 }}>CIVIL RIGHTS • LAWS • QUICK REFERENCE</div>
-        </div>
-
-        {/* Body */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 12 }}>
-          <div>
-            <Section title="Constitutional Rights">
-              <List items={["I do not consent to searches.", "I choose to remain silent.", "I do not waive any rights.", "I want a lawyer if detained."]} />
-            </Section>
-
-            <Section title="State Laws (Quick Cite)">
-              <KV k="Stop & ID" v={idr.stopAndID ? `YES — ${idr.law}` : "NO state stop-and-identify statute"} />
-              <KV k="Recording Rule" v={idr.recording || "—"} />
-              <KV k="FOIA Statute" v={`${foia.statute || "—"}`} />
-              <KV k="FOIA Response" v={`${foia.timeLimit || "—"}`} />
-            </Section>
-
-            <Section title="Cannabis (Possession & Cultivation)">
-              <KV k="Status" v={canna.status} />
-              <KV k="Possession" v={canna.possession || "See statute"} />
-              <KV k="Cultivation" v={canna.cultivation || "See statute"} />
-            </Section>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: 8,
+              background: "rgba(255,255,255,0.15)",
+              display: "grid",
+              placeItems: "center",
+              fontWeight: 700,
+            }}
+          >
+            ⚖️
           </div>
-
-          <div>
-            <Section title={idr.stopAndID ? "Police Contact — Stop-&-ID Steps" : "Police Contact — If Stopped"}>
-              <Ordered items={stopSteps} />
-            </Section>
-
-            <Section title="Four Simple Steps (always)">
-              <Ordered items={fourSteps} compact />
-            </Section>
-
-            <Section title="Emergency">
-              <div style={{ fontSize: 12 }}>Attorney: __________________</div>
-              <div style={{ fontSize: 12 }}>Emergency: ________________</div>
-            </Section>
+        <div>
+            <div style={{ fontSize: 14, fontWeight: 700, letterSpacing: 0.3 }}>
+              {stateName.toUpperCase()}
+            </div>
+            <div style={{ fontSize: 11, opacity: 0.9, fontWeight: 600 }}>
+              CIVIL RIGHTS & LAWS REFERENCE CARD
+            </div>
           </div>
         </div>
-
-        {/* Footer */}
-        <div style={{
-          marginTop: 10,
-          paddingTop: 8,
-          fontSize: 11,
-          display: "flex",
-          justifyContent: "space-between",
-          opacity: 0.85,
-          borderTop: "1px solid #ffffff55",
-        }}>
-          <div>Generated: {new Date().toLocaleDateString()}</div>
-          <div>Civil Rights Legal Toolkit Pro 2025</div>
+        <div
+          style={{
+            fontSize: 10,
+            padding: "2px 8px",
+            background: "rgba(255,255,255,0.15)",
+            borderRadius: 999,
+          }}
+        >
+          {stopIdTag}
         </div>
       </div>
-    );
-  };
+
+      {/* Body */}
+      <div style={{ display: "flex", gap: 14, padding: 14, flex: 1 }}>
+        {/* Left column */}
+        <div style={{ flex: 1.1, display: "flex", flexDirection: "column", gap: 10 }}>
+          <section>
+            <div
+              style={{
+                fontSize: 10,
+                fontWeight: 700,
+                letterSpacing: 0.6,
+                color: "#0f3d91",
+                marginBottom: 6,
+              }}
+            >
+              CORE RIGHTS
+            </div>
+            <ul style={{ margin: 0, padding: 0, listStyle: "none", fontSize: 11, lineHeight: 1.35 }}>
+              <li>• I do not consent to searches.</li>
+              <li>• I choose to remain silent.</li>
+              <li>• I do not waive any rights.</li>
+              <li>• I want a lawyer if detained/arrested.</li>
+            </ul>
+          </section>
+
+          <section>
+            <div
+              style={{
+                fontSize: 10,
+                fontWeight: 700,
+                letterSpacing: 0.6,
+                color: "#0f3d91",
+                marginBottom: 6,
+              }}
+            >
+              STATE SNAPSHOT
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "auto 1fr",
+                rowGap: 4,
+                columnGap: 8,
+                fontSize: 10.5,
+                lineHeight: 1.3,
+              }}
+            >
+              <div style={{ opacity: 0.7 }}>Recording:</div>
+              <div>{rights.recording}</div>
+
+              <div style={{ opacity: 0.7 }}>Cannabis:</div>
+              <div>{cannabis ? `${cannabis.status}` : "Unknown"}</div>
+
+              <div style={{ opacity: 0.7 }}>Possession:</div>
+              <div>{cannabis ? possessionText : "N/A"}</div>
+
+              <div style={{ opacity: 0.7 }}>Cultivation:</div>
+              <div>{cannabis ? cultivationText : "N/A"}</div>
+
+              <div style={{ opacity: 0.7 }}>FOIA:</div>
+              <div>{pr ? pr.timeLimit : "N/A"}</div>
+            </div>
+          </section>
+
+          <section>
+            <div
+              style={{
+                fontSize: 10,
+                fontWeight: 700,
+                letterSpacing: 0.6,
+                color: "#0f3d91",
+                marginBottom: 6,
+              }}
+            >
+              STATUTES
+            </div>
+            <div style={{ fontSize: 10, lineHeight: 1.35 }}>
+              <div>
+                <span style={{ fontWeight: 600 }}>ID:</span> {rights.law}
+              </div>
+              {pr?.statute && (
+                <div>
+                  <span style={{ fontWeight: 600 }}>Public Records:</span> {pr.statute}
+                </div>
+              )}
+            </div>
+          </section>
+        </div>
+
+        {/* Divider */}
+        <div style={{ width: 1, background: "#e5e7eb" }} />
+
+        {/* Right column */}
+        <div style={{ flex: 0.9, display: "flex", flexDirection: "column", gap: 10 }}>
+          <section>
+            <div
+              style={{
+                fontSize: 10,
+                fontWeight: 700,
+                letterSpacing: 0.6,
+                color: "#0f3d91",
+                marginBottom: 6,
+              }}
+            >
+              POLICE CONTACT — WHAT TO DO
+            </div>
+            <div style={{ fontSize: 10.5, lineHeight: 1.35 }}>
+              {rights.stopAndID ? (
+                <ol style={{ margin: 0, paddingLeft: 14 }}>
+                  <li>Stay calm, hands visible. Do not resist.</li>
+                  <li>Ask: “Am I being detained or am I free to go?”</li>
+                  <li>
+                    If detained, provide required ID info per {rights.law} (e.g., true name;
+                    some states allow address/DOB requests). Do not volunteer extra details.
+                  </li>
+                  <li>State: “I do not consent to any searches.”</li>
+                  <li>
+                    If free to go, leave. If arrested: “I’m invoking my right to remain
+                    silent and want a lawyer.”
+                  </li>
+                </ol>
+              ) : (
+                <ol style={{ margin: 0, paddingLeft: 14 }}>
+                  <li>Stay calm, hands visible. Do not resist.</li>
+                  <li>Ask: “Am I being detained or am I free to go?”</li>
+                  <li>
+                    If not driving or under arrest, you generally aren’t required to show ID.
+                    You may state your name if asked.
+                  </li>
+                  <li>State: “I do not consent to any searches.”</li>
+                  <li>
+                    If arrested: “I’m invoking my right to remain silent and want a lawyer.”
+                  </li>
+                </ol>
+              )}
+            </div>
+          </section>
+
+          <section
+            aria-label="Four simple steps"
+            style={{
+              marginTop: "auto",
+              background: "#f8fafc",
+              border: "1px solid #e2e8f0",
+              borderRadius: 10,
+              padding: "8px 10px",
+            }}
+          >
+            <div
+              style={{
+                fontSize: 10,
+                fontWeight: 700,
+                letterSpacing: 0.6,
+                color: "#0f3d91",
+                marginBottom: 4,
+              }}
+            >
+              FOUR SIMPLE STEPS
+            </div>
+            <ol style={{ margin: 0, paddingLeft: 14, fontSize: 10.5, lineHeight: 1.35 }}>
+              <li>Why did you stop me?</li>
+              <li>I’m not discussing my day.</li>
+              <li>Am I being detained, or am I free to go?</li>
+              <li>I invoke the 5th and want a lawyer.</li>
+            </ol>
+          </section>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "6px 12px",
+          borderTop: "1px solid #e5e7eb",
+          background: "#fcfcfd",
+          color: "#475569",
+          fontSize: 9,
+        }}
+      >
+        <div>Generated: {today}</div>
+        <div>Civil Rights Legal Toolkit Pro</div>
+      </div>
+    </div>
+  );
+};
 
   const generateLetter = () => {
     let out = "";
