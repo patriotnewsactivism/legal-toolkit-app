@@ -1,12 +1,28 @@
 /*
-  File: src/components/legal_toolkit.js
-  Description: Clean, production-ready LegalToolkit component with:
-    • ID Rights Card: stop-and-ID guidance, statutes, recording rule, FOIA statute, cannabis possession + cultivation (incl. MS)
-    • Generators: FOIA, State PRR, Cease & Desist, Notice of Claim, Pre-Suit Notice, Subpoena Duces Tecum, Discovery
-    • Quick Mode for faster inputs, copy/PNG/print exports, robust deadline calculator
-  Notes:
-    - Pure React (no external UI deps) to keep CRA/Netlify builds simple.
-    - Graceful fallbacks for missing per-state data.
+  File: src/components/LegalToolkit.jsx
+  Purpose: Production-ready Civil Rights Legal Toolkit Pro (fixed + enhanced)
+
+  BUILD-FIX + ENHANCEMENTS — PSEUDOCODE PLAN
+  -------------------------------------------------
+  1) Fix build/runtime issues
+     - Replace undefined generateIDRightsCard() with reusable <IDCard/> component.
+     - Harden clipboard/print/PNG helpers with guards and fallbacks.
+     - Add missing setter for `damages` and related inputs.
+     - Sort states and support filtering; ensure dropdown renders reliably.
+  2) UX & polish
+     - Quick Mode toggle preserved; add hotkeys (Ctrl/Cmd+Enter = Generate).
+     - Add Reset, Print, and Download JSON buttons.
+     - Persist all inputs to localStorage (auto-save/restore).
+     - Professional spacing, consistent paddings, bolder headers, subtle shadows.
+  3) Capabilities
+     - FOIA / PRR / Cease & Desist / Notice of Claim / Pre-Suit / Subpoena / Discovery.
+     - ID Rights Card: on-screen preview + PNG export + wallet print.
+     - Deadline calculator from statutory labels.
+  4) Safety
+     - Graceful fallbacks for missing per-state data.
+     - Avoid SSR pitfalls with window/document checks.
+
+  Notes: Pure React (no external UI deps). Keep CRA/Netlify friendly.
 */
 
 import React, { useEffect, useMemo, useState } from "react";
@@ -96,6 +112,14 @@ const styles = {
     textTransform: "uppercase",
     letterSpacing: 0.5,
     boxShadow: "0 4px 15px rgba(52, 152, 219, 0.3)",
+  },
+  subtleBtn: {
+    padding: 10,
+    borderRadius: 10,
+    border: "2px solid #e1e7ef",
+    background: "#fff",
+    cursor: "pointer",
+    fontWeight: 700,
   },
   panel: (accent) => ({
     backgroundColor: "#fff",
@@ -390,6 +414,8 @@ const calculateDeadlineFromLabel = (label) => {
   } else if (years) {
     dt = new Date(today);
     dt.setFullYear(dt.getFullYear() + parseInt(years[1], 10));
+  } else {
+    return "Contact the agency for deadline";
   }
   return dt ? dt.toLocaleDateString() : "Contact the agency for deadline";
 };
@@ -407,6 +433,7 @@ const LegalToolkit = () => {
   // Core state
   const [documentType, setDocumentType] = useState("FOIA Request");
   const [selectedState, setSelectedState] = useState("");
+  const [stateFilter, setStateFilter] = useState("");
   const [jurisdiction, setJurisdiction] = useState("");
   const [agency, setAgency] = useState("");
   const [recipient, setRecipient] = useState("");
@@ -424,11 +451,21 @@ const LegalToolkit = () => {
 
   // Notices
   const [claimType, setClaimType] = useState("general");
-  const [damages] = useState("");
+  const [damages, setDamages] = useState("");
   const [violationType, setViolationType] = useState("harassment");
 
   // UX
   const [quickMode, setQuickMode] = useState(true);
+  const [statusMsg, setStatusMsg] = useState("");
+
+  // Sorted state list with filter
+  const statesSorted = useMemo(() => {
+    return Object.entries(statePublicRecordsData)
+      .sort((a, b) => a[1].name.localeCompare(b[1].name))
+      .filter(([code, data]) =>
+        stateFilter.trim() ? data.name.toLowerCase().includes(stateFilter.trim().toLowerCase()) || code.toLowerCase().includes(stateFilter.trim().toLowerCase()) : true
+      );
+  }, [stateFilter]);
 
   // Auto-prop based on state + document
   useEffect(() => {
@@ -457,10 +494,82 @@ const LegalToolkit = () => {
       setStatute(req.statute);
     } else {
       setJurisdiction(st.name);
+      setTimeLimit("");
+      setStatute("");
     }
   }, [selectedState, documentType]);
 
   const calculateResponseDate = useMemo(() => () => calculateDeadlineFromLabel(timeLimit), [timeLimit]);
+
+  // Persist all fields to localStorage
+  useEffect(() => {
+    // why: keep user context even after refresh
+    const payload = {
+      documentType,
+      selectedState,
+      stateFilter,
+      jurisdiction,
+      agency,
+      recipient,
+      incident,
+      timeLimit,
+      statute,
+      plaintiffName,
+      defendantName,
+      caseNumber,
+      courtName,
+      discoveryType,
+      claimType,
+      damages,
+      violationType,
+      quickMode,
+    };
+    try {
+      window.localStorage.setItem("legalToolkitState", JSON.stringify(payload));
+    } catch (_) {}
+  }, [documentType, selectedState, stateFilter, jurisdiction, agency, recipient, incident, timeLimit, statute, plaintiffName, defendantName, caseNumber, courtName, discoveryType, claimType, damages, violationType, quickMode]);
+
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem("legalToolkitState");
+      if (raw) {
+        const s = JSON.parse(raw);
+        setDocumentType(s.documentType || "FOIA Request");
+        setSelectedState(s.selectedState || "");
+        setStateFilter(s.stateFilter || "");
+        setJurisdiction(s.jurisdiction || "");
+        setAgency(s.agency || "");
+        setRecipient(s.recipient || "");
+        setIncident(s.incident || "");
+        setTimeLimit(s.timeLimit || "");
+        setStatute(s.statute || "");
+        setPlaintiffName(s.plaintiffName || "");
+        setDefendantName(s.defendantName || "");
+        setCaseNumber(s.caseNumber || "");
+        setCourtName(s.courtName || "");
+        setDiscoveryType(s.discoveryType || "interrogatories");
+        setClaimType(s.claimType || "general");
+        setDamages(s.damages || "");
+        setViolationType(s.violationType || "harassment");
+        setQuickMode(s.quickMode ?? true);
+      }
+    } catch (_) {}
+  }, []);
+
+  // Keyboard shortcut: Ctrl/Cmd+Enter = Generate
+  useEffect(() => {
+    const onKey = (e) => {
+      const isMac = navigator.platform.toLowerCase().includes("mac");
+      if ((isMac ? e.metaKey : e.ctrlKey) && e.key.toLowerCase() === "enter") {
+        e.preventDefault();
+        generateLetter();
+        setStatusMsg("Generated via keyboard shortcut");
+        setTimeout(() => setStatusMsg(""), 1800);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [documentType, timeLimit, statute, incident, selectedState]);
 
   // --- Generators --------------------------------------------------------
   const generateFOIARequest = () => {
@@ -527,6 +636,8 @@ RE: FORMAL CEASE AND DESIST — ${jurisdiction || "[Jurisdiction]"}
 
 You are demanded to CEASE AND DESIST from the unlawful conduct described below.
 
+TYPE: ${violationType.replace(/_/g, " ")}
+
 VIOLATIONS:
 ${incident || "[Dates, acts, links, witnesses]"}
 
@@ -566,6 +677,8 @@ Claims/Risk Management
 RE: NOTICE OF CLAIM — ${jurisdiction || "[Jurisdiction]"}
 
 This serves as formal notice of claim for injuries and damages arising from the incident below.
+
+CLAIM TYPE: ${claimType}
 
 INCIDENT:
 ${incident || "[Date/Time, Location, Parties, Chronology, Conditions, Witnesses]"}
@@ -680,7 +793,7 @@ YOU ARE REQUESTED to respond pursuant to the applicable rules of civil procedure
 
 DEFINITIONS/INSTRUCTIONS: "Document" includes ESI; these requests are continuing.
 
-$${
+${
       discoveryType === "interrogatories"
         ? `INTERROGATORIES:
 1. Identify yourself.
@@ -734,7 +847,8 @@ Counsel for ${plaintiffName || "[Plaintiff]"}`;
 
   // ID RIGHTS CARD (JSX) --------------------------------------------------
   const IDCard = () => {
-    if (!selectedState) return <em style={{ color: "#666" }}>Select a state to generate the card.</em>;
+    if (!selectedState)
+      return <em style={{ color: "#666" }}>Select a state to generate the card.</em>;
 
     const stName = statePublicRecordsData[selectedState]?.name || "[STATE]";
     const idr = stateIDRights[selectedState] || { stopAndID: false, law: "—", recording: "—" };
@@ -858,6 +972,30 @@ Counsel for ${plaintiffName || "[Plaintiff]"}`;
     setGeneratedLetter(out);
   };
 
+  const resetForm = () => {
+    setDocumentType("FOIA Request");
+    setSelectedState("");
+    setStateFilter("");
+    setJurisdiction("");
+    setAgency("");
+    setRecipient("");
+    setIncident("");
+    setGeneratedLetter("");
+    setTimeLimit("");
+    setStatute("");
+    setPlaintiffName("");
+    setDefendantName("");
+    setCaseNumber("");
+    setCourtName("");
+    setDiscoveryType("interrogatories");
+    setClaimType("general");
+    setDamages("");
+    setViolationType("harassment");
+    setQuickMode(true);
+    setStatusMsg("Form reset");
+    setTimeout(() => setStatusMsg(""), 1500);
+  };
+
   // --- UI ---------------------------------------------------------------
   return (
     <div style={styles.appShell}>
@@ -867,14 +1005,22 @@ Counsel for ${plaintiffName || "[Plaintiff]"}`;
           <p style={styles.sub}>Attorney-Level Document Generator • 2024–2025 legislative snapshot • Professional practice tooling</p>
         </div>
 
-        {/* Quick Mode toggle */}
-        <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 12 }}>
+        {/* Status bar */}
+        <div aria-live="polite" style={{ minHeight: 20, color: theme.brand1, fontWeight: 700, marginBottom: 6 }}>{statusMsg}</div>
+
+        {/* Quick Mode & actions */}
+        <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 12, flexWrap: "wrap" }}>
           <label style={{ fontWeight: 700, color: theme.ink }}>
             <input type="checkbox" checked={quickMode} onChange={(e) => setQuickMode(e.target.checked)} /> Quick Mode
           </label>
           <span style={{ fontSize: 12, color: "#667085" }}>
             {quickMode ? "Fewer inputs. Smart defaults. You can still edit output." : "Show all fields for granular control."}
           </span>
+          <div style={{ marginLeft: "auto", display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <button onClick={resetForm} style={styles.subtleBtn}>↺ Reset</button>
+            <button onClick={printCurrent} style={styles.subtleBtn}>🖨️ Print</button>
+            <button onClick={downloadJSON} style={styles.subtleBtn}>⬇️ JSON</button>
+          </div>
         </div>
 
         {/* Top inputs */}
@@ -899,13 +1045,20 @@ Counsel for ${plaintiffName || "[Plaintiff]"}`;
 
           <div>
             <label style={styles.label}>🏛️ State/Jurisdiction</label>
+            <input
+              type="text"
+              placeholder="Filter states by name or code…"
+              value={stateFilter}
+              onChange={(e) => setStateFilter(e.target.value)}
+              style={{ ...styles.text(false), marginBottom: 8 }}
+            />
             <select
               value={selectedState}
               onChange={(e) => setSelectedState(e.target.value)}
               style={styles.text(false)}
             >
               <option value="">Select a state…</option>
-              {Object.entries(statePublicRecordsData).map(([code, data]) => (
+              {statesSorted.map(([code, data]) => (
                 <option key={code} value={code}>
                   {data.name}
                 </option>
@@ -980,6 +1133,19 @@ Counsel for ${plaintiffName || "[Plaintiff]"}`;
                   ? "Short description. You can refine after generation."
                   : "Include dates, people, departments, keywords, document types, formats, and relevant timeframes."
               }
+            />
+          </div>
+        )}
+
+        {/* Damages box for Notice/Pre-Suit */}
+        {(documentType === "Notice of Claim" || documentType === "Pre-Suit Notice") && (
+          <div style={{ marginBottom: 12 }}>
+            <label style={styles.label}>💸 Damages Summary</label>
+            <textarea
+              value={damages}
+              onChange={(e) => setDamages(e.target.value)}
+              style={{ ...styles.area, height: 120 }}
+              placeholder="Itemize medical, wage loss, property, non-economic, and future care."
             />
           </div>
         )}
@@ -1067,21 +1233,26 @@ Counsel for ${plaintiffName || "[Plaintiff]"}`;
 
         {/* Output */}
         {generatedLetter !== "" && (
-          <div style={styles.panel(theme.ok)}>
+          <div style={{ ...styles.panel(theme.ok), marginTop: 12 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
               <h3 style={{ color: theme.ok, margin: 0 }}>📄 Generated {documentType}</h3>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 <button
                   onClick={() => {
-                    if (documentType === "ID Rights Card") {
-                      // Copy plain snapshot of key lines
-                      const stName = selectedState ? statePublicRecordsData[selectedState].name : "[STATE]";
-                      const idr = selectedState ? stateIDRights[selectedState] : null;
-                      const canna = selectedState ? cannabisLaws[selectedState] : null;
-                      const txt = `${stName} — Civil Rights Quick Card\nStop & ID: ${idr?.stopAndID ? "YES" : "NO"} (${idr?.law || "—"})\nRecording: ${idr?.recording || "—"}\nCannabis: ${canna?.status || "—"}; Possession: ${canna?.possession || "—"}; Cultivation: ${canna?.cultivation || "—"}\nFOIA: ${statePublicRecordsData[selectedState]?.statute || "—"}; ${statePublicRecordsData[selectedState]?.timeLimit || "—"}`;
-                      navigator.clipboard.writeText(txt);
-                    } else {
-                      navigator.clipboard.writeText(generatedLetter);
+                    try {
+                      if (documentType === "ID Rights Card") {
+                        const stName = selectedState ? statePublicRecordsData[selectedState].name : "[STATE]";
+                        const idr = selectedState ? stateIDRights[selectedState] : null;
+                        const canna = selectedState ? cannabisLaws[selectedState] : null;
+                        const txt = `${stName} — Civil Rights Quick Card\nStop & ID: ${idr?.stopAndID ? "YES" : "NO"} (${idr?.law || "—"})\nRecording: ${idr?.recording || "—"}\nCannabis: ${canna?.status || "—"}; Possession: ${canna?.possession || "—"}; Cultivation: ${canna?.cultivation || "—"}\nFOIA: ${statePublicRecordsData[selectedState]?.statute || "—"}; ${statePublicRecordsData[selectedState]?.timeLimit || "—"}`;
+                        navigator.clipboard.writeText(txt);
+                      } else {
+                        navigator.clipboard.writeText(generatedLetter);
+                      }
+                      setStatusMsg("Copied to clipboard");
+                      setTimeout(() => setStatusMsg(""), 1500);
+                    } catch (_) {
+                      alert("Copy failed. Select the text and copy manually.");
                     }
                   }}
                   style={{ ...styles.text(false), padding: 10, fontWeight: 700, background: theme.ok, color: "#fff", border: 0, width: "auto" }}
@@ -1105,21 +1276,33 @@ Counsel for ${plaintiffName || "[Plaintiff]"}`;
                     </button>
                   </>
                 ) : (
-                  <button
-                    onClick={() => {
-                      const blob = new Blob([generatedLetter], { type: "text/plain" });
-                      const url = window.URL.createObjectURL(blob);
-                      const a = document.createElement("a");
-                      a.href = url;
-                      const today = new Date().toLocaleDateString().replace(/\//g, "-");
-                      a.download = `${documentType.replace(/\s+/g, "_")}_${today}.txt`;
-                      a.click();
-                      window.URL.revokeObjectURL(url);
-                    }}
-                    style={{ ...styles.text(false), padding: 10, fontWeight: 700, background: "#8e44ad", color: "#fff", border: 0, width: "auto" }}
-                  >
-                    💾 Download Text
-                  </button>
+                  <>
+                    <button
+                      onClick={() => {
+                        try {
+                          const blob = new Blob([generatedLetter], { type: "text/plain" });
+                          const url = window.URL.createObjectURL(blob);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          const today = new Date().toLocaleDateString().replace(/\//g, "-");
+                          a.download = `${documentType.replace(/\s+/g, "_")}_${today}.txt`;
+                          a.click();
+                          window.URL.revokeObjectURL(url);
+                        } catch (_) {
+                          alert("Download failed in this browser.");
+                        }
+                      }}
+                      style={{ ...styles.text(false), padding: 10, fontWeight: 700, background: "#8e44ad", color: "#fff", border: 0, width: "auto" }}
+                    >
+                      💾 Download Text
+                    </button>
+                    <button
+                      onClick={printCurrent}
+                      style={{ ...styles.text(false), padding: 10, fontWeight: 700, background: theme.info, color: "#fff", border: 0, width: "auto" }}
+                    >
+                      🖨️ Print
+                    </button>
+                  </>
                 )}
               </div>
             </div>
@@ -1127,7 +1310,7 @@ Counsel for ${plaintiffName || "[Plaintiff]"}`;
             {documentType === "ID Rights Card" ? (
               <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: 16, background: theme.subtle, borderRadius: 12, marginTop: 12 }}>
                 <div id="id-rights-card-display">
-                  {generateIDRightsCard()}
+                  <IDCard />
                 </div>
               </div>
             ) : (
@@ -1146,7 +1329,7 @@ Counsel for ${plaintiffName || "[Plaintiff]"}`;
         )}
 
         {/* Disclaimer */}
-        <div style={{ ...styles.panel("#6c757d"), background: theme.subtle, color: "#495057", textAlign: "center" }}>
+        <div style={{ ...styles.panel("#6c757d"), background: theme.subtle, color: "#495057", textAlign: "center", marginTop: 12 }}>
           <strong>⚖️ CIVIL RIGHTS TOOLKIT — 2025 SNAPSHOT</strong>
           <br />
           Laws change. Information reflects a 2024–2025 snapshot and may require verification. Not legal advice.
@@ -1157,9 +1340,15 @@ Counsel for ${plaintiffName || "[Plaintiff]"}`;
 
   // --- Utilities: Card export/print -------------------------------------
   function downloadCardPNG() {
-    // Render to offscreen canvas for high-res export
-    const wrap = document.getElementById("id-rights-card-display");
-    if (!wrap) return;
+    if (!selectedState) {
+      alert("Select a state first.");
+      return;
+    }
+    const wrap = typeof document !== "undefined" && document.getElementById("id-rights-card-display");
+    if (!wrap) {
+      alert("Preview not mounted yet.");
+      return;
+    }
 
     const canvas = document.createElement("canvas");
     canvas.width = 1200; // upscale for crisper export
@@ -1218,7 +1407,8 @@ Counsel for ${plaintiffName || "[Plaintiff]"}`;
       "I do not waive any rights",
       "I want a lawyer if detained",
     ].forEach((t) => {
-      ctx.fillText(`• ${t}`, leftX, (y += 28));
+      y += 28;
+      ctx.fillText(`• ${t}`, leftX, y);
     });
 
     y += 16;
@@ -1228,9 +1418,9 @@ Counsel for ${plaintiffName || "[Plaintiff]"}`;
 
     ctx.fillStyle = "#fff";
     ctx.font = "18px Arial";
-    ctx.fillText(`Stop & ID: ${idr.stopAndID ? "YES — " + idr.law : "NO state stop-and-identify"}`, leftX, (y += 28));
-    ctx.fillText(`Recording: ${idr.recording}`, leftX, (y += 24));
-    ctx.fillText(`FOIA: ${foia.statute} — ${foia.timeLimit}`, leftX, (y += 24));
+    y += 28; ctx.fillText(`Stop & ID: ${idr.stopAndID ? "YES — " + idr.law : "NO state stop-and-identify"}`, leftX, y);
+    y += 24; ctx.fillText(`Recording: ${idr.recording}`, leftX, y);
+    y += 24; ctx.fillText(`FOIA: ${foia.statute} — ${foia.timeLimit}`, leftX, y);
 
     y += 10;
     ctx.fillStyle = "#ffd700";
@@ -1239,9 +1429,9 @@ Counsel for ${plaintiffName || "[Plaintiff]"}`;
 
     ctx.fillStyle = "#fff";
     ctx.font = "18px Arial";
-    ctx.fillText(`Status: ${canna.status}`, leftX, (y += 28));
-    ctx.fillText(`Possession: ${canna.possession}`, leftX, (y += 24));
-    ctx.fillText(`Cultivation: ${canna.cultivation}`, leftX, (y += 24));
+    y += 28; ctx.fillText(`Status: ${canna.status}`, leftX, y);
+    y += 24; ctx.fillText(`Possession: ${canna.possession}`, leftX, y);
+    y += 24; ctx.fillText(`Cultivation: ${canna.cultivation}`, leftX, y);
 
     // Right column — steps
     const rightX = canvas.width / 2 + 40;
@@ -1267,7 +1457,7 @@ Counsel for ${plaintiffName || "[Plaintiff]"}`;
           "Ask: ‘Am I detained or free to go?’",
           "Decline consent; request a lawyer if detained.",
         ];
-    steps.forEach((t) => (ctx.fillText(`• ${t}`, rightX, (ry += 28))));
+    steps.forEach((t) => { ry += 28; ctx.fillText(`• ${t}`, rightX, ry); });
 
     ry += 16;
     ctx.fillStyle = "#ffd700";
@@ -1276,7 +1466,7 @@ Counsel for ${plaintiffName || "[Plaintiff]"}`;
 
     ctx.fillStyle = "#fff";
     ctx.font = "18px Arial";
-    fourSteps.forEach((t, i) => (ctx.fillText(`${i + 1}. ${t}`, rightX, (ry += 24))));
+    fourSteps.forEach((t, i) => { ry += 24; ctx.fillText(`${i + 1}. ${t}`, rightX, ry); });
 
     // Footer
     ctx.fillStyle = "rgba(255,255,255,0.8)";
@@ -1289,6 +1479,7 @@ Counsel for ${plaintiffName || "[Plaintiff]"}`;
     );
 
     canvas.toBlob((blob) => {
+      if (!blob) return;
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -1300,11 +1491,16 @@ Counsel for ${plaintiffName || "[Plaintiff]"}`;
   }
 
   function printWalletCard() {
-    const win = window.open("", "_blank");
     const stName = statePublicRecordsData[selectedState]?.name || "STATE";
     const idr = stateIDRights[selectedState] || { stopAndID: false, law: "—", recording: "—" };
     const canna = cannabisLaws[selectedState] || { status: "Unknown", possession: "See statute", cultivation: "See statute" };
     const foia = statePublicRecordsData[selectedState] || { statute: "—", timeLimit: "—" };
+
+    const win = typeof window !== "undefined" ? window.open("", "_blank") : null;
+    if (!win) {
+      alert("Popup blocked. Allow popups to print.");
+      return;
+    }
 
     win.document.write(`
       <html>
@@ -1370,6 +1566,69 @@ Counsel for ${plaintiffName || "[Plaintiff]"}`;
       </html>
     `);
     win.document.close();
+  }
+
+  function printCurrent() {
+    if (documentType === "ID Rights Card") {
+      printWalletCard();
+      return;
+    }
+    const win = typeof window !== "undefined" ? window.open("", "_blank") : null;
+    if (!win) {
+      alert("Popup blocked. Allow popups to print.");
+      return;
+    }
+    const title = `${documentType} — ${new Date().toLocaleDateString()}`;
+    win.document.write(`
+      <html>
+        <head>
+          <title>${title}</title>
+          <style>
+            body{font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: .75in; white-space: pre-wrap;}
+            pre{font: 12px/1.4 monospace;}
+          </style>
+        </head>
+        <body>
+          <h2>${documentType}</h2>
+          <pre>${(generatedLetter || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>
+          <script>window.print()</script>
+        </body>
+      </html>
+    `);
+    win.document.close();
+  }
+
+  function downloadJSON() {
+    const payload = {
+      documentType,
+      selectedState,
+      jurisdiction,
+      agency,
+      recipient,
+      incident,
+      timeLimit,
+      statute,
+      plaintiffName,
+      defendantName,
+      caseNumber,
+      courtName,
+      discoveryType,
+      claimType,
+      damages,
+      violationType,
+      quickMode,
+    };
+    try {
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `legal_toolkit_${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (_) {
+      alert("Browser blocked JSON download.");
+    }
   }
 };
 
