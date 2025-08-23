@@ -384,6 +384,7 @@ Sincerely,
     const today = new Date().toLocaleDateString();
     const recRule = recordingConsent[selectedState] || "One-party consent (check local exceptions)";
     return `[Your Name]\n[Address]\n[City, State ZIP]\n[Email] | [Phone]\n\n${today}\n\n${recipient || "[Recipient]"}\n[Address]\n\nRE: FORMAL CEASE AND DESIST – ${jurisdiction || "[Jurisdiction]"}\n\nYou are hereby demanded to cease and desist from the conduct described below.\n\nVIOLATIONS:\n${incident || "[Describe dates, acts, links, witnesses]"}\n\nLEGAL BASIS:\n• Applicable federal/state laws; consumer protection and civil remedies\n• Recording rules in your state: ${recRule}\n\nDEMAND:\n• Immediate cessation; preserve evidence; confirm in 10 business days.\n• Remove/rectify offending content or actions.\n\nFailure to comply may result in injunctions, damages, and fees.\n\nSincerely,\n[Your Name]\n`;
+    Generated: ${today}
   };
 
   const generateNoticeOfClaim = () => {
@@ -391,23 +392,27 @@ Sincerely,
     const stateData = stateNoticeRequirements[selectedState]?.govTortClaim;
     const tl = stateData?.timeLimit ? `Under ${stateData.statute}, deadline: ${stateData.timeLimit}.` : "";
     return `[Your Name]\n[Address]\n[City, State ZIP]\n[Email] | [Phone]\n\n${today}\n\n${agency || recipient || "[Entity/Agency]"}\nClaims/Risk Management\n[Address]\n\nRE: NOTICE OF CLAIM – ${jurisdiction || "[Jurisdiction]"}\n\nIncident: ${incident || "[Date, time, location, facts]"}\nDamages: ${damages || "[Medical, wage loss, property, non-economic]"}\n\nThis notice preserves all rights and seeks resolution pre-litigation. ${tl}\nPlease acknowledge and provide claims handling contact within 30 days.\n\nSincerely,\n[Your Name]\n`;
+    Generated: ${today}
   };
 
   const generatePreSuit = () => {
     const today = new Date().toLocaleDateString();
     const med = stateNoticeRequirements[selectedState]?.medMalpractice;
     return `PRE-SUIT NOTICE – ${claimType.toUpperCase()}\nJurisdiction: ${jurisdiction || "[Jurisdiction]"}\nStatute: ${med?.statute || "[Applicable law]"}\n\nAllegations: ${incident || "[Chronology of negligent acts; standard-of-care breaches]"}\nDamages: ${damages || "[Itemize]"}\n\nNotice period: ${med?.timeLimit || "[State-specific or none]"}.\nPlease forward to liability carrier and confirm adjuster details.\n`;
+    Generated: ${today}
   };
 
   const generateDiscovery = () => {
     const today = new Date().toLocaleDateString();
     const title = discoveryType === "interrogatories" ? "INTERROGATORIES" : discoveryType === "requests_for_production" ? "REQUESTS FOR PRODUCTION" : "REQUESTS FOR ADMISSION";
     return `${courtName || "[COURT]"}\n${jurisdiction || "[JURISDICTION]"}\n\n${plaintiffName || "[PLAINTIFF]"} v. ${defendantName || "[DEFENDANT]"}\nCase No.: ${caseNumber || "[NUMBER]"}\n\nPLAINTIFF'S ${title} (SET ONE)\n\nDefinitions, instructions, and ${title.toLowerCase()} tailored to: ${incident || "[Subject matter]"}.\nResponses due in 30 days unless modified by rule or order.\nDate: ${today}\n`;
+    Generated: ${today}
   };
 
   const generateSubpoena = () => {
     const today = new Date().toLocaleDateString();
     return `${courtName || "[COURT]"}\n${jurisdiction || "[JURISDICTION]"}\n\nSUBPOENA DUCES TECUM\nTO: ${recipient || "[Witness/Records Custodian]"}\n\nAppear/produce on: [Date/Time/Place].\nDocuments requested: ${incident || "[Specific categories with dates and formats incl. metadata]"}.\nPrivilege log required for any withholdings.\nDate: ${today}`;
+    Generated: ${today}
   };
 
   const generateLetter = () => {
@@ -429,6 +434,7 @@ Sincerely,
         return "[Select a state to render the card below]";
       default:
         return "";
+      Generated: ${today}
     }
   };
 
