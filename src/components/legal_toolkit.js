@@ -424,7 +424,7 @@ const LegalToolkit = () => {
 
   // Notices
   const [claimType, setClaimType] = useState("general");
-  const [damages, setDamages] = useState("");
+  const [damages] = useState("");
   const [violationType, setViolationType] = useState("harassment");
 
   // UX
