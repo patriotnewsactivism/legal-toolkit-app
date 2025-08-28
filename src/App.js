@@ -1,10 +1,12 @@
+// FILE: src/App.js
+
 import React from 'react';
-import LegalToolkit from './components/legal_toolkit.js';
-import './App.css';
+import LegalToolkit from './components/legal_toolkit';
 
 function App() {
   return (
-    <div className="App">
+    <div>
+      <h1>Legal Toolkit</h1>
       <LegalToolkit />
     </div>
   );
