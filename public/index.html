@@ -1,21 +1,86 @@
+<!-- FILE: public/index.html -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Civil Rights Legal Toolkit – Upgraded</title>
-  <!-- Tailwind CSS via CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gradient-to-b from-indigo-800 via-blue-900 to-indigo-950 min-h-screen text-white">
-  <div id="root" class="p-6"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Legal Toolkit</title>
 
-  <!-- React + ReactDOM via CDN -->
-  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <!-- Google Fonts: Inter (clean UI font) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
 
-  <!-- Main app -->
-  <script type="text/babel" src="app.js"></script>
-</body>
+    <style>
+      :root {
+        --bg: #f9fafb;
+        --fg: #111827;
+        --accent: #2563eb;
+        --radius: 0.75rem;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--fg);
+        line-height: 1.6;
+      }
+      header,
+      footer {
+        background: white;
+        border-bottom: 1px solid #e5e7eb;
+        border-top: 1px solid #e5e7eb;
+        padding: 1rem 2rem;
+      }
+      main {
+        padding: 2rem;
+        max-width: 960px;
+        margin: 0 auto;
+      }
+      h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+      button {
+        background: var(--accent);
+        color: white;
+        border: none;
+        border-radius: var(--radius);
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #1e40af;
+      }
+      #root {
+        margin-top: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Legal Toolkit</h1>
+    </header>
+    <main>
+      <div id="root"></div>
+    </main>
+    <footer>
+      <small>© <span id="year"></span> Legal Toolkit</small>
+    </footer>
+
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+
+    <!-- For Vite -->
+    <script type="module" src="/src/main.jsx"></script>
+    <!-- For CRA, CRA injects scripts automatically at build, remove the above line -->
+  </body>
 </html>
