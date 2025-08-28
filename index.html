@@ -1,21 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Civil Rights Legal Toolkit – Upgraded</title>
-  <!-- Tailwind CSS via CDN -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Legal Toolkit</title>
+  <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-b from-indigo-800 via-blue-900 to-indigo-950 min-h-screen text-white">
-  <div id="root" class="p-6"></div>
+<body class="min-h-screen bg-gray-50 text-gray-900">
+  <div class="max-w-3xl mx-auto p-5">
+    <h1 class="text-3xl font-extrabold mb-4">📚 Legal Toolkit</h1>
+    <div id="root"></div>
+  </div>
 
-  <!-- React + ReactDOM via CDN -->
+  <!-- React + ReactDOM + Babel -->
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 
-  <!-- Main app -->
-  <script type="text/babel" src="app.js"></script>
+  <!-- App code inline so it always runs -->
+  <script type="text/babel">
+    const { useState } = React;
+
+    const STATE_DATA = {
+      Texas: {
+        deadline: "10 business days",
+        statute: "Texas Gov. Code § 552.301",
+        notes: "Agency must produce, explain delay with a date, or seek AG opinion within 10 business days."
+      },
+      Tennessee: {
+        deadline: "7 business days",
+        statute: "Tenn. Code Ann. § 10-7-503",
+        notes: "Records custodian must grant, deny, or explain delay within 7 business days."
+      }
+    };
+
+    function SubscriptionBanner() {
+      const [show, setShow] = useState(true);
+      if (!show) return null;
+      return (
+        <div className="rounded-xl bg-yellow-100 border border-yellow-300 p-3 mb-4 flex items-center justify-between">
+          <p className="text-sm text-yellow-900">
+            <strong>Upgrade preview:</strong> unlock unlimited templates & timelines ($10/mo).
+          </p>
+          <button className="text-xs px-2 py-1 bg-yellow-300 rounded" onClick={() => setShow(false)}>
+            Dismiss
+          </button>
+        </div>
+      );
+    }
+
+    function Generator() {
+      const [state, setState] = useState("Texas");
+      const [agency, setAgency] = useState("");
+      const [records, setRecords] = useState("");
+      const [letter, setLetter] = useState("");
+
+      function generate() {
+        const info = STATE_DATA[state];
+        const body = `
+${agency}
+Public Records / FOIA Officer
+
+RE: Public Records Request under ${info.statute}
+
+To Whom It May Concern,
+
+I am exercising my right under ${info.statute}. Please provide access to the following records:
+
+${records}
+
+This request should be processed within ${info.deadline}. ${info.notes}
+
+If you foresee delays or fees over $25, please provide written notice and a cost estimate before processing.
+
+Respectfully,
+/s/ [Your Name]
+[Your Email] · [Your Mailing Address]
+        `.trim();
+        setLetter(body);
+      }
+
+      function copy() {
+        navigator.clipboard?.writeText(letter);
+      }
+
+      return (
+        <div className="space-y-4">
+          <div className="grid gap-3">
+            <label className="text-sm font-semibold">
+              State
+              <select
+                value={state}
+                onChange={e => setState(e.target.value)}
+                className="mt-1 w-full rounded border p-2"
+              >
+                {Object.keys(STATE_DATA).map(s => <option key={s}>{s}</option>)}
+              </select>
+            </label>
+
+            <input
+              className="w-full rounded border p-2"
+              placeholder="Agency / Records Custodian"
+              value={agency}
+              onChange={e => setAgency(e.target.value)}
+            />
+
+            <textarea
+              className="w-full rounded border p-2"
+              rows="4"
+              placeholder="Describe the records (subject, date range, formats, keywords...)"
+              value={records}
+              onChange={e => setRecords(e.target.value)}
+            ></textarea>
+
+            <button
+              className="bg-green-600 text-white rounded px-4 py-2"
+              onClick={generate}
+            >
+              Generate Request
+            </button>
+          </div>
+
+          {letter && (
+            <div className="mt-4">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-lg font-bold">Generated Request</h2>
+                <button className="text-sm px-3 py-1 rounded border" onClick={copy}>Copy</button>
+              </div>
+              <pre className="whitespace-pre-wrap rounded-lg border bg-white p-3 text-sm overflow-x-auto">
+{letter}
+              </pre>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function App() {
+      return (
+        <>
+          <SubscriptionBanner />
+          <Generator />
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
 </body>
 </html>
