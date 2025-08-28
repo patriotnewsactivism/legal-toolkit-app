@@ -66,11 +66,11 @@ const STORAGE_KEY = 'legal-toolkit:v2';
 const DEFAULT_TEMPLATE = `
 {{date}}
 
-{{senderName}}
-{{senderAddress}}
-{{city}}, {{state}} {{zip}}
-{{email}}
-{{phone}}
+{senderName}<br />
+{senderAddress}<br />
+{city}, {state} {zip}<br />
+{email}<br />
+{phone}
 
 To:
 {{recipientName}}
