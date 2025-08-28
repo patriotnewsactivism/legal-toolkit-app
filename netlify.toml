@@ -1,7 +1,6 @@
-# netlify.toml
 [build]
-  publish = "."        # publish from root (where index.html lives)
-  command = ""         # no build command needed, just serve static files
+  publish = "."
+  command = ""
 
 [[redirects]]
   from = "/*"
