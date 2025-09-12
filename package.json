@@ -16,11 +16,13 @@
     "zod": "^4.1.8"
   },
   "scripts": {
-    "test": "react-scripts test",
     "dev": "vite",
-    "preview": "vite preview"
+    "start": "vite",
     "build": "vite build",
-    "start": "npm start"
+    "preview": "vite preview"
+  }
+}
+
   },
   "eslintConfig": {
     "extends": [
