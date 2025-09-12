@@ -42,7 +42,8 @@
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.2",
     "typescript": "^5.9.2",
-    "vite": "^7.1.5"
+    "vite": "^7.1.5",
+    "vite-tsconfig-paths": "^5.1.4"
   },
   "type": "module",
   "engines": {
