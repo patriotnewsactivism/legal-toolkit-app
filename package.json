@@ -22,8 +22,6 @@
     "preview": "vite preview"
   }
 }
-
-  },
   "eslintConfig": {
     "extends": [
       "react-app",
