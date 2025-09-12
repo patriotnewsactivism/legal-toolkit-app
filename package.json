@@ -20,7 +20,7 @@
     "dev": "vite",
     "preview": "vite preview"
     "build": "vite build",
-    "start": "vite" # allow `npm start`
+    "start": "npm start"
   },
   "eslintConfig": {
     "extends": [
